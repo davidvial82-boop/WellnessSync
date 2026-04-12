@@ -228,7 +228,7 @@ function render(){
 }
 async function analyseFood(text){
   const prompt=`You are a nutrition expert. Analyse this food and return ONLY JSON (no markdown):\nFood: "${text}"\n{"name":"short name max 40 chars","cal":number,"p":number,"c":number,"f":number}\nMacros in grams, calories as kcal. Sum multiple items. Australian foods.`;
-  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:prompt}]})});
+  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:300,messages:[{role:'user',content:prompt}]})});
   const d=await res.json();
   return JSON.parse((d.content?.[0]?.text||'').replace(/```json|```/g,'').trim());
 }
