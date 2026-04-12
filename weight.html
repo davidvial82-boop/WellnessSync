@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dave - Weight</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07090d;--s1:#0d1117;--s2:#131920;--s3:#1a2233;--border:#1e2a3a;--border2:#253248;--accent:#00e5ff;--adim:rgba(0,229,255,0.1);--green:#00ff88;--orange:#ff6b35;--odim:rgba(255,107,53,0.1);--yellow:#ffd600;--red:#ff3d71;--rdim:rgba(255,61,113,0.1);--purple:#b388ff;--text:#e2e8f5;--muted:#4a5c78;--muted2:#2e3d54}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;padding-bottom:90px}
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(7,9,13,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 max(10px,env(safe-area-inset-bottom))}
+.nav-link{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--muted);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:6px 16px;border-radius:10px;transition:color 0.2s}
+.nav-link svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-link.active,.nav-link:hover{color:var(--orange)}
+.wrap{max-width:600px;margin:0 auto;padding:20px 16px}
+.page-header{padding:20px 0 20px;display:flex;justify-content:space-between;align-items:center}
+.page-header h1{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:2px}
+.card-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* HERO STATS */
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.hstat{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px 12px;text-align:center}
+.hstat .hv{font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;margin-bottom:4px}
+.hstat .hl{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.hstat.current .hv{color:var(--orange)}
+.hstat.goal .hv{color:var(--green)}
+.hstat.diff .hv{color:var(--accent)}
+
+/* PROGRESS BAR */
+.progress-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px}
+.prog-bar-track{height:12px;background:var(--border);border-radius:99px;overflow:hidden;margin:10px 0 6px}
+.prog-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--orange),var(--green));transition:width 0.8s ease}
+.prog-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.goal-date{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+
+/* LOG CARD */
+.log-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px}
+.log-row{display:flex;gap:8px;margin-bottom:8px}
+.weight-input{flex:1;background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:28px;text-align:center;letter-spacing:3px;outline:none}
+.weight-input:focus{border-color:var(--orange)}
+.log-btn{background:var(--orange);color:var(--bg);border:none;border-radius:10px;padding:12px 20px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;transition:opacity 0.2s}
+.log-btn:hover{opacity:0.85}
+.log-status{font-size:11px;color:var(--muted);text-align:center;min-height:16px}
+.log-status.success{color:var(--green)} .log-status.error{color:var(--red)}
+
+/* GOAL SETUP */
+.goal-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px}
+.goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.goal-input{background:var(--s2);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;width:100%}
+.goal-input:focus{border-color:var(--orange)}
+.goal-input::placeholder{color:var(--muted)}
+.goal-btn{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:10px;color:var(--orange);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;transition:all 0.2s}
+.goal-btn:hover{background:var(--odim);border-color:var(--orange)}
+
+/* CHART */
+.chart-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px}
+.chart-wrap{position:relative;height:200px;margin-top:8px}
+.chart-svg{width:100%;height:100%}
+
+/* HISTORY */
+.history-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px}
+.history-list{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto}
+.history-list::-webkit-scrollbar{width:2px} .history-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+.history-item{display:flex;align-items:center;justify-content:space-between;background:var(--s2);border-radius:9px;padding:10px 13px}
+.hi-date{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.hi-weight{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--orange)}
+.hi-change{font-size:11px;padding:3px 8px;border-radius:99px}
+.hi-change.down{background:var(--gdim);color:var(--green)}
+.hi-change.up{background:var(--rdim);color:var(--red)}
+.hi-change.same{background:rgba(255,255,255,0.05);color:var(--muted)}
+.hi-del{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:12px;padding:4px;border-radius:6px;transition:all 0.2s}
+.hi-del:hover{color:var(--red);background:var(--rdim)}
+.empty-state{text-align:center;padding:28px;color:var(--muted);font-size:13px;line-height:2}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="page-header">
+    <h1>WEIGHT</h1>
+  </div>
+
+  <!-- Hero Stats -->
+  <div class="hero-stats">
+    <div class="hstat current">
+      <div class="hv" id="heroCurrentKg">--</div>
+      <div class="hl">Current</div>
+    </div>
+    <div class="hstat goal">
+      <div class="hv" id="heroGoalKg">--</div>
+      <div class="hl">Goal</div>
+    </div>
+    <div class="hstat diff">
+      <div class="hv" id="heroDiff">--</div>
+      <div class="hl">To Go</div>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-card">
+    <div class="card-title">Progress</div>
+    <div class="prog-bar-track">
+      <div class="prog-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+    <div class="prog-labels">
+      <span id="progStart">Start</span>
+      <span id="progPct">0%</span>
+      <span id="progGoal">Goal</span>
+    </div>
+    <div class="goal-date" id="goalDateLabel"></div>
+  </div>
+
+  <!-- Log Weight -->
+  <div class="log-card">
+    <div class="card-title">Log Weight</div>
+    <div class="log-row">
+      <input class="weight-input" id="weightInput" type="number" placeholder="kg" step="0.1" min="0" max="300">
+      <button class="log-btn" id="logWeightBtn">LOG</button>
+    </div>
+    <div class="log-status" id="logStatus"></div>
+  </div>
+
+  <!-- Set Goal -->
+  <div class="goal-card">
+    <div class="card-title">Set Goal</div>
+    <div class="goal-grid">
+      <input class="goal-input" id="goalTarget" type="number" placeholder="Target kg e.g. 100" step="0.1">
+      <input class="goal-input" id="goalDate" type="date">
+    </div>
+    <button class="goal-btn" id="saveGoalBtn">SAVE GOAL</button>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-card">
+    <div class="card-title">Weight Trend</div>
+    <div class="chart-wrap">
+      <svg class="chart-svg" id="weightChart"></svg>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="history-card">
+    <div class="card-title">History</div>
+    <div class="history-list" id="historyList"></div>
+  </div>
+</div>
+
+<nav class="nav">
+  <a class="nav-link" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Hub</a>
+  <a class="nav-link" href="nutrition.html"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Nutrition</a>
+  <a class="nav-link" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Workout</a>
+  <a class="nav-link active" href="weight.html"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Weight</a>
+</nav>
+
+<script>
+var DB={get:function(k){try{return JSON.parse(localStorage.getItem('dw_'+k)||'null')}catch(e){return null}},set:function(k,v){localStorage.setItem('dw_'+k,JSON.stringify(v))},dayKey:function(off){off=off||0;var d=new Date();d.setDate(d.getDate()+off);return d.toISOString().split('T')[0]}};
+
+function getWeights(){return DB.get('weights')||[];}
+function getGoal(){return DB.get('weightGoal')||{};}
+
+function render(){
+  var weights=getWeights();
+  var goal=getGoal();
+  var current=weights.length>0?weights[weights.length-1].kg:null;
+  var start=weights.length>0?weights[0].kg:null;
+
+  // Hero
+  document.getElementById('heroCurrentKg').textContent=current?current+'kg':'--';
+  document.getElementById('heroGoalKg').textContent=goal.target?goal.target+'kg':'--';
+  if(current&&goal.target){
+    var diff=(current-goal.target).toFixed(1);
+    document.getElementById('heroDiff').textContent=Math.abs(diff)+'kg';
+  } else {
+    document.getElementById('heroDiff').textContent='--';
+  }
+
+  // Progress bar
+  if(start&&current&&goal.target){
+    var totalToLose=start-goal.target;
+    var lost=start-current;
+    var pct=totalToLose>0?Math.min(Math.max(lost/totalToLose*100,0),100):0;
+    document.getElementById('progressBar').style.width=pct+'%';
+    document.getElementById('progPct').textContent=Math.round(pct)+'%';
+    document.getElementById('progStart').textContent=start+'kg';
+    document.getElementById('progGoal').textContent=goal.target+'kg';
+    if(goal.date){
+      var daysLeft=Math.ceil((new Date(goal.date)-new Date())/(1000*60*60*24));
+      document.getElementById('goalDateLabel').textContent=daysLeft>0?daysLeft+' days to goal date ('+formatDate(goal.date)+')':'Goal date: '+formatDate(goal.date);
+    }
+  }
+
+  // Pre-fill goal inputs
+  if(goal.target)document.getElementById('goalTarget').value=goal.target;
+  if(goal.date)document.getElementById('goalDate').value=goal.date;
+
+  // Chart
+  renderChart(weights,goal);
+
+  // History
+  var list=document.getElementById('historyList');
+  if(weights.length===0){list.innerHTML='<div class="empty-state">No weight logged yet.<br>Tap LOG to record your first weigh-in.</div>';return;}
+  list.innerHTML='';
+  var rev=weights.slice().reverse();
+  rev.forEach(function(w,i){
+    var prev=i<rev.length-1?rev[i+1]:null;
+    var change=prev?(w.kg-prev.kg).toFixed(1):null;
+    var changeClass=change===null?'same':parseFloat(change)<0?'down':'up';
+    var changeText=change===null?'First entry':(parseFloat(change)<0?change+'kg':'+'+change+'kg');
+    var item=document.createElement('div');item.className='history-item';
+    item.innerHTML='<div class="hi-date">'+formatDate(w.date)+'</div><div class="hi-weight">'+w.kg+'kg</div><div class="hi-change '+changeClass+'">'+changeText+'</div><button class="hi-del" data-date="'+w.date+'">X</button>';
+    list.appendChild(item);
+  });
+  list.querySelectorAll('.hi-del').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var weights=getWeights();
+      var filtered=weights.filter(function(w){return w.date!==btn.dataset.date;});
+      DB.set('weights',filtered);render();
+    });
+  });
+}
+
+function formatDate(dateStr){
+  var d=new Date(dateStr+'T00:00:00');
+  return d.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});
+}
+
+function renderChart(weights,goal){
+  var svg=document.getElementById('weightChart');
+  if(weights.length<2){svg.innerHTML='<text x="50%" y="50%" fill="#4a5c78" text-anchor="middle" font-family="Syne" font-size="13">Log at least 2 weigh-ins to see your trend</text>';return;}
+  var w=svg.clientWidth||340,h=190,pad={t:20,r:20,b:30,l:44};
+  var chartW=w-pad.l-pad.r,chartH=h-pad.t-pad.b;
+  var vals=weights.map(function(x){return x.kg;});
+  var allVals=vals.slice();
+  if(goal.target)allVals.push(parseFloat(goal.target));
+  var minV=Math.min.apply(null,allVals)-2;
+  var maxV=Math.max.apply(null,allVals)+2;
+  var n=weights.length;
+  var html='';
+
+  // Grid lines
+  var steps=4;
+  for(var i=0;i<=steps;i++){
+    var val=minV+(maxV-minV)*i/steps;
+    var y=pad.t+chartH-(val-minV)/(maxV-minV)*chartH;
+    html+='<line x1="'+pad.l+'" y1="'+y+'" x2="'+(pad.l+chartW)+'" y2="'+y+'" stroke="#1e2a3a" stroke-width="1"/>';
+    html+='<text x="'+(pad.l-4)+'" y="'+(y+4)+'" fill="#4a5c78" font-size="9" text-anchor="end" font-family="DM Mono, monospace">'+val.toFixed(1)+'</text>';
+  }
+
+  // Goal line
+  if(goal.target){
+    var gy=pad.t+chartH-(parseFloat(goal.target)-minV)/(maxV-minV)*chartH;
+    html+='<line x1="'+pad.l+'" y1="'+gy+'" x2="'+(pad.l+chartW)+'" y2="'+gy+'" stroke="#00ff88" stroke-width="1" stroke-dasharray="4,4"/>';
+    html+='<text x="'+(pad.l+chartW+4)+'" y="'+(gy+4)+'" fill="#00ff88" font-size="9" font-family="Syne">Goal</text>';
+  }
+
+  // Area fill
+  var points=weights.map(function(w,i){var x=pad.l+(n===1?chartW/2:i/(n-1)*chartW);var y=pad.t+chartH-(w.kg-minV)/(maxV-minV)*chartH;return x+','+y;});
+  var firstX=pad.l;var lastX=pad.l+(n===1?chartW/2:(n-1)/(n-1)*chartW);
+  var areaPath='M'+firstX+','+(pad.t+chartH)+' L'+points.join(' L')+' L'+lastX+','+(pad.t+chartH)+' Z';
+  html+='<path d="'+areaPath+'" fill="rgba(255,107,53,0.1)"/>';
+
+  // Line
+  var linePath='M'+points.join(' L');
+  html+='<path d="'+linePath+'" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+
+  // Dots + labels
+  weights.forEach(function(wt,i){
+    var x=pad.l+(n===1?chartW/2:i/(n-1)*chartW);
+    var y=pad.t+chartH-(wt.kg-minV)/(maxV-minV)*chartH;
+    var isLast=i===n-1;
+    html+='<circle cx="'+x+'" cy="'+y+'" r="'+(isLast?5:3)+'" fill="'+(isLast?'var(--orange)':'var(--s2)')+'" stroke="var(--orange)" stroke-width="2"/>';
+  });
+
+  // X axis dates
+  var step=Math.ceil(n/5);
+  weights.forEach(function(wt,i){
+    if(i%step===0||i===n-1){
+      var x=pad.l+(n===1?chartW/2:i/(n-1)*chartW);
+      var d=new Date(wt.date+'T00:00:00');
+      var label=(d.getDate())+'/'+(d.getMonth()+1);
+      html+='<text x="'+x+'" y="'+(h-8)+'" fill="#4a5c78" font-size="8" text-anchor="middle" font-family="DM Mono, monospace">'+label+'</text>';
+    }
+  });
+
+  svg.innerHTML=html;
+}
+
+document.getElementById('logWeightBtn').addEventListener('click',function(){
+  var val=parseFloat(document.getElementById('weightInput').value);
+  if(!val){var st=document.getElementById('logStatus');st.textContent='Please enter a weight';st.className='log-status error';setTimeout(function(){st.textContent='';st.className='log-status';},2000);return;}
+  var weights=getWeights();
+  var todayKey=DB.dayKey();
+  var existing=weights.findIndex(function(w){return w.date===todayKey;});
+  if(existing>=0){weights[existing].kg=val;}else{weights.push({date:todayKey,kg:val});}
+  DB.set('weights',weights);
+  document.getElementById('weightInput').value='';
+  var st=document.getElementById('logStatus');st.textContent='Logged: '+val+'kg';st.className='log-status success';
+  setTimeout(function(){st.textContent='';st.className='log-status';},3000);
+  render();
+});
+
+document.getElementById('saveGoalBtn').addEventListener('click',function(){
+  var target=parseFloat(document.getElementById('goalTarget').value);
+  var date=document.getElementById('goalDate').value;
+  if(!target)return;
+  DB.set('weightGoal',{target:target,date:date||null});
+  var st=document.getElementById('logStatus');st.textContent='Goal saved: '+target+'kg';st.className='log-status success';
+  setTimeout(function(){st.textContent='';st.className='log-status';},3000);
+  render();
+});
+
+// Allow Enter to log
+document.getElementById('weightInput').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('logWeightBtn').click();});
+
+render();
+</script>
+</body>
+</html>
