@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dave · Nutrition</title>
+<title>Dave - Nutrition</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#07090d;--s1:#0d1117;--s2:#131920;--s3:#1a2233;--border:#1e2a3a;--border2:#253248;--accent:#00e5ff;--adim:rgba(0,229,255,0.1);--green:#00ff88;--gdim:rgba(0,255,136,0.1);--orange:#ff6b35;--odim:rgba(255,107,53,0.1);--yellow:#ffd600;--ydim:rgba(255,214,0,0.1);--red:#ff3d71;--rdim:rgba(255,61,113,0.1);--purple:#b388ff;--text:#e2e8f5;--muted:#4a5c78;--muted2:#2e3d54}
@@ -123,9 +123,9 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
   <div class="page-header">
     <h1>NUTRITION</h1>
     <div class="date-nav">
-      <button id="prevDay">◂</button>
+      <button id="prevDay">&#9666;</button>
       <div class="dlabel" id="dateLabel">Today</div>
-      <button id="nextDay">▸</button>
+      <button id="nextDay">&#9656;</button>
     </div>
   </div>
   <div class="snap">
@@ -142,18 +142,18 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
   </div>
   <div class="log-card">
     <div class="card-title">Log Food</div>
-    <textarea class="food-input" id="foodInput" placeholder="e.g. 200g chicken breast, 1 cup brown rice, 2 scrambled eggs…"></textarea>
+    <textarea class="food-input" id="foodInput" placeholder="e.g. 200g chicken breast, 1 cup brown rice, 2 scrambled eggs"></textarea>
     <select class="meal-select" id="mealSelect">
-      <option value="Breakfast">Breakfast — 7:00 AM</option>
-      <option value="Mid-Morning">Mid-Morning — 10:00 AM</option>
-      <option value="Lunch">Lunch — 1:00 PM</option>
-      <option value="Pre-Workout">Pre-Workout — 4:30 PM</option>
-      <option value="Dinner">Dinner — 7:00 PM</option>
-      <option value="Evening">Evening — 9:00 PM</option>
+      <option value="Breakfast">Breakfast - 7:00 AM</option>
+      <option value="Mid-Morning">Mid-Morning - 10:00 AM</option>
+      <option value="Lunch">Lunch - 1:00 PM</option>
+      <option value="Pre-Workout">Pre-Workout - 4:30 PM</option>
+      <option value="Dinner">Dinner - 7:00 PM</option>
+      <option value="Evening">Evening - 9:00 PM</option>
       <option value="Other">Other</option>
     </select>
     <div class="btn-row">
-      <button class="scan-btn" id="openScannerBtn">▦ SCAN BARCODE</button>
+      <button class="scan-btn" id="openScannerBtn">SCAN BARCODE</button>
       <button class="log-btn" id="logBtn">ANALYSE + LOG</button>
     </div>
     <div class="log-status" id="logStatus"></div>
@@ -169,7 +169,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 </div>
 <div class="scanner-overlay" id="scannerOverlay">
   <div class="scanner-modal">
-    <div class="smod-hdr"><h3>⬛ SCAN BARCODE</h3><button class="smod-close" id="closeScannerBtn">✕</button></div>
+    <div class="smod-hdr"><h3>SCAN BARCODE</h3><button class="smod-close" id="closeScannerBtn">X</button></div>
     <div class="video-wrap"><video id="scannerVideo" autoplay muted playsinline></video><div class="scan-line"></div><div class="scan-corners"><span></span></div></div>
     <div class="scanner-status" id="scannerStatus">Point camera at a barcode</div>
     <div class="product-confirm" id="productConfirm">
@@ -185,7 +185,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
       <button class="pc-add-btn" id="pcAddBtn">ADD TO LOG</button>
     </div>
     <div class="manual-wrap">
-      <input class="manual-input" id="manualBarcodeInput" type="number" placeholder="Enter barcode manually…">
+      <input class="manual-input" id="manualBarcodeInput" type="number" placeholder="Enter barcode manually">
       <button class="manual-btn" id="manualLookupBtn">LOOK UP</button>
     </div>
   </div>
@@ -196,73 +196,148 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
   <a class="nav-link" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Workout</a>
 </nav>
 <script>
-const DB={get(k){try{return JSON.parse(localStorage.getItem('dw_'+k)||'null')}catch{return null}},set(k,v){localStorage.setItem('dw_'+k,JSON.stringify(v))},dayKey(off=0){const d=new Date();d.setDate(d.getDate()+off);return d.toISOString().split('T')[0]}};
-const TARGETS={cal:2400,p:185,c:220,f:65};
-const MEAL_TARGETS={'Breakfast':480,'Mid-Morning':280,'Lunch':560,'Pre-Workout':320,'Dinner':580,'Evening':180,'Other':0};
-const MEAL_TIMES={'Breakfast':'7:00 AM','Mid-Morning':'10:00 AM','Lunch':'1:00 PM','Pre-Workout':'4:30 PM','Dinner':'7:00 PM','Evening':'9:00 PM','Other':'—'};
-let offset=0;
+var DB={get:function(k){try{return JSON.parse(localStorage.getItem('dw_'+k)||'null')}catch(e){return null}},set:function(k,v){localStorage.setItem('dw_'+k,JSON.stringify(v))},dayKey:function(off){off=off||0;var d=new Date();d.setDate(d.getDate()+off);return d.toISOString().split('T')[0]}};
+var TARGETS={cal:2400,p:185,c:220,f:65};
+var MEAL_TARGETS={'Breakfast':480,'Mid-Morning':280,'Lunch':560,'Pre-Workout':320,'Dinner':580,'Evening':180,'Other':0};
+var MEAL_TIMES={'Breakfast':'7:00 AM','Mid-Morning':'10:00 AM','Lunch':'1:00 PM','Pre-Workout':'4:30 PM','Dinner':'7:00 PM','Evening':'9:00 PM','Other':'--'};
+var offset=0;
 function dayKey(){return DB.dayKey(offset)}
 function getNutrition(){return DB.get('nutrition_'+dayKey())||{entries:[]}}
 function saveNutrition(d){DB.set('nutrition_'+dayKey(),d)}
-function dateLabel(off){if(off===0)return'Today';if(off===-1)return'Yesterday';const d=new Date();d.setDate(d.getDate()+off);return d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});}
+function dateLabel(off){if(off===0)return'Today';if(off===-1)return'Yesterday';var d=new Date();d.setDate(d.getDate()+off);return d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});}
 function render(){
   document.getElementById('dateLabel').textContent=dateLabel(offset);
-  const data=getNutrition();
-  const t=data.entries.reduce((a,e)=>({cal:a.cal+(e.cal||0),p:a.p+(e.p||0),c:a.c+(e.c||0),f:a.f+(e.f||0)}),{cal:0,p:0,c:0,f:0});
+  var data=getNutrition();
+  var t=data.entries.reduce(function(a,e){return{cal:a.cal+(e.cal||0),p:a.p+(e.p||0),c:a.c+(e.c||0),f:a.f+(e.f||0)}},{cal:0,p:0,c:0,f:0});
   document.getElementById('snapCal').textContent=Math.round(t.cal);
-  const rem=TARGETS.cal-Math.round(t.cal);
-  const remEl=document.getElementById('snapRem');
-  remEl.textContent=Math.abs(rem);remEl.className='snap-rem'+(rem<0?' over':'');
+  var rem=TARGETS.cal-Math.round(t.cal);
+  var remEl=document.getElementById('snapRem');
+  remEl.textContent=Math.abs(rem);
+  remEl.className='snap-rem'+(rem<0?' over':'');
   document.getElementById('snapRemLabel').textContent=rem<0?'OVER TARGET':'REMAINING';
-  const barFill=document.getElementById('calBarFill');
+  var barFill=document.getElementById('calBarFill');
   barFill.style.width=Math.min(t.cal/TARGETS.cal*100,100)+'%';
   barFill.className='bar-fill'+(t.cal>TARGETS.cal?' over':'');
-  ['p','c','f'].forEach(k=>{const v=Math.round(t[k]),tgt=TARGETS[k];document.getElementById('mp'+k.toUpperCase()).textContent=v+'g';document.getElementById('mp'+k.toUpperCase()+'b').style.width=Math.min(v/tgt*100,100)+'%';document.getElementById('mp'+k.toUpperCase()+'s').textContent=v+'/'+tgt+'g';});
-  const ms=document.getElementById('mealSlots');ms.innerHTML='';
-  ['Breakfast','Mid-Morning','Lunch','Pre-Workout','Dinner','Evening'].forEach(meal=>{const mc=data.entries.filter(e=>e.meal===meal).reduce((s,e)=>s+(e.cal||0),0);const tgt=MEAL_TARGETS[meal],pct=tgt>0?Math.min(mc/tgt*100,100):0;const s=document.createElement('div');s.className='mslot';s.innerHTML=`<div class="msn">${meal}</div><div class="mst">${MEAL_TIMES[meal]}</div><div class="msc">${Math.round(mc)}</div><div class="mstgt">tgt: ${tgt}</div><div class="msbar"><div class="msbf" style="width:${pct}%"></div></div>`;ms.appendChild(s);});
-  const el=document.getElementById('entriesList');
-  if(data.entries.length===0){el.innerHTML='<div class="empty-state">Nothing logged yet.<br>Add your first meal above ↑</div>';return;}
+  ['p','c','f'].forEach(function(k){
+    var v=Math.round(t[k]),tgt=TARGETS[k];
+    document.getElementById('mp'+k.toUpperCase()).textContent=v+'g';
+    document.getElementById('mp'+k.toUpperCase()+'b').style.width=Math.min(v/tgt*100,100)+'%';
+    document.getElementById('mp'+k.toUpperCase()+'s').textContent=v+'/'+tgt+'g';
+  });
+  var ms=document.getElementById('mealSlots');ms.innerHTML='';
+  ['Breakfast','Mid-Morning','Lunch','Pre-Workout','Dinner','Evening'].forEach(function(meal){
+    var mc=data.entries.filter(function(e){return e.meal===meal}).reduce(function(s,e){return s+(e.cal||0)},0);
+    var tgt=MEAL_TARGETS[meal],pct=tgt>0?Math.min(mc/tgt*100,100):0;
+    var s=document.createElement('div');s.className='mslot';
+    s.innerHTML='<div class="msn">'+meal+'</div><div class="mst">'+MEAL_TIMES[meal]+'</div><div class="msc">'+Math.round(mc)+'</div><div class="mstgt">tgt: '+tgt+'</div><div class="msbar"><div class="msbf" style="width:'+pct+'%"></div></div>';
+    ms.appendChild(s);
+  });
+  var el=document.getElementById('entriesList');
+  if(data.entries.length===0){el.innerHTML='<div class="empty-state">Nothing logged yet. Add your first meal above.</div>';return;}
   el.innerHTML='';
-  [...data.entries].reverse().forEach((e,ri)=>{const idx=data.entries.length-1-ri;const item=document.createElement('div');item.className='entry';item.innerHTML=`<div class="entry-left"><div class="entry-name">${e.name}</div><div class="entry-tag">${e.meal}</div></div><div class="entry-right"><div><div class="entry-cal">${Math.round(e.cal)}</div><div style="font-size:8px;color:var(--muted)">kcal</div></div><div class="entry-pfc"><span style="color:var(--green)">${Math.round(e.p)}P</span><br><span style="color:#7eb8ff">${Math.round(e.c)}C</span><br><span style="color:var(--orange)">${Math.round(e.f)}F</span></div><button class="entry-del" data-idx="${idx}">✕</button></div>`;el.appendChild(item);});
-  el.querySelectorAll('.entry-del').forEach(btn=>{btn.addEventListener('click',()=>{const d=getNutrition();d.entries.splice(parseInt(btn.dataset.idx),1);saveNutrition(d);render();});});
+  var reversed=data.entries.slice().reverse();
+  reversed.forEach(function(e,ri){
+    var idx=data.entries.length-1-ri;
+    var item=document.createElement('div');item.className='entry';
+    item.innerHTML='<div class="entry-left"><div class="entry-name">'+e.name+'</div><div class="entry-tag">'+e.meal+'</div></div><div class="entry-right"><div><div class="entry-cal">'+Math.round(e.cal)+'</div><div style="font-size:8px;color:var(--muted)">kcal</div></div><div class="entry-pfc"><span style="color:var(--green)">'+Math.round(e.p)+'P</span><br><span style="color:#7eb8ff">'+Math.round(e.c)+'C</span><br><span style="color:var(--orange)">'+Math.round(e.f)+'F</span></div><button class="entry-del" data-idx="'+idx+'">X</button></div>';
+    el.appendChild(item);
+  });
+  el.querySelectorAll('.entry-del').forEach(function(btn){
+    btn.addEventListener('click',function(){var d=getNutrition();d.entries.splice(parseInt(btn.dataset.idx),1);saveNutrition(d);render();});
+  });
 }
-async function analyseFood(text){
-  const prompt=`You are a nutrition expert. Analyse this food and return ONLY JSON (no markdown):\nFood: "${text}"\n{"name":"short name max 40 chars","cal":number,"p":number,"c":number,"f":number}\nMacros in grams, calories as kcal. Sum multiple items. Australian foods.`;
-  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:prompt}]})});
-  const d=await res.json();
-  return JSON.parse((d.content?.[0]?.text||'').replace(/```json|```/g,'').trim());
+function analyseFood(text){
+  var prompt="You are a nutrition expert. Analyse this food and return ONLY a JSON object with no markdown, no backticks, no explanation. Food: "+text+". Return exactly this format: {\"name\":\"food name max 40 chars\",\"cal\":number,\"p\":number,\"c\":number,\"f\":number} where cal is calories in kcal and p, c, f are grams of protein, carbs, fat. Sum all items if multiple foods.";
+  return fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:300,messages:[{role:'user',content:prompt}]})})
+  .then(function(res){return res.json()})
+  .then(function(d){
+    var raw=d.content&&d.content[0]&&d.content[0].text?d.content[0].text:'';
+    raw=raw.replace(/```json/g,'').replace(/```/g,'').trim();
+    return JSON.parse(raw);
+  });
 }
-document.getElementById('logBtn').addEventListener('click',async()=>{
-  const input=document.getElementById('foodInput');const text=input.value.trim();if(!text)return;
-  const btn=document.getElementById('logBtn'),status=document.getElementById('logStatus'),meal=document.getElementById('mealSelect').value;
-  btn.disabled=true;status.textContent='⏳ Analysing…';status.className='log-status loading';
-  try{const r=await analyseFood(text);r.meal=meal;r.time=new Date().toISOString();const d=getNutrition();d.entries.push(r);saveNutrition(d);input.value='';status.textContent=`✓ ${r.name} — ${Math.round(r.cal)} cal · ${Math.round(r.p)}P · ${Math.round(r.c)}C · ${Math.round(r.f)}F`;status.className='log-status success';render();setTimeout(()=>{status.textContent='';status.className='log-status';},4000);}
-  catch(e){status.textContent='✗ Could not analyse. Try again.';status.className='log-status error';setTimeout(()=>{status.textContent='';status.className='log-status';},3000);}
-  btn.disabled=false;
+document.getElementById('logBtn').addEventListener('click',function(){
+  var input=document.getElementById('foodInput');
+  var text=input.value.trim();if(!text)return;
+  var btn=document.getElementById('logBtn'),status=document.getElementById('logStatus'),meal=document.getElementById('mealSelect').value;
+  btn.disabled=true;status.textContent='Analysing...';status.className='log-status loading';
+  analyseFood(text).then(function(r){
+    r.meal=meal;r.time=new Date().toISOString();
+    var d=getNutrition();d.entries.push(r);saveNutrition(d);
+    input.value='';
+    status.textContent='Added: '+r.name+' - '+Math.round(r.cal)+' cal | '+Math.round(r.p)+'P '+Math.round(r.c)+'C '+Math.round(r.f)+'F';
+    status.className='log-status success';
+    render();
+    setTimeout(function(){status.textContent='';status.className='log-status';},4000);
+  }).catch(function(){
+    status.textContent='Could not analyse. Try again.';
+    status.className='log-status error';
+    setTimeout(function(){status.textContent='';status.className='log-status';},3000);
+  }).finally(function(){btn.disabled=false;});
 });
-document.getElementById('prevDay').addEventListener('click',()=>{offset--;render();});
-document.getElementById('nextDay').addEventListener('click',()=>{if(offset<0){offset++;render();}});
-let scannerStream=null,scannerActive=false,zxingReader=null,currentProduct=null;
-function loadZXing(){return new Promise((res,rej)=>{if(window.ZXing){res();return;}const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/zxing-js/0.20.0/zxing.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
-async function openScanner(){
-  document.getElementById('scannerOverlay').classList.add('active');document.getElementById('productConfirm').classList.remove('show');document.getElementById('scannerStatus').textContent='Starting camera…';document.getElementById('scannerStatus').className='scanner-status scanning';currentProduct=null;
-  try{await loadZXing();const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});scannerStream=stream;const video=document.getElementById('scannerVideo');video.srcObject=stream;await video.play();scannerActive=true;document.getElementById('scannerStatus').textContent='Point camera at a barcode';zxingReader=new ZXing.BrowserMultiFormatReader();zxingReader.decodeFromVideoElement(video,(result)=>{if(!scannerActive||!result)return;scannerActive=false;lookupBarcode(result.getText());});}
-  catch(e){document.getElementById('scannerStatus').textContent=e.name==='NotAllowedError'?'Camera denied — use manual entry below':'Camera unavailable — use manual entry';document.getElementById('scannerStatus').className='scanner-status error';}
+document.getElementById('prevDay').addEventListener('click',function(){offset--;render();});
+document.getElementById('nextDay').addEventListener('click',function(){if(offset<0){offset++;render();}});
+var scannerStream=null,scannerActive=false,zxingReader=null,currentProduct=null;
+function loadZXing(){return new Promise(function(res,rej){if(window.ZXing){res();return;}var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/zxing-js/0.20.0/zxing.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+function openScanner(){
+  document.getElementById('scannerOverlay').classList.add('active');
+  document.getElementById('productConfirm').classList.remove('show');
+  document.getElementById('scannerStatus').textContent='Starting camera...';
+  document.getElementById('scannerStatus').className='scanner-status scanning';
+  currentProduct=null;
+  loadZXing().then(function(){
+    return navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+  }).then(function(stream){
+    scannerStream=stream;var video=document.getElementById('scannerVideo');video.srcObject=stream;
+    return video.play();
+  }).then(function(){
+    scannerActive=true;document.getElementById('scannerStatus').textContent='Point camera at a barcode';
+    zxingReader=new ZXing.BrowserMultiFormatReader();
+    zxingReader.decodeFromVideoElement(document.getElementById('scannerVideo'),function(result){if(!scannerActive||!result)return;scannerActive=false;lookupBarcode(result.getText());});
+  }).catch(function(e){
+    document.getElementById('scannerStatus').textContent=e.name==='NotAllowedError'?'Camera denied - use manual entry':'Camera unavailable - use manual entry';
+    document.getElementById('scannerStatus').className='scanner-status error';
+  });
 }
-async function lookupBarcode(barcode){
-  document.getElementById('scannerStatus').textContent=`Barcode: ${barcode} — looking up…`;document.getElementById('scannerStatus').className='scanner-status scanning';
-  try{const res=await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);const data=await res.json();if(data.status!==1||!data.product){document.getElementById('scannerStatus').textContent='✗ Not found in database';document.getElementById('scannerStatus').className='scanner-status error';scannerActive=true;return;}const p=data.product,n=p.nutriments||{};const per100={cal:Math.round(n['energy-kcal_100g']||n['energy_100g']/4.184||0),p:Math.round((n['proteins_100g']||0)*10)/10,c:Math.round((n['carbohydrates_100g']||0)*10)/10,f:Math.round((n['fat_100g']||0)*10)/10};currentProduct={name:p.product_name||'Unknown Product',brand:p.brands||'',per100,servingSize:parseFloat(p.serving_size)||100};document.getElementById('pcName').textContent=currentProduct.name;document.getElementById('pcBrand').textContent=currentProduct.brand?`by ${currentProduct.brand}`:'';document.getElementById('servingInput').value=Math.round(currentProduct.servingSize);updateProductMacros();document.getElementById('productConfirm').classList.add('show');document.getElementById('scannerStatus').textContent='✓ Found! Adjust serving if needed';document.getElementById('scannerStatus').className='scanner-status found';}
-  catch(e){document.getElementById('scannerStatus').textContent='✗ Lookup failed';document.getElementById('scannerStatus').className='scanner-status error';scannerActive=true;}
+function lookupBarcode(barcode){
+  document.getElementById('scannerStatus').textContent='Looking up barcode...';
+  document.getElementById('scannerStatus').className='scanner-status scanning';
+  fetch('https://world.openfoodfacts.org/api/v0/product/'+barcode+'.json')
+  .then(function(res){return res.json()})
+  .then(function(data){
+    if(data.status!==1||!data.product){document.getElementById('scannerStatus').textContent='Not found in database';document.getElementById('scannerStatus').className='scanner-status error';scannerActive=true;return;}
+    var p=data.product,n=p.nutriments||{};
+    var per100={cal:Math.round(n['energy-kcal_100g']||n['energy_100g']/4.184||0),p:Math.round((n['proteins_100g']||0)*10)/10,c:Math.round((n['carbohydrates_100g']||0)*10)/10,f:Math.round((n['fat_100g']||0)*10)/10};
+    currentProduct={name:p.product_name||'Unknown Product',brand:p.brands||'',per100:per100,servingSize:parseFloat(p.serving_size)||100};
+    document.getElementById('pcName').textContent=currentProduct.name;
+    document.getElementById('pcBrand').textContent=currentProduct.brand?'by '+currentProduct.brand:'';
+    document.getElementById('servingInput').value=Math.round(currentProduct.servingSize);
+    updateProductMacros();
+    document.getElementById('productConfirm').classList.add('show');
+    document.getElementById('scannerStatus').textContent='Found! Adjust serving if needed';
+    document.getElementById('scannerStatus').className='scanner-status found';
+  }).catch(function(){
+    document.getElementById('scannerStatus').textContent='Lookup failed';
+    document.getElementById('scannerStatus').className='scanner-status error';
+    scannerActive=true;
+  });
 }
-function updateProductMacros(){if(!currentProduct)return;const s=parseFloat(document.getElementById('servingInput').value)||100,r=s/100,{per100}=currentProduct;document.getElementById('pcCal').textContent=Math.round(per100.cal*r);document.getElementById('pcP').textContent=Math.round(per100.p*r*10)/10;document.getElementById('pcC').textContent=Math.round(per100.c*r*10)/10;document.getElementById('pcF').textContent=Math.round(per100.f*r*10)/10;}
-function closeScanner(){scannerActive=false;if(zxingReader){try{zxingReader.reset();}catch(e){}zxingReader=null;}if(scannerStream){scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null;}document.getElementById('scannerVideo').srcObject=null;document.getElementById('scannerOverlay').classList.remove('active');document.getElementById('productConfirm').classList.remove('show');document.getElementById('manualBarcodeInput').value='';currentProduct=null;}
+function updateProductMacros(){if(!currentProduct)return;var s=parseFloat(document.getElementById('servingInput').value)||100,r=s/100,per100=currentProduct.per100;document.getElementById('pcCal').textContent=Math.round(per100.cal*r);document.getElementById('pcP').textContent=Math.round(per100.p*r*10)/10;document.getElementById('pcC').textContent=Math.round(per100.c*r*10)/10;document.getElementById('pcF').textContent=Math.round(per100.f*r*10)/10;}
+function closeScanner(){scannerActive=false;if(zxingReader){try{zxingReader.reset();}catch(e){}zxingReader=null;}if(scannerStream){scannerStream.getTracks().forEach(function(t){t.stop();});scannerStream=null;}document.getElementById('scannerVideo').srcObject=null;document.getElementById('scannerOverlay').classList.remove('active');document.getElementById('productConfirm').classList.remove('show');document.getElementById('manualBarcodeInput').value='';currentProduct=null;}
 document.getElementById('openScannerBtn').addEventListener('click',openScanner);
 document.getElementById('closeScannerBtn').addEventListener('click',closeScanner);
 document.getElementById('servingInput').addEventListener('input',updateProductMacros);
-document.getElementById('scannerOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('scannerOverlay'))closeScanner();});
-document.getElementById('pcAddBtn').addEventListener('click',()=>{if(!currentProduct)return;const s=parseFloat(document.getElementById('servingInput').value)||100,r=s/100,{per100,name}=currentProduct;const meal=document.getElementById('mealSelect').value;const entry={name:name.length>40?name.slice(0,38)+'…':name,cal:Math.round(per100.cal*r),p:Math.round(per100.p*r*10)/10,c:Math.round(per100.c*r*10)/10,f:Math.round(per100.f*r*10)/10,meal,time:new Date().toISOString(),source:'barcode'};const d=getNutrition();d.entries.push(entry);saveNutrition(d);render();closeScanner();const status=document.getElementById('logStatus');status.textContent=`✓ Scanned: ${entry.name} — ${entry.cal} cal`;status.className='log-status success';setTimeout(()=>{status.textContent='';status.className='log-status';},4000);});
-document.getElementById('manualLookupBtn').addEventListener('click',()=>{const b=document.getElementById('manualBarcodeInput').value.trim();if(!b)return;scannerActive=false;lookupBarcode(b);});
-document.getElementById('manualBarcodeInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('manualLookupBtn').click();});
+document.getElementById('scannerOverlay').addEventListener('click',function(e){if(e.target===document.getElementById('scannerOverlay'))closeScanner();});
+document.getElementById('pcAddBtn').addEventListener('click',function(){
+  if(!currentProduct)return;
+  var s=parseFloat(document.getElementById('servingInput').value)||100,r=s/100,per100=currentProduct.per100,name=currentProduct.name;
+  var meal=document.getElementById('mealSelect').value;
+  var entry={name:name.length>40?name.slice(0,38)+'...':name,cal:Math.round(per100.cal*r),p:Math.round(per100.p*r*10)/10,c:Math.round(per100.c*r*10)/10,f:Math.round(per100.f*r*10)/10,meal:meal,time:new Date().toISOString(),source:'barcode'};
+  var d=getNutrition();d.entries.push(entry);saveNutrition(d);render();closeScanner();
+  var status=document.getElementById('logStatus');status.textContent='Scanned: '+entry.name+' - '+entry.cal+' cal';status.className='log-status success';setTimeout(function(){status.textContent='';status.className='log-status';},4000);
+});
+document.getElementById('manualLookupBtn').addEventListener('click',function(){var b=document.getElementById('manualBarcodeInput').value.trim();if(!b)return;scannerActive=false;lookupBarcode(b);});
+document.getElementById('manualBarcodeInput').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('manualLookupBtn').click();});
 render();
 </script>
 </body>
