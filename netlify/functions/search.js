@@ -2,7 +2,7 @@ exports.handler = async function(event) {
   const query = event.queryStringParameters.q;
   if (!query) return { statusCode: 400, body: 'Missing query' };
   
-  const url = 'https://world.openfoodfacts.org/cgi/search.pl?search_terms=' + 
+  const url = 'https://fetch('/.netlify/functions/search?q='+encodeURIComponent(query))?search_terms=' + 
     encodeURIComponent(query) + 
     '&search_simple=1&action=process&json=1&page_size=8&fields=product_name,brands,nutriments,serving_size,code';
   
