@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dave · Wellness</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07090d; --s1: #0d1117; --s2: #131920; --s3: #1a2233;
+  --border: #1e2a3a; --border2: #253248; --accent: #00e5ff;
+  --adim: rgba(0,229,255,0.1); --green: #00ff88; --gdim: rgba(0,255,136,0.1);
+  --orange: #ff6b35; --odim: rgba(255,107,53,0.1); --yellow: #ffd600;
+  --ydim: rgba(255,214,0,0.1); --red: #ff3d71; --rdim: rgba(255,61,113,0.1);
+  --purple: #b388ff; --text: #e2e8f5; --muted: #4a5c78; --muted2: #2e3d54;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;padding-bottom:90px}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(0,229,255,0.04),transparent);pointer-events:none;z-index:0}
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(7,9,13,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 max(10px,env(safe-area-inset-bottom))}
+.nav-link{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--muted);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:6px 20px;border-radius:10px;transition:color 0.2s}
+.nav-link svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-link.active,.nav-link:hover{color:var(--accent)}
+.wrap{position:relative;z-index:1;max-width:600px;margin:0 auto;padding:20px 16px}
+.header{padding:20px 0 24px;display:flex;justify-content:space-between;align-items:flex-end}
+.header-left .sup{font-size:10px;letter-spacing:4px;color:var(--accent);text-transform:uppercase;margin-bottom:4px}
+.header-left h1{font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:1;letter-spacing:2px}
+.header-right .date{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);text-align:right}
+.header-right .day{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--text);text-align:right;line-height:1}
+.score-section{display:flex;align-items:center;gap:20px;background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:22px;margin-bottom:16px;position:relative;overflow:hidden}
+.score-section::before{content:'';position:absolute;right:-40px;top:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(0,229,255,0.05),transparent 70%);pointer-events:none}
+.ring-wrap{position:relative;width:110px;height:110px;flex-shrink:0}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:10}
+.ring-fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1)}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-num{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--accent);line-height:1}
+.ring-label{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.score-info{flex:1}
+.score-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;margin-bottom:6px}
+.score-sub{font-size:12px;color:var(--muted);line-height:1.6}
+.streak-badge{display:inline-flex;align-items:center;gap:6px;background:var(--ydim);border:1px solid rgba(255,214,0,0.2);border-radius:99px;padding:4px 10px;font-size:11px;color:var(--yellow);font-weight:700;margin-top:10px}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.stat-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:18px;position:relative;overflow:hidden;transition:border-color 0.2s}
+.stat-card:hover{border-color:var(--border2)}
+.stat-card .sc-icon{font-size:22px;margin-bottom:8px}
+.stat-card .sc-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.stat-card .sc-val{font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;margin-bottom:2px}
+.stat-card .sc-sub{font-size:11px;color:var(--muted)}
+.stat-card .sc-bar{height:4px;background:var(--border);border-radius:99px;margin-top:10px;overflow:hidden}
+.stat-card .sc-bar-fill{height:100%;border-radius:99px;transition:width 0.8s ease}
+.stat-card.cal .sc-val{color:var(--accent)} .stat-card.cal .sc-bar-fill{background:linear-gradient(90deg,var(--accent),var(--green))}
+.stat-card.pro .sc-val{color:var(--green)} .stat-card.pro .sc-bar-fill{background:var(--green)}
+.stat-card.steps .sc-val{color:var(--yellow)} .stat-card.steps .sc-bar-fill{background:var(--yellow)}
+.stat-card.wod .sc-val{color:var(--purple)} .stat-card.wod .sc-val.done{color:var(--green)}
+.week-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px}
+.week-card .card-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day-col{display:flex;flex-direction:column;align-items:center;gap:5px}
+.day-col .dc-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.day-col .dc-dot{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:all 0.3s}
+.day-col .dc-dot.full{background:var(--green);border-color:var(--green);color:var(--bg)}
+.day-col .dc-dot.partial{background:var(--ydim);border-color:var(--yellow);color:var(--yellow)}
+.day-col .dc-dot.empty{color:var(--muted2)}
+.day-col .dc-dot.today{box-shadow:0 0 0 2px var(--accent)}
+.day-col .dc-cal{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace}
+.quick-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.quick-btn{display:flex;align-items:center;gap:12px;background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px;text-decoration:none;color:var(--text);transition:all 0.2s;cursor:pointer}
+.quick-btn:hover{border-color:var(--accent);background:var(--adim)}
+.quick-btn .qb-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.quick-btn .qb-label{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.quick-btn .qb-val{font-family:'Bebas Neue',sans-serif;font-size:20px;line-height:1}
+.steps-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:flex-end;justify-content:center}
+.steps-modal.active{display:flex}
+.steps-sheet{background:var(--s2);border:1px solid var(--border2);border-radius:20px 20px 0 0;padding:28px 24px 40px;width:100%;max-width:500px}
+.steps-sheet h3{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--accent);margin-bottom:16px}
+.steps-input{width:100%;background:var(--s3);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:32px;text-align:center;letter-spacing:4px;outline:none;margin-bottom:12px}
+.steps-input:focus{border-color:var(--accent)}
+.steps-save{width:100%;background:var(--accent);color:var(--bg);border:none;border-radius:12px;padding:14px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;cursor:pointer}
+.steps-cancel{width:100%;background:none;border:none;color:var(--muted);font-family:'Syne',sans-serif;font-size:13px;padding:10px;cursor:pointer;margin-top:4px}
+@media(max-width:400px){.stat-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="header-left">
+      <div class="sup">Wellness OS</div>
+      <h1>DAVE'S<br>HUB</h1>
+    </div>
+    <div class="header-right">
+      <div class="date" id="dateStr"></div>
+      <div class="day" id="dayStr"></div>
+    </div>
+  </div>
+  <div class="score-section">
+    <div class="ring-wrap">
+      <svg width="110" height="110" viewBox="0 0 110 110">
+        <circle class="ring-bg" cx="55" cy="55" r="46"/>
+        <circle class="ring-fill" id="ringFill" cx="55" cy="55" r="46" stroke="var(--accent)" stroke-dasharray="289" stroke-dashoffset="289"/>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-num" id="ringScore">0</div>
+        <div class="ring-label">SCORE</div>
+      </div>
+    </div>
+    <div class="score-info">
+      <div class="score-title" id="scoreTitle">LET'S GO</div>
+      <div class="score-sub" id="scoreSub">Start logging your day to build your wellness score.</div>
+      <div class="streak-badge">🔥 <span id="streakNum">0</span> day streak</div>
+    </div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card cal">
+      <div class="sc-icon">⚡</div>
+      <div class="sc-label">Calories</div>
+      <div class="sc-val" id="statCal">0</div>
+      <div class="sc-sub">of 2,400 target</div>
+      <div class="sc-bar"><div class="sc-bar-fill" id="calBar" style="width:0%"></div></div>
+    </div>
+    <div class="stat-card pro">
+      <div class="sc-icon">💪</div>
+      <div class="sc-label">Protein</div>
+      <div class="sc-val" id="statPro">0g</div>
+      <div class="sc-sub">of 185g target</div>
+      <div class="sc-bar"><div class="sc-bar-fill" id="proBar" style="width:0%"></div></div>
+    </div>
+    <div class="stat-card steps" id="stepsCard" style="cursor:pointer">
+      <div class="sc-icon">👟</div>
+      <div class="sc-label">Steps</div>
+      <div class="sc-val" id="statSteps">0</div>
+      <div class="sc-sub">of 11,000 target</div>
+      <div class="sc-bar"><div class="sc-bar-fill" id="stepsBar" style="width:0%"></div></div>
+    </div>
+    <div class="stat-card wod">
+      <div class="sc-icon">🏋️</div>
+      <div class="sc-label">Workout</div>
+      <div class="sc-val" id="statWod">—</div>
+      <div class="sc-sub" id="statWodSub">Not logged today</div>
+    </div>
+  </div>
+  <div class="week-card">
+    <div class="card-title">This Week</div>
+    <div class="week-strip" id="weekStrip"></div>
+  </div>
+  <div class="quick-row">
+    <a class="quick-btn" href="nutrition.html">
+      <div class="qb-icon" style="background:var(--adim)">🥗</div>
+      <div><div class="qb-label">Log Food</div><div class="qb-val" style="color:var(--accent)">NUTRITION</div></div>
+    </a>
+    <a class="quick-btn" href="workout.html">
+      <div class="qb-icon" style="background:rgba(179,136,255,0.1)">🏋️</div>
+      <div><div class="qb-label">Log Session</div><div class="qb-val" style="color:var(--purple)">WORKOUT</div></div>
+    </a>
+  </div>
+</div>
+<div class="steps-modal" id="stepsModal">
+  <div class="steps-sheet">
+    <h3>LOG STEPS</h3>
+    <input class="steps-input" id="stepsInput" type="number" placeholder="0" min="0" max="99999">
+    <button class="steps-save" id="stepsSave">SAVE STEPS</button>
+    <button class="steps-cancel" id="stepsCancel">Cancel</button>
+  </div>
+</div>
+<nav class="nav">
+  <a class="nav-link active" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+  <a class="nav-link" href="nutrition.html"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Nutrition</a>
+  <a class="nav-link" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Workout</a>
+</nav>
+<script>
+const DB={get(k){try{return JSON.parse(localStorage.getItem('dw_'+k)||'null')}catch{return null}},set(k,v){localStorage.setItem('dw_'+k,JSON.stringify(v))},dayKey(off=0){const d=new Date();d.setDate(d.getDate()+off);return d.toISOString().split('T')[0]}};
+const DAYS=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function init(){
+  const now=new Date();
+  document.getElementById('dateStr').textContent=`${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('dayStr').textContent=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][now.getDay()];
+  const todayKey=DB.dayKey();
+  const nutrition=DB.get('nutrition_'+todayKey)||{entries:[]};
+  const steps=DB.get('steps_'+todayKey)||0;
+  const workouts=DB.get('workouts_'+todayKey)||[];
+  const totals=nutrition.entries.reduce((a,e)=>({cal:a.cal+(e.cal||0),p:a.p+(e.p||0)}),{cal:0,p:0});
+  document.getElementById('statCal').textContent=Math.round(totals.cal);
+  document.getElementById('calBar').style.width=Math.min(totals.cal/2400*100,100)+'%';
+  document.getElementById('statPro').textContent=Math.round(totals.p)+'g';
+  document.getElementById('proBar').style.width=Math.min(totals.p/185*100,100)+'%';
+  document.getElementById('statSteps').textContent=steps.toLocaleString();
+  document.getElementById('stepsBar').style.width=Math.min(steps/11000*100,100)+'%';
+  if(workouts.length>0){const w=workouts[workouts.length-1];document.getElementById('statWod').textContent='DONE';document.getElementById('statWod').className='sc-val done';document.getElementById('statWodSub').textContent=w.name||'Session logged';}
+  let score=0;
+  if(totals.cal>=1800&&totals.cal<=2600)score+=25;else if(totals.cal>0)score+=10;
+  if(totals.p>=150)score+=25;else if(totals.p>=100)score+=15;
+  if(steps>=11000)score+=25;else if(steps>=7000)score+=15;
+  if(workouts.length>0)score+=25;
+  document.getElementById('ringScore').textContent=score;
+  document.getElementById('ringFill').style.strokeDashoffset=289-(289*score/100);
+  const titles={0:"LET'S GO",25:'WARMING UP',50:'HALF WAY',75:'CRUSHING IT',100:'LOCKED IN 🔥'};
+  const subs={0:'Start logging your day.',25:'Good start — keep building.',50:'Solid effort today, Dave.',75:'Almost perfect day!',100:'100% — absolute machine.'};
+  const key=[100,75,50,25,0].find(k=>score>=k);
+  document.getElementById('scoreTitle').textContent=titles[key];
+  document.getElementById('scoreSub').textContent=subs[key];
+  let streak=0;
+  for(let i=1;i<=30;i++){const k=DB.dayKey(-i);const n=DB.get('nutrition_'+k);const w=DB.get('workouts_'+k);if((n&&n.entries.length>0)||(w&&w.length>0))streak++;else break;}
+  if(nutrition.entries.length>0||workouts.length>0)streak++;
+  document.getElementById('streakNum').textContent=streak;
+  const strip=document.getElementById('weekStrip');strip.innerHTML='';
+  for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split('T')[0];const n2=DB.get('nutrition_'+k);const w2=DB.get('workouts_'+k);const hasN=n2&&n2.entries.length>0;const hasW=w2&&w2.length>0;const isToday=k===todayKey;const col=document.createElement('div');col.className='day-col';const dotClass=(hasN&&hasW)?'full':(hasN||hasW)?'partial':'empty';const dotSymbol=(hasN&&hasW)?'✓':(hasN?'~':hasW?'~':'·');const nCal=n2?n2.entries.reduce((a,e)=>a+(e.cal||0),0):0;col.innerHTML=`<div class="dc-label">${DAYS[d.getDay()]}</div><div class="dc-dot ${dotClass}${isToday?' today':''}">${dotSymbol}</div><div class="dc-cal">${nCal>0?Math.round(nCal):'—'}</div>`;strip.appendChild(col);}
+}
+document.getElementById('stepsCard').addEventListener('click',()=>{document.getElementById('stepsInput').value=DB.get('steps_'+DB.dayKey())||'';document.getElementById('stepsModal').classList.add('active');document.getElementById('stepsInput').focus();});
+document.getElementById('stepsSave').addEventListener('click',()=>{DB.set('steps_'+DB.dayKey(),parseInt(document.getElementById('stepsInput').value)||0);document.getElementById('stepsModal').classList.remove('active');init();});
+document.getElementById('stepsCancel').addEventListener('click',()=>document.getElementById('stepsModal').classList.remove('active'));
+document.getElementById('stepsModal').addEventListener('click',e=>{if(e.target===document.getElementById('stepsModal'))document.getElementById('stepsModal').classList.remove('active');});
+init();
+</script>
+</body>
+</html>
