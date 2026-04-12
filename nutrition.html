@@ -242,7 +242,7 @@ function searchFood(query){
   if(!query||query.length<2){document.getElementById('resultsList').innerHTML='';document.getElementById('searchStatus').textContent='';return;}
   document.getElementById('searchStatus').textContent='Searching...';
   document.getElementById('resultsList').innerHTML='';
-  fetch('https://world.openfoodfacts.org/cgi/search.pl?search_terms='+encodeURIComponent(query)+'&search_simple=1&action=process&json=1&page_size=8&fields=product_name,brands,nutriments,serving_size,code')
+  fetch('https://world.openfoodfacts.org/api/v2/search?search_terms='+encodeURIComponent(query)+'&page_size=8&fields=product_name,brands,nutriments,serving_size,code',{headers:{'User-Agent':'WellnessSync/1.0'}})
   .then(function(r){return r.json()})
   .then(function(data){
     var products=(data.products||[]).filter(function(p){var n=p.nutriments||{};return p.product_name&&(n['energy-kcal_100g']||0)>0;});
