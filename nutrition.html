@@ -6,7 +6,7 @@
 <title>Dave - Nutrition</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#07090d;--s1:#0d1117;--s2:#131920;--s3:#1a2233;--border:#1e2a3a;--border2:#253248;--accent:#00e5ff;--adim:rgba(0,229,255,0.1);--green:#00ff88;--gdim:rgba(0,255,136,0.1);--orange:#ff6b35;--odim:rgba(255,107,53,0.1);--yellow:#ffd600;--ydim:rgba(255,214,0,0.1);--red:#ff3d71;--rdim:rgba(255,61,113,0.1);--purple:#b388ff;--text:#e2e8f5;--muted:#4a5c78;--muted2:#2e3d54}
+:root{--bg:#07090d;--s1:#0d1117;--s2:#131920;--s3:#1a2233;--border:#1e2a3a;--border2:#253248;--accent:#00e5ff;--adim:rgba(0,229,255,0.1);--green:#00ff88;--orange:#ff6b35;--yellow:#ffd600;--red:#ff3d71;--rdim:rgba(255,61,113,0.1);--purple:#b388ff;--text:#e2e8f5;--muted:#4a5c78;--muted2:#2e3d54}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;padding-bottom:90px}
 .nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(7,9,13,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 max(10px,env(safe-area-inset-bottom))}
@@ -44,19 +44,40 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .log-card{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px}
 .card-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .card-title::after{content:'';flex:1;height:1px;background:var(--border)}
-.food-input{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:11px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;resize:none;min-height:64px;outline:none;transition:border-color 0.2s;margin-bottom:8px}
-.food-input:focus{border-color:var(--accent)}
-.food-input::placeholder{color:var(--muted)}
-.meal-select{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:9px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;cursor:pointer;margin-bottom:8px}
+.food-search{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:12px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;margin-bottom:6px}
+.food-search:focus{border-color:var(--accent)}
+.food-search::placeholder{color:var(--muted)}
+.search-status{font-size:11px;color:var(--accent);padding:2px;min-height:18px;margin-bottom:6px}
+.results-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;max-height:260px;overflow-y:auto}
+.results-list::-webkit-scrollbar{width:2px} .results-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+.result-item{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.result-item:hover{border-color:var(--accent);background:rgba(0,229,255,0.05)}
+.result-left{flex:1;min-width:0}
+.result-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.result-brand{font-size:10px;color:var(--muted);margin-top:2px}
+.result-right{text-align:right;flex-shrink:0}
+.result-cal{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);line-height:1}
+.result-pfc{font-size:9px;color:var(--muted);line-height:1.5}
+.confirm-card{background:var(--s2);border:1px solid var(--border2);border-radius:12px;padding:14px;margin-bottom:10px;display:none}
+.confirm-card.show{display:block}
+.confirm-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px}
+.confirm-brand{font-size:10px;color:var(--muted);margin-bottom:10px}
+.confirm-macros{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.cm{background:var(--s1);border-radius:8px;padding:8px 5px;text-align:center}
+.cm .cmv{font-family:'Bebas Neue',sans-serif;font-size:20px;line-height:1}
+.cm .cmv.cal{color:var(--accent)} .cm .cmv.p{color:var(--green)} .cm .cmv.c{color:#7eb8ff} .cm .cmv.f{color:var(--orange)}
+.cm .cml{font-size:8px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.serving-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;color:var(--muted)}
+.serving-inp{background:var(--s1);border:1px solid var(--border2);border-radius:8px;padding:7px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:14px;width:70px;text-align:center;outline:none}
+.serving-inp:focus{border-color:var(--accent)}
+.meal-select{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:9px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;cursor:pointer;margin-bottom:10px}
 .meal-select option{background:var(--s2)}
-.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-.scan-btn{background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:10px;color:var(--accent);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;letter-spacing:1px;transition:all 0.2s}
-.scan-btn:hover{background:var(--adim);border-color:var(--accent)}
-.log-btn{background:var(--accent);color:var(--bg);border:none;border-radius:10px;padding:10px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;cursor:pointer;transition:opacity 0.2s}
-.log-btn:disabled{opacity:0.4;cursor:not-allowed}
-.log-btn:hover:not(:disabled){opacity:0.88}
-.log-status{font-size:11px;color:var(--muted);text-align:center;min-height:16px}
-.log-status.loading{color:var(--accent)} .log-status.success{color:var(--green)} .log-status.error{color:var(--red)}
+.add-btn{width:100%;background:var(--green);color:var(--bg);border:none;border-radius:10px;padding:12px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;transition:opacity 0.2s}
+.add-btn:hover{opacity:0.85}
+.scan-btn{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:10px;color:var(--accent);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;letter-spacing:1px;transition:all 0.2s;margin-top:8px}
+.scan-btn:hover{background:rgba(0,229,255,0.1);border-color:var(--accent)}
+.log-status{font-size:11px;color:var(--muted);text-align:center;min-height:16px;margin-top:6px}
+.log-status.success{color:var(--green)} .log-status.error{color:var(--red)}
 .meal-bd{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px}
 .meal-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .mslot{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:12px 10px}
@@ -86,7 +107,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .smod-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .smod-hdr h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--accent)}
 .smod-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:all 0.2s}
-.smod-close:hover{color:var(--red);background:var(--rdim)}
+.smod-close:hover{color:var(--red)}
 .video-wrap{position:relative;width:100%;aspect-ratio:4/3;background:#000;border-radius:12px;overflow:hidden;margin-bottom:12px}
 #scannerVideo{width:100%;height:100%;object-fit:cover;display:block}
 .scan-line{position:absolute;left:10%;right:10%;height:2px;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:scanMove 2s ease-in-out infinite;top:20%}
@@ -97,25 +118,12 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .scan-corners span::before{bottom:0;left:0;border-width:0 0 2px 2px} .scan-corners span::after{bottom:0;right:0;border-width:0 2px 2px 0}
 .scanner-status{text-align:center;font-size:11px;color:var(--muted);margin-bottom:10px;min-height:16px;letter-spacing:1px}
 .scanner-status.scanning{color:var(--accent)} .scanner-status.found{color:var(--green)} .scanner-status.error{color:var(--red)}
-.product-confirm{display:none;background:var(--s2);border:1px solid var(--border2);border-radius:12px;padding:14px;margin-bottom:10px}
-.product-confirm.show{display:block}
-.pc-name{font-size:13px;font-weight:700;margin-bottom:2px} .pc-brand{font-size:10px;color:var(--muted);margin-bottom:10px}
-.pc-macros{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
-.pcm{background:var(--s1);border-radius:8px;padding:7px 5px;text-align:center}
-.pcm .pcmv{font-family:'Bebas Neue',sans-serif;font-size:18px;line-height:1}
-.pcm .pcmv.cal{color:var(--accent)} .pcm .pcmv.p{color:var(--green)} .pcm .pcmv.c{color:#7eb8ff} .pcm .pcmv.f{color:var(--orange)}
-.pcm .pcml{font-size:8px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
-.serving-row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);margin-bottom:10px}
-.serving-input{background:var(--s1);border:1px solid var(--border2);border-radius:8px;padding:6px 8px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;width:65px;text-align:center;outline:none}
-.serving-input:focus{border-color:var(--accent)}
-.pc-add-btn{background:var(--green);color:var(--bg);border:none;border-radius:10px;padding:10px;width:100%;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;transition:opacity 0.2s}
-.pc-add-btn:hover{opacity:0.85}
 .manual-wrap{display:flex;gap:8px;margin-top:8px}
 .manual-input{flex:1;background:var(--s2);border:1px solid var(--border2);border-radius:8px;padding:8px 10px;color:var(--text);font-family:'Syne',sans-serif;font-size:12px;outline:none}
 .manual-input:focus{border-color:var(--accent)}
 .manual-input::placeholder{color:var(--muted)}
-.manual-btn{background:var(--s2);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--accent);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background 0.2s}
-.manual-btn:hover{background:var(--adim)}
+.manual-btn{background:var(--s2);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--accent);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.manual-btn:hover{background:rgba(0,229,255,0.1)}
 </style>
 </head>
 <body>
@@ -142,20 +150,35 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
   </div>
   <div class="log-card">
     <div class="card-title">Log Food</div>
-    <textarea class="food-input" id="foodInput" placeholder="e.g. 200g chicken breast, 1 cup brown rice, 2 scrambled eggs"></textarea>
-    <select class="meal-select" id="mealSelect">
-      <option value="Breakfast">Breakfast - 7:00 AM</option>
-      <option value="Mid-Morning">Mid-Morning - 10:00 AM</option>
-      <option value="Lunch">Lunch - 1:00 PM</option>
-      <option value="Pre-Workout">Pre-Workout - 4:30 PM</option>
-      <option value="Dinner">Dinner - 7:00 PM</option>
-      <option value="Evening">Evening - 9:00 PM</option>
-      <option value="Other">Other</option>
-    </select>
-    <div class="btn-row">
-      <button class="scan-btn" id="openScannerBtn">SCAN BARCODE</button>
-      <button class="log-btn" id="logBtn">ANALYSE + LOG</button>
+    <input class="food-search" id="foodSearch" type="text" placeholder="Search food e.g. chicken breast, oats, banana...">
+    <div class="search-status" id="searchStatus"></div>
+    <div class="results-list" id="resultsList"></div>
+    <div class="confirm-card" id="confirmCard">
+      <div class="confirm-name" id="confirmName"></div>
+      <div class="confirm-brand" id="confirmBrand"></div>
+      <div class="confirm-macros">
+        <div class="cm"><div class="cmv cal" id="cmCal">0</div><div class="cml">Cal</div></div>
+        <div class="cm"><div class="cmv p" id="cmP">0</div><div class="cml">Prot</div></div>
+        <div class="cm"><div class="cmv c" id="cmC">0</div><div class="cml">Carbs</div></div>
+        <div class="cm"><div class="cmv f" id="cmF">0</div><div class="cml">Fat</div></div>
+      </div>
+      <div class="serving-row">
+        <span>Serving:</span>
+        <input class="serving-inp" id="servingAmt" type="number" value="100" min="1">
+        <span>g</span>
+      </div>
+      <select class="meal-select" id="mealSelect">
+        <option value="Breakfast">Breakfast - 7:00 AM</option>
+        <option value="Mid-Morning">Mid-Morning - 10:00 AM</option>
+        <option value="Lunch">Lunch - 1:00 PM</option>
+        <option value="Pre-Workout">Pre-Workout - 4:30 PM</option>
+        <option value="Dinner">Dinner - 7:00 PM</option>
+        <option value="Evening">Evening - 9:00 PM</option>
+        <option value="Other">Other</option>
+      </select>
+      <button class="add-btn" id="addEntryBtn">ADD TO LOG</button>
     </div>
+    <button class="scan-btn" id="openScannerBtn">SCAN BARCODE</button>
     <div class="log-status" id="logStatus"></div>
   </div>
   <div class="meal-bd">
@@ -172,20 +195,8 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
     <div class="smod-hdr"><h3>SCAN BARCODE</h3><button class="smod-close" id="closeScannerBtn">X</button></div>
     <div class="video-wrap"><video id="scannerVideo" autoplay muted playsinline></video><div class="scan-line"></div><div class="scan-corners"><span></span></div></div>
     <div class="scanner-status" id="scannerStatus">Point camera at a barcode</div>
-    <div class="product-confirm" id="productConfirm">
-      <div class="pc-name" id="pcName"></div>
-      <div class="pc-brand" id="pcBrand"></div>
-      <div class="pc-macros">
-        <div class="pcm"><div class="pcmv cal" id="pcCal">0</div><div class="pcml">Cal</div></div>
-        <div class="pcm"><div class="pcmv p" id="pcP">0</div><div class="pcml">Prot</div></div>
-        <div class="pcm"><div class="pcmv c" id="pcC">0</div><div class="pcml">Carbs</div></div>
-        <div class="pcm"><div class="pcmv f" id="pcF">0</div><div class="pcml">Fat</div></div>
-      </div>
-      <div class="serving-row"><span>Serving:</span><input class="serving-input" id="servingInput" type="number" value="100" min="1"><span>g (per 100g)</span></div>
-      <button class="pc-add-btn" id="pcAddBtn">ADD TO LOG</button>
-    </div>
     <div class="manual-wrap">
-      <input class="manual-input" id="manualBarcodeInput" type="number" placeholder="Enter barcode manually">
+      <input class="manual-input" id="manualBarcodeInput" type="number" placeholder="Or enter barcode number manually">
       <button class="manual-btn" id="manualLookupBtn">LOOK UP</button>
     </div>
   </div>
@@ -200,11 +211,11 @@ var DB={get:function(k){try{return JSON.parse(localStorage.getItem('dw_'+k)||'nu
 var TARGETS={cal:2400,p:185,c:220,f:65};
 var MEAL_TARGETS={'Breakfast':480,'Mid-Morning':280,'Lunch':560,'Pre-Workout':320,'Dinner':580,'Evening':180,'Other':0};
 var MEAL_TIMES={'Breakfast':'7:00 AM','Mid-Morning':'10:00 AM','Lunch':'1:00 PM','Pre-Workout':'4:30 PM','Dinner':'7:00 PM','Evening':'9:00 PM','Other':'--'};
-var offset=0;
+var offset=0,selectedProduct=null,searchTimer=null;
 function dayKey(){return DB.dayKey(offset)}
 function getNutrition(){return DB.get('nutrition_'+dayKey())||{entries:[]}}
 function saveNutrition(d){DB.set('nutrition_'+dayKey(),d)}
-function dateLabel(off){if(off===0)return'Today';if(off===-1)return'Yesterday';var d=new Date();d.setDate(d.getDate()+off);return d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});}
+function dateLabel(off){if(off===0)return 'Today';if(off===-1)return 'Yesterday';var d=new Date();d.setDate(d.getDate()+off);return d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});}
 function render(){
   document.getElementById('dateLabel').textContent=dateLabel(offset);
   var data=getNutrition();
@@ -215,127 +226,93 @@ function render(){
   remEl.textContent=Math.abs(rem);
   remEl.className='snap-rem'+(rem<0?' over':'');
   document.getElementById('snapRemLabel').textContent=rem<0?'OVER TARGET':'REMAINING';
-  var barFill=document.getElementById('calBarFill');
-  barFill.style.width=Math.min(t.cal/TARGETS.cal*100,100)+'%';
-  barFill.className='bar-fill'+(t.cal>TARGETS.cal?' over':'');
-  ['p','c','f'].forEach(function(k){
-    var v=Math.round(t[k]),tgt=TARGETS[k];
-    document.getElementById('mp'+k.toUpperCase()).textContent=v+'g';
-    document.getElementById('mp'+k.toUpperCase()+'b').style.width=Math.min(v/tgt*100,100)+'%';
-    document.getElementById('mp'+k.toUpperCase()+'s').textContent=v+'/'+tgt+'g';
-  });
+  var bf=document.getElementById('calBarFill');
+  bf.style.width=Math.min(t.cal/TARGETS.cal*100,100)+'%';
+  bf.className='bar-fill'+(t.cal>TARGETS.cal?' over':'');
+  ['p','c','f'].forEach(function(k){var v=Math.round(t[k]),tgt=TARGETS[k];document.getElementById('mp'+k.toUpperCase()).textContent=v+'g';document.getElementById('mp'+k.toUpperCase()+'b').style.width=Math.min(v/tgt*100,100)+'%';document.getElementById('mp'+k.toUpperCase()+'s').textContent=v+'/'+tgt+'g';});
   var ms=document.getElementById('mealSlots');ms.innerHTML='';
-  ['Breakfast','Mid-Morning','Lunch','Pre-Workout','Dinner','Evening'].forEach(function(meal){
-    var mc=data.entries.filter(function(e){return e.meal===meal}).reduce(function(s,e){return s+(e.cal||0)},0);
-    var tgt=MEAL_TARGETS[meal],pct=tgt>0?Math.min(mc/tgt*100,100):0;
-    var s=document.createElement('div');s.className='mslot';
-    s.innerHTML='<div class="msn">'+meal+'</div><div class="mst">'+MEAL_TIMES[meal]+'</div><div class="msc">'+Math.round(mc)+'</div><div class="mstgt">tgt: '+tgt+'</div><div class="msbar"><div class="msbf" style="width:'+pct+'%"></div></div>';
-    ms.appendChild(s);
-  });
+  ['Breakfast','Mid-Morning','Lunch','Pre-Workout','Dinner','Evening'].forEach(function(meal){var mc=data.entries.filter(function(e){return e.meal===meal}).reduce(function(s,e){return s+(e.cal||0)},0);var tgt=MEAL_TARGETS[meal],pct=tgt>0?Math.min(mc/tgt*100,100):0;var s=document.createElement('div');s.className='mslot';s.innerHTML='<div class="msn">'+meal+'</div><div class="mst">'+MEAL_TIMES[meal]+'</div><div class="msc">'+Math.round(mc)+'</div><div class="mstgt">tgt: '+tgt+'</div><div class="msbar"><div class="msbf" style="width:'+pct+'%"></div></div>';ms.appendChild(s);});
   var el=document.getElementById('entriesList');
-  if(data.entries.length===0){el.innerHTML='<div class="empty-state">Nothing logged yet. Add your first meal above.</div>';return;}
+  if(data.entries.length===0){el.innerHTML='<div class="empty-state">Nothing logged yet.<br>Search for a food above to get started.</div>';return;}
   el.innerHTML='';
-  var reversed=data.entries.slice().reverse();
-  reversed.forEach(function(e,ri){
-    var idx=data.entries.length-1-ri;
-    var item=document.createElement('div');item.className='entry';
-    item.innerHTML='<div class="entry-left"><div class="entry-name">'+e.name+'</div><div class="entry-tag">'+e.meal+'</div></div><div class="entry-right"><div><div class="entry-cal">'+Math.round(e.cal)+'</div><div style="font-size:8px;color:var(--muted)">kcal</div></div><div class="entry-pfc"><span style="color:var(--green)">'+Math.round(e.p)+'P</span><br><span style="color:#7eb8ff">'+Math.round(e.c)+'C</span><br><span style="color:var(--orange)">'+Math.round(e.f)+'F</span></div><button class="entry-del" data-idx="'+idx+'">X</button></div>';
-    el.appendChild(item);
-  });
-  el.querySelectorAll('.entry-del').forEach(function(btn){
-    btn.addEventListener('click',function(){var d=getNutrition();d.entries.splice(parseInt(btn.dataset.idx),1);saveNutrition(d);render();});
-  });
+  data.entries.slice().reverse().forEach(function(e,ri){var idx=data.entries.length-1-ri;var item=document.createElement('div');item.className='entry';item.innerHTML='<div class="entry-left"><div class="entry-name">'+e.name+'</div><div class="entry-tag">'+e.meal+'</div></div><div class="entry-right"><div><div class="entry-cal">'+Math.round(e.cal)+'</div><div style="font-size:8px;color:var(--muted)">kcal</div></div><div class="entry-pfc"><span style="color:var(--green)">'+Math.round(e.p)+'P</span><br><span style="color:#7eb8ff">'+Math.round(e.c)+'C</span><br><span style="color:var(--orange)">'+Math.round(e.f)+'F</span></div><button class="entry-del" data-idx="'+idx+'">X</button></div>';el.appendChild(item);});
+  el.querySelectorAll('.entry-del').forEach(function(btn){btn.addEventListener('click',function(){var d=getNutrition();d.entries.splice(parseInt(btn.dataset.idx),1);saveNutrition(d);render();});});
 }
-function analyseFood(text){
-  var prompt="You are a nutrition expert. Analyse this food and return ONLY a JSON object with no markdown, no backticks, no explanation. Food: "+text+". Return exactly this format: {\"name\":\"food name max 40 chars\",\"cal\":number,\"p\":number,\"c\":number,\"f\":number} where cal is calories in kcal and p, c, f are grams of protein, carbs, fat. Sum all items if multiple foods.";
-  return fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:300,messages:[{role:'user',content:prompt}]})})
-  .then(function(res){return res.json()})
-  .then(function(d){
-    var raw=d.content&&d.content[0]&&d.content[0].text?d.content[0].text:'';
-    raw=raw.replace(/```json/g,'').replace(/```/g,'').trim();
-    return JSON.parse(raw);
-  });
+function searchFood(query){
+  if(!query||query.length<2){document.getElementById('resultsList').innerHTML='';document.getElementById('searchStatus').textContent='';return;}
+  document.getElementById('searchStatus').textContent='Searching...';
+  document.getElementById('resultsList').innerHTML='';
+  fetch('https://world.openfoodfacts.org/cgi/search.pl?search_terms='+encodeURIComponent(query)+'&search_simple=1&action=process&json=1&page_size=8&fields=product_name,brands,nutriments,serving_size,code')
+  .then(function(r){return r.json()})
+  .then(function(data){
+    var products=(data.products||[]).filter(function(p){var n=p.nutriments||{};return p.product_name&&(n['energy-kcal_100g']||0)>0;});
+    if(products.length===0){document.getElementById('searchStatus').textContent='No results. Try different search terms.';return;}
+    document.getElementById('searchStatus').textContent=products.length+' results - tap one to select';
+    var list=document.getElementById('resultsList');list.innerHTML='';
+    products.forEach(function(p){
+      var n=p.nutriments||{};
+      var cal=Math.round(n['energy-kcal_100g']||0);
+      var prot=Math.round((n['proteins_100g']||0)*10)/10;
+      var carb=Math.round((n['carbohydrates_100g']||0)*10)/10;
+      var fat=Math.round((n['fat_100g']||0)*10)/10;
+      var item=document.createElement('div');item.className='result-item';
+      item.innerHTML='<div class="result-left"><div class="result-name">'+(p.product_name||'Unknown')+'</div><div class="result-brand">'+(p.brands||'per 100g')+'</div></div><div class="result-right"><div class="result-cal">'+cal+'</div><div class="result-pfc">kcal/100g<br>'+prot+'P '+carb+'C '+fat+'F</div></div>';
+      item.addEventListener('click',function(){selectProduct(p);});
+      list.appendChild(item);
+    });
+  }).catch(function(){document.getElementById('searchStatus').textContent='Search failed. Check your connection.';});
 }
-document.getElementById('logBtn').addEventListener('click',function(){
-  var input=document.getElementById('foodInput');
-  var text=input.value.trim();if(!text)return;
-  var btn=document.getElementById('logBtn'),status=document.getElementById('logStatus'),meal=document.getElementById('mealSelect').value;
-  btn.disabled=true;status.textContent='Analysing...';status.className='log-status loading';
-  analyseFood(text).then(function(r){
-    r.meal=meal;r.time=new Date().toISOString();
-    var d=getNutrition();d.entries.push(r);saveNutrition(d);
-    input.value='';
-    status.textContent='Added: '+r.name+' - '+Math.round(r.cal)+' cal | '+Math.round(r.p)+'P '+Math.round(r.c)+'C '+Math.round(r.f)+'F';
-    status.className='log-status success';
-    render();
-    setTimeout(function(){status.textContent='';status.className='log-status';},4000);
-  }).catch(function(){
-    status.textContent='Could not analyse. Try again.';
-    status.className='log-status error';
-    setTimeout(function(){status.textContent='';status.className='log-status';},3000);
-  }).finally(function(){btn.disabled=false;});
+function selectProduct(p){
+  var n=p.nutriments||{};
+  selectedProduct={name:p.product_name||'Unknown',brand:p.brands||'',per100:{cal:Math.round(n['energy-kcal_100g']||0),p:Math.round((n['proteins_100g']||0)*10)/10,c:Math.round((n['carbohydrates_100g']||0)*10)/10,f:Math.round((n['fat_100g']||0)*10)/10},servingSize:parseFloat(p.serving_size)||100};
+  document.getElementById('confirmName').textContent=selectedProduct.name;
+  document.getElementById('confirmBrand').textContent=selectedProduct.brand?'by '+selectedProduct.brand:'';
+  document.getElementById('servingAmt').value=Math.round(selectedProduct.servingSize);
+  updateConfirmMacros();
+  document.getElementById('confirmCard').classList.add('show');
+  document.getElementById('resultsList').innerHTML='';
+  document.getElementById('searchStatus').textContent='';
+  document.getElementById('foodSearch').value='';
+}
+function updateConfirmMacros(){
+  if(!selectedProduct)return;
+  var s=parseFloat(document.getElementById('servingAmt').value)||100,r=s/100,p=selectedProduct.per100;
+  document.getElementById('cmCal').textContent=Math.round(p.cal*r);
+  document.getElementById('cmP').textContent=Math.round(p.p*r*10)/10;
+  document.getElementById('cmC').textContent=Math.round(p.c*r*10)/10;
+  document.getElementById('cmF').textContent=Math.round(p.f*r*10)/10;
+}
+document.getElementById('servingAmt').addEventListener('input',updateConfirmMacros);
+document.getElementById('addEntryBtn').addEventListener('click',function(){
+  if(!selectedProduct)return;
+  var s=parseFloat(document.getElementById('servingAmt').value)||100,r=s/100,p=selectedProduct.per100,meal=document.getElementById('mealSelect').value;
+  var entry={name:selectedProduct.name.length>40?selectedProduct.name.slice(0,38)+'...':selectedProduct.name,cal:Math.round(p.cal*r),p:Math.round(p.p*r*10)/10,c:Math.round(p.c*r*10)/10,f:Math.round(p.f*r*10)/10,meal:meal,time:new Date().toISOString()};
+  var d=getNutrition();d.entries.push(entry);saveNutrition(d);
+  document.getElementById('confirmCard').classList.remove('show');
+  selectedProduct=null;
+  var st=document.getElementById('logStatus');st.textContent='Added: '+entry.name+' - '+entry.cal+' cal';st.className='log-status success';
+  setTimeout(function(){st.textContent='';st.className='log-status';},3000);
+  render();
 });
+document.getElementById('foodSearch').addEventListener('input',function(){clearTimeout(searchTimer);var q=this.value.trim();searchTimer=setTimeout(function(){searchFood(q);},500);});
 document.getElementById('prevDay').addEventListener('click',function(){offset--;render();});
 document.getElementById('nextDay').addEventListener('click',function(){if(offset<0){offset++;render();}});
-var scannerStream=null,scannerActive=false,zxingReader=null,currentProduct=null;
+var scannerStream=null,scannerActive=false,zxingReader=null;
 function loadZXing(){return new Promise(function(res,rej){if(window.ZXing){res();return;}var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/zxing-js/0.20.0/zxing.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
 function openScanner(){
   document.getElementById('scannerOverlay').classList.add('active');
-  document.getElementById('productConfirm').classList.remove('show');
   document.getElementById('scannerStatus').textContent='Starting camera...';
   document.getElementById('scannerStatus').className='scanner-status scanning';
-  currentProduct=null;
-  loadZXing().then(function(){
-    return navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-  }).then(function(stream){
-    scannerStream=stream;var video=document.getElementById('scannerVideo');video.srcObject=stream;
-    return video.play();
-  }).then(function(){
-    scannerActive=true;document.getElementById('scannerStatus').textContent='Point camera at a barcode';
-    zxingReader=new ZXing.BrowserMultiFormatReader();
-    zxingReader.decodeFromVideoElement(document.getElementById('scannerVideo'),function(result){if(!scannerActive||!result)return;scannerActive=false;lookupBarcode(result.getText());});
-  }).catch(function(e){
-    document.getElementById('scannerStatus').textContent=e.name==='NotAllowedError'?'Camera denied - use manual entry':'Camera unavailable - use manual entry';
-    document.getElementById('scannerStatus').className='scanner-status error';
-  });
+  loadZXing().then(function(){return navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});}).then(function(stream){scannerStream=stream;var v=document.getElementById('scannerVideo');v.srcObject=stream;return v.play();}).then(function(){scannerActive=true;document.getElementById('scannerStatus').textContent='Point camera at a barcode';zxingReader=new ZXing.BrowserMultiFormatReader();zxingReader.decodeFromVideoElement(document.getElementById('scannerVideo'),function(result){if(!scannerActive||!result)return;scannerActive=false;lookupBarcode(result.getText());});}).catch(function(e){document.getElementById('scannerStatus').textContent=e.name==='NotAllowedError'?'Camera denied - use manual entry':'Camera unavailable - use manual entry';document.getElementById('scannerStatus').className='scanner-status error';});
 }
 function lookupBarcode(barcode){
-  document.getElementById('scannerStatus').textContent='Looking up barcode...';
-  document.getElementById('scannerStatus').className='scanner-status scanning';
-  fetch('https://world.openfoodfacts.org/api/v0/product/'+barcode+'.json')
-  .then(function(res){return res.json()})
-  .then(function(data){
-    if(data.status!==1||!data.product){document.getElementById('scannerStatus').textContent='Not found in database';document.getElementById('scannerStatus').className='scanner-status error';scannerActive=true;return;}
-    var p=data.product,n=p.nutriments||{};
-    var per100={cal:Math.round(n['energy-kcal_100g']||n['energy_100g']/4.184||0),p:Math.round((n['proteins_100g']||0)*10)/10,c:Math.round((n['carbohydrates_100g']||0)*10)/10,f:Math.round((n['fat_100g']||0)*10)/10};
-    currentProduct={name:p.product_name||'Unknown Product',brand:p.brands||'',per100:per100,servingSize:parseFloat(p.serving_size)||100};
-    document.getElementById('pcName').textContent=currentProduct.name;
-    document.getElementById('pcBrand').textContent=currentProduct.brand?'by '+currentProduct.brand:'';
-    document.getElementById('servingInput').value=Math.round(currentProduct.servingSize);
-    updateProductMacros();
-    document.getElementById('productConfirm').classList.add('show');
-    document.getElementById('scannerStatus').textContent='Found! Adjust serving if needed';
-    document.getElementById('scannerStatus').className='scanner-status found';
-  }).catch(function(){
-    document.getElementById('scannerStatus').textContent='Lookup failed';
-    document.getElementById('scannerStatus').className='scanner-status error';
-    scannerActive=true;
-  });
+  document.getElementById('scannerStatus').textContent='Looking up...';document.getElementById('scannerStatus').className='scanner-status scanning';
+  fetch('https://world.openfoodfacts.org/api/v0/product/'+barcode+'.json').then(function(r){return r.json();}).then(function(data){if(data.status!==1||!data.product){document.getElementById('scannerStatus').textContent='Not found - try manual entry';document.getElementById('scannerStatus').className='scanner-status error';scannerActive=true;return;}closeScanner();selectProduct(data.product);}).catch(function(){document.getElementById('scannerStatus').textContent='Lookup failed';document.getElementById('scannerStatus').className='scanner-status error';scannerActive=true;});
 }
-function updateProductMacros(){if(!currentProduct)return;var s=parseFloat(document.getElementById('servingInput').value)||100,r=s/100,per100=currentProduct.per100;document.getElementById('pcCal').textContent=Math.round(per100.cal*r);document.getElementById('pcP').textContent=Math.round(per100.p*r*10)/10;document.getElementById('pcC').textContent=Math.round(per100.c*r*10)/10;document.getElementById('pcF').textContent=Math.round(per100.f*r*10)/10;}
-function closeScanner(){scannerActive=false;if(zxingReader){try{zxingReader.reset();}catch(e){}zxingReader=null;}if(scannerStream){scannerStream.getTracks().forEach(function(t){t.stop();});scannerStream=null;}document.getElementById('scannerVideo').srcObject=null;document.getElementById('scannerOverlay').classList.remove('active');document.getElementById('productConfirm').classList.remove('show');document.getElementById('manualBarcodeInput').value='';currentProduct=null;}
+function closeScanner(){scannerActive=false;if(zxingReader){try{zxingReader.reset();}catch(e){}zxingReader=null;}if(scannerStream){scannerStream.getTracks().forEach(function(t){t.stop();});scannerStream=null;}document.getElementById('scannerVideo').srcObject=null;document.getElementById('scannerOverlay').classList.remove('active');document.getElementById('manualBarcodeInput').value='';}
 document.getElementById('openScannerBtn').addEventListener('click',openScanner);
 document.getElementById('closeScannerBtn').addEventListener('click',closeScanner);
-document.getElementById('servingInput').addEventListener('input',updateProductMacros);
 document.getElementById('scannerOverlay').addEventListener('click',function(e){if(e.target===document.getElementById('scannerOverlay'))closeScanner();});
-document.getElementById('pcAddBtn').addEventListener('click',function(){
-  if(!currentProduct)return;
-  var s=parseFloat(document.getElementById('servingInput').value)||100,r=s/100,per100=currentProduct.per100,name=currentProduct.name;
-  var meal=document.getElementById('mealSelect').value;
-  var entry={name:name.length>40?name.slice(0,38)+'...':name,cal:Math.round(per100.cal*r),p:Math.round(per100.p*r*10)/10,c:Math.round(per100.c*r*10)/10,f:Math.round(per100.f*r*10)/10,meal:meal,time:new Date().toISOString(),source:'barcode'};
-  var d=getNutrition();d.entries.push(entry);saveNutrition(d);render();closeScanner();
-  var status=document.getElementById('logStatus');status.textContent='Scanned: '+entry.name+' - '+entry.cal+' cal';status.className='log-status success';setTimeout(function(){status.textContent='';status.className='log-status';},4000);
-});
 document.getElementById('manualLookupBtn').addEventListener('click',function(){var b=document.getElementById('manualBarcodeInput').value.trim();if(!b)return;scannerActive=false;lookupBarcode(b);});
 document.getElementById('manualBarcodeInput').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('manualLookupBtn').click();});
 render();
