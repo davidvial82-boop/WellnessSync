@@ -208,7 +208,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
   <a class="nav-link" href="weight.html"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Weight</a>
 </nav>
 <script>
-var DB={get:function(k){try{return JSON.parse(localStorage.getItem('dw_'+k)||'null')}catch(e){return null}},set:function(k,v){localStorage.setItem('dw_'+k,JSON.stringify(v))},dayKey:function(off){off=off||0;var d=new Date();d.setDate(d.getDate()+off);return d.toISOString().split('T')[0]}};
+var DB={_cache:{},_base:"/.netlify/functions/data",dayKey:function(off){off=off||0;var d=new Date();d.setDate(d.getDate()+off);return d.toISOString().split("T")[0];},_ls:function(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem("dw_"+k)||"null");localStorage.setItem("dw_"+k,JSON.stringify(v));}catch(e){return null;}},get:function(k,cb){if(!cb)return this._ls(k);var self=this;var local=this._ls(k);fetch(this._base+"?key="+encodeURIComponent(k)).then(function(r){return r.json();}).then(function(d){var val=(d.value!==undefined&&d.value!==null)?d.value:local;self._ls(k,val);if(cb)cb(val);}).catch(function(){if(cb)cb(local);});},set:function(k,v,cb){this._ls(k,v);fetch(this._base,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:k,value:v})}).then(function(){if(cb)cb(true);}).catch(function(){if(cb)cb(false);});}};
 var TARGETS={cal:2400,p:185,c:220,f:65};
 var MEAL_TARGETS={'Breakfast':480,'Mid-Morning':280,'Lunch':560,'Pre-Workout':320,'Dinner':580,'Evening':180,'Other':0};
 var MEAL_TIMES={'Breakfast':'7:00 AM','Mid-Morning':'10:00 AM','Lunch':'1:00 PM','Pre-Workout':'4:30 PM','Dinner':'7:00 PM','Evening':'9:00 PM','Other':'--'};
