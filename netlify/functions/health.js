@@ -17,7 +17,12 @@ exports.handler = async function(event) {
   }
 
   try {
-    const store = getStore('wellness');
+    const store = getStore({
+      name: 'wellness',
+      siteID: process.env.NETLIFY_SITE_ID,
+      token: process.env.NETLIFY_TOKEN
+    });
+
     const body = JSON.parse(event.body || '{}');
     const metrics = body.data?.metrics || body.metrics || [];
     let stepsProcessed = 0;
