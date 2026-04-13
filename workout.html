@@ -180,7 +180,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 </nav>
 
 <script>
-const DB={get(k){try{return JSON.parse(localStorage.getItem('dw_'+k)||'null')}catch{return null}},set(k,v){localStorage.setItem('dw_'+k,JSON.stringify(v))},dayKey(off=0){const d=new Date();d.setDate(d.getDate()+off);return d.toISOString().split('T')[0]}};
+var DB={_cache:{},_base:"/.netlify/functions/data",dayKey:function(off){off=off||0;var d=new Date();d.setDate(d.getDate()+off);return d.toISOString().split("T")[0];},_ls:function(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem("dw_"+k)||"null");localStorage.setItem("dw_"+k,JSON.stringify(v));}catch(e){return null;}},get:function(k,cb){if(!cb)return this._ls(k);var self=this;var local=this._ls(k);fetch(this._base+"?key="+encodeURIComponent(k)).then(function(r){return r.json();}).then(function(d){var val=(d.value!==undefined&&d.value!==null)?d.value:local;self._ls(k,val);if(cb)cb(val);}).catch(function(){if(cb)cb(local);});},set:function(k,v,cb){this._ls(k,v);fetch(this._base,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:k,value:v})}).then(function(){if(cb)cb(true);}).catch(function(){if(cb)cb(false);});}};
 
 const TEMPLATES=[
   {id:'push',name:'PUSH',icon:'🔺',desc:'Chest · Shoulders · Triceps',exercises:['Bench Press','Incline Dumbbell Press','Overhead Press','Lateral Raises','Tricep Pushdown','Skull Crushers']},
