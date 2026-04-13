@@ -14,7 +14,7 @@ exports.handler = async function(event, context) {
 
   try {
     // Use Netlify's built-in token from context - no extra env vars needed
-    const store = getStore('wellness');
+    const store = getStore({   name: 'wellness',   siteID: process.env.NETLIFY_SITE_ID,   token: process.env.NETLIFY_TOKEN });
 
     if (event.httpMethod === 'GET') {
       const key = (event.queryStringParameters || {}).key;
