@@ -36,6 +36,47 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .score-sub{font-size:12px;color:var(--muted);line-height:1.6}
 .streak-badge{display:inline-flex;align-items:center;gap:6px;background:var(--ydim);border:1px solid rgba(255,214,0,0.2);border-radius:99px;padding:4px 10px;font-size:11px;color:var(--yellow);font-weight:700;margin-top:10px}
 
+/* IF TIMER */
+.if-card{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;transition:border-color 0.3s}
+.if-card.active{border-color:rgba(0,255,136,0.4)}
+.if-card.fasting{border-color:rgba(0,229,255,0.4)}
+.if-card::before{content:'';position:absolute;right:-40px;top:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(0,255,136,0.04),transparent 70%);pointer-events:none}
+.if-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.if-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+.if-toggle-wrap{display:flex;align-items:center;gap:10px}
+.if-toggle-label{font-size:11px;color:var(--muted)}
+.if-toggle{position:relative;width:44px;height:24px;cursor:pointer}
+.if-toggle input{opacity:0;width:0;height:0}
+.if-slider{position:absolute;inset:0;background:var(--s3);border-radius:99px;transition:0.3s;border:1px solid var(--border2)}
+.if-slider:before{content:'';position:absolute;width:18px;height:18px;left:2px;top:2px;background:var(--muted);border-radius:50%;transition:0.3s}
+.if-toggle input:checked+.if-slider{background:rgba(0,255,136,0.2);border-color:var(--green)}
+.if-toggle input:checked+.if-slider:before{transform:translateX(20px);background:var(--green)}
+.if-body{display:flex;align-items:center;gap:16px}
+.if-ring-wrap{position:relative;width:80px;height:80px;flex-shrink:0}
+.if-ring-wrap svg{transform:rotate(-90deg)}
+.if-ring-bg{fill:none;stroke:var(--border);stroke-width:8}
+.if-ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s ease}
+.if-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.if-ring-pct{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1}
+.if-ring-lbl{font-size:8px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.if-info{flex:1}
+.if-status{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;line-height:1;margin-bottom:4px}
+.if-status.eating{color:var(--green)}
+.if-status.fasting{color:var(--accent)}
+.if-status.off{color:var(--muted)}
+.if-countdown{font-family:'DM Mono',monospace;font-size:14px;color:var(--text);margin-bottom:4px}
+.if-sublabel{font-size:11px;color:var(--muted)}
+.if-settings{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.if-settings.show{display:block}
+.if-settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.if-settings label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
+.if-settings input{width:100%;background:var(--s3);border:1px solid var(--border2);border-radius:8px;padding:9px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:14px;outline:none}
+.if-settings input:focus{border-color:var(--accent)}
+.if-save-btn{width:100%;background:var(--accent);color:var(--bg);border:none;border-radius:10px;padding:10px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer}
+.if-gear{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:6px;transition:color 0.2s}
+.if-gear:hover{color:var(--accent)}
+.if-disabled{text-align:center;padding:10px 0;color:var(--muted);font-size:12px}
+
 /* STAT GRID */
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .stat-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden;transition:border-color 0.2s;cursor:pointer}
@@ -121,6 +162,51 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
       <div class="score-title" id="scoreTitle">LET'S GO</div>
       <div class="score-sub" id="scoreSub">Start logging your day to build your wellness score.</div>
       <div class="streak-badge">&#128293; <span id="streakNum">0</span> day streak</div>
+    </div>
+  </div>
+
+  <!-- Intermittent Fasting Card -->
+  <div class="if-card" id="ifCard">
+    <div class="if-top">
+      <div class="if-title">⏱ Intermittent Fasting</div>
+      <div class="if-toggle-wrap">
+        <span class="if-toggle-label" id="ifToggleLabel">OFF</span>
+        <label class="if-toggle">
+          <input type="checkbox" id="ifToggle">
+          <span class="if-slider"></span>
+        </label>
+        <button class="if-gear" id="ifGear" title="Settings">⚙</button>
+      </div>
+    </div>
+    <div class="if-body" id="ifBody">
+      <div class="if-ring-wrap">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle class="if-ring-bg" cx="40" cy="40" r="34"/>
+          <circle class="if-ring-fill" id="ifRingFill" cx="40" cy="40" r="34" stroke="var(--accent)" stroke-dasharray="214" stroke-dashoffset="214"/>
+        </svg>
+        <div class="if-ring-center">
+          <div class="if-ring-pct" id="ifPct">0%</div>
+          <div class="if-ring-lbl">done</div>
+        </div>
+      </div>
+      <div class="if-info">
+        <div class="if-status off" id="ifStatus">INACTIVE</div>
+        <div class="if-countdown" id="ifCountdown">-- : -- : --</div>
+        <div class="if-sublabel" id="ifSublabel">Enable to start tracking</div>
+      </div>
+    </div>
+    <div class="if-settings" id="ifSettings">
+      <div class="if-settings-grid">
+        <div>
+          <label>Eating Window Opens</label>
+          <input type="time" id="ifStart" value="12:00">
+        </div>
+        <div>
+          <label>Eating Window Closes</label>
+          <input type="time" id="ifEnd" value="20:00">
+        </div>
+      </div>
+      <button class="if-save-btn" id="ifSaveBtn">SAVE WINDOW</button>
     </div>
   </div>
 
@@ -381,6 +467,127 @@ document.getElementById('weightCancel').addEventListener('click',function(){docu
 document.getElementById('weightModal').addEventListener('click',function(e){if(e.target===document.getElementById('weightModal'))document.getElementById('weightModal').classList.remove('active');});
 
 init();
+
+// ── INTERMITTENT FASTING ──────────────────────────────────────
+(function(){
+  var toggle=document.getElementById('ifToggle');
+  var card=document.getElementById('ifCard');
+  var status=document.getElementById('ifStatus');
+  var countdown=document.getElementById('ifCountdown');
+  var sublabel=document.getElementById('ifSublabel');
+  var pct=document.getElementById('ifPct');
+  var ring=document.getElementById('ifRingFill');
+  var gear=document.getElementById('ifGear');
+  var settings=document.getElementById('ifSettings');
+  var saveBtn=document.getElementById('ifSaveBtn');
+  var label=document.getElementById('ifToggleLabel');
+  var CIRC=214;
+
+  function getIFSettings(){
+    return DB.get('if_settings')||{enabled:false,start:'12:00',end:'20:00'};
+  }
+  function saveIFSettings(s){ DB.set('if_settings',s); }
+
+  function parseTime(str){
+    var p=str.split(':');
+    return parseInt(p[0])*60+parseInt(p[1]);
+  }
+
+  function updateIF(){
+    var s=getIFSettings();
+    toggle.checked=s.enabled;
+    document.getElementById('ifStart').value=s.start||'12:00';
+    document.getElementById('ifEnd').value=s.end||'20:00';
+    label.textContent=s.enabled?'ON':'OFF';
+
+    if(!s.enabled){
+      card.className='if-card';
+      status.className='if-status off';
+      status.textContent='INACTIVE';
+      countdown.textContent='-- : -- : --';
+      sublabel.textContent='Enable to start tracking';
+      pct.textContent='0%';
+      ring.style.strokeDashoffset=CIRC;
+      ring.style.stroke='var(--muted)';
+      return;
+    }
+
+    var now=new Date();
+    var nowMins=now.getHours()*60+now.getMinutes();
+    var startMins=parseTime(s.start);
+    var endMins=parseTime(s.end);
+    var windowLen=endMins>startMins?endMins-startMins:(1440-startMins+endMins);
+    var fastLen=1440-windowLen;
+
+    var inWindow;
+    if(endMins>startMins){
+      inWindow=nowMins>=startMins&&nowMins<endMins;
+    } else {
+      inWindow=nowMins>=startMins||nowMins<endMins;
+    }
+
+    var minsUntilNext, progress, totalPeriod;
+    if(inWindow){
+      // eating — countdown to window close
+      minsUntilNext=endMins>nowMins?endMins-nowMins:(1440-nowMins+endMins);
+      progress=(windowLen-minsUntilNext)/windowLen;
+      totalPeriod=windowLen;
+      card.className='if-card active';
+      status.className='if-status eating';
+      status.textContent='EATING WINDOW';
+      sublabel.textContent='Window closes at '+formatTime(s.end);
+      ring.style.stroke='var(--green)';
+    } else {
+      // fasting — countdown to window open
+      minsUntilNext=startMins>nowMins?startMins-nowMins:(1440-nowMins+startMins);
+      progress=(fastLen-minsUntilNext)/fastLen;
+      totalPeriod=fastLen;
+      card.className='if-card fasting';
+      status.className='if-status fasting';
+      status.textContent='FASTING';
+      sublabel.textContent='Window opens at '+formatTime(s.start);
+      ring.style.stroke='var(--accent)';
+    }
+
+    var h=Math.floor(minsUntilNext/60);
+    var m=minsUntilNext%60;
+    var sec=60-now.getSeconds();
+    countdown.textContent=pad(h)+':'+pad(m)+':'+pad(sec===60?0:sec);
+    var p=Math.round(Math.max(0,Math.min(1,progress))*100);
+    pct.textContent=p+'%';
+    ring.style.strokeDashoffset=CIRC-(CIRC*p/100);
+  }
+
+  function pad(n){return n<10?'0'+n:String(n);}
+  function formatTime(str){
+    var p=str.split(':');var h=parseInt(p[0]);var m=p[1];
+    var ampm=h>=12?'PM':'AM';h=h%12||12;
+    return h+':'+m+' '+ampm;
+  }
+
+  toggle.addEventListener('change',function(){
+    var s=getIFSettings();
+    s.enabled=toggle.checked;
+    saveIFSettings(s);
+    updateIF();
+  });
+
+  gear.addEventListener('click',function(){
+    settings.classList.toggle('show');
+  });
+
+  saveBtn.addEventListener('click',function(){
+    var s=getIFSettings();
+    s.start=document.getElementById('ifStart').value;
+    s.end=document.getElementById('ifEnd').value;
+    saveIFSettings(s);
+    settings.classList.remove('show');
+    updateIF();
+  });
+
+  updateIF();
+  setInterval(updateIF,1000);
+})();
 </script>
 </body>
 </html>
