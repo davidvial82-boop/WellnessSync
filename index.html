@@ -483,10 +483,20 @@ init();
   var label=document.getElementById('ifToggleLabel');
   var CIRC=214;
 
-  function getIFSettings(){
-    return DB.get('if_settings')||{enabled:false,start:'12:00',end:'20:00'};
+  // Keep a local in-memory copy so saves are instant
+  var _ifSettings={enabled:false,start:'12:00',end:'20:00'};
+
+  function loadIFSettings(){
+    var stored=DB._ls('if_settings');
+    if(stored){_ifSettings=stored;}
+    return _ifSettings;
   }
-  function saveIFSettings(s){ DB.set('if_settings',s); }
+  function saveIFSettings(s){
+    _ifSettings=s;
+    DB._ls('if_settings',s); // write to localStorage immediately
+    DB.set('if_settings',s); // also sync to Netlify Blobs in background
+  }
+  function getIFSettings(){ return _ifSettings; }
 
   function parseTime(str){
     var p=str.split(':');
@@ -586,12 +596,12 @@ init();
     saveIFSettings(s);
     settings.classList.remove('show');
     updateIF();
-    // Confirm to user
-    var btn=document.getElementById('ifSaveBtn');
-    btn.textContent='SAVED ✓';
-    setTimeout(function(){btn.textContent='SAVE WINDOW';},2000);
+    saveBtn.textContent='SAVED ✓';
+    setTimeout(function(){saveBtn.textContent='SAVE WINDOW';},2000);
   });
 
+  // Load from localStorage first for instant display
+  loadIFSettings();
   updateIF();
   setInterval(updateIF,1000);
 })();
