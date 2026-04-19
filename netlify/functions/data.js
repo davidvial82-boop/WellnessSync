@@ -1,6 +1,6 @@
 const { getStore } = require('@netlify/blobs');
 
-exports.handler = async function(event, context) {
+exports.handler = async function(event) {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -13,15 +13,19 @@ exports.handler = async function(event, context) {
   }
 
   try {
-    // Use Netlify's built-in token from context - no extra env vars needed
-    const store = getStore({   name: 'wellness',   siteID: process.env.NETLIFY_SITE_ID,   token: process.env.NETLIFY_TOKEN });
+    // Use implicit context — no manual siteID/token needed on Netlify
+    const store = getStore('wellness');
 
     if (event.httpMethod === 'GET') {
       const key = (event.queryStringParameters || {}).key;
       if (!key) return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing key' }) };
       try {
-        const val = await store.get(key);
-        return { statusCode: 200, headers, body: JSON.stringify({ value: val ? JSON.parse(val) : null }) };
+        const val = await store.get(key, { type: 'text' });
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ value: val ? JSON.parse(val) : null })
+        };
       } catch(e) {
         return { statusCode: 200, headers, body: JSON.stringify({ value: null }) };
       }
@@ -35,8 +39,13 @@ exports.handler = async function(event, context) {
     }
 
     return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
+
   } catch(e) {
     console.error('Blob error:', e);
-    return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: e.message, stack: e.stack })
+    };
   }
 };
