@@ -577,12 +577,19 @@ init();
   });
 
   saveBtn.addEventListener('click',function(){
+    var startVal=document.getElementById('ifStart').value;
+    var endVal=document.getElementById('ifEnd').value;
+    if(!startVal||!endVal){alert('Please set both start and end times.');return;}
     var s=getIFSettings();
-    s.start=document.getElementById('ifStart').value;
-    s.end=document.getElementById('ifEnd').value;
+    s.start=startVal;
+    s.end=endVal;
     saveIFSettings(s);
     settings.classList.remove('show');
     updateIF();
+    // Confirm to user
+    var btn=document.getElementById('ifSaveBtn');
+    btn.textContent='SAVED ✓';
+    setTimeout(function(){btn.textContent='SAVE WINDOW';},2000);
   });
 
   updateIF();
