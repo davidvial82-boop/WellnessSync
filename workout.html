@@ -100,6 +100,34 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .chart-svg{width:100%;height:100%}
 .chart-label{font-family:'DM Mono',monospace;font-size:9px;fill:var(--muted)}
 
+/* HIIT TIMER */
+.hiit-timer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:500;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.hiit-timer-overlay.active{display:flex}
+.hiit-phase{font-size:11px;letter-spacing:4px;text-transform:uppercase;margin-bottom:12px}
+.hiit-phase.work{color:var(--red)}
+.hiit-phase.rest{color:var(--green)}
+.hiit-phase.get-ready{color:var(--yellow)}
+.hiit-big-time{font-family:'Bebas Neue',sans-serif;font-size:120px;line-height:1;letter-spacing:4px}
+.hiit-big-time.work{color:var(--red)}
+.hiit-big-time.rest{color:var(--green)}
+.hiit-big-time.get-ready{color:var(--yellow)}
+.hiit-exercise-name{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--text);letter-spacing:2px;margin-bottom:8px}
+.hiit-next{font-size:12px;color:var(--muted);margin-bottom:24px}
+.hiit-round-info{font-family:'DM Mono',monospace;font-size:14px;color:var(--muted);margin-bottom:32px}
+.hiit-progress-track{width:280px;height:6px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:32px}
+.hiit-progress-fill{height:100%;border-radius:99px;transition:width 0.1s linear}
+.hiit-controls{display:flex;gap:12px}
+.hiit-ctrl-btn{background:var(--s2);border:1px solid var(--border2);border-radius:12px;padding:12px 24px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;transition:all 0.2s}
+.hiit-ctrl-btn.stop{color:var(--red);border-color:rgba(255,61,113,0.3)}
+.hiit-ctrl-btn.skip{color:var(--accent);border-color:rgba(0,229,255,0.3)}
+.hiit-ctrl-btn:hover{opacity:0.8}
+.tpl-btn.hiit{border-color:rgba(255,61,113,0.2)}
+.tpl-btn.hiit:hover{border-color:var(--red);background:rgba(255,61,113,0.08)}
+.tpl-btn.hiit .tpl-name{color:var(--red)}
+.tpl-badge{display:inline-block;font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:4px;margin-top:4px;font-family:'DM Mono',monospace}
+.tpl-badge.hiit-badge{background:rgba(255,61,113,0.15);color:var(--red)}
+.tpl-badge.strength-badge{background:rgba(179,136,255,0.15);color:var(--purple)}
+
 /* FINISH BTN */
 .finish-btn{width:100%;background:linear-gradient(135deg,var(--purple),var(--accent));color:var(--bg);border:none;border-radius:14px;padding:16px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;transition:opacity 0.2s;margin-bottom:14px}
 .finish-btn:hover{opacity:0.88}
@@ -108,6 +136,22 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 </style>
 </head>
 <body>
+
+<!-- HIIT Timer Overlay -->
+<div class="hiit-timer-overlay" id="hiitOverlay">
+  <div class="hiit-phase" id="hiitPhase">GET READY</div>
+  <div class="hiit-big-time get-ready" id="hiitBigTime">10</div>
+  <div class="hiit-exercise-name" id="hiitExName">BURPEES</div>
+  <div class="hiit-next" id="hiitNext">Next: Rest</div>
+  <div class="hiit-round-info" id="hiitRoundInfo">Round 1 of 8</div>
+  <div class="hiit-progress-track">
+    <div class="hiit-progress-fill" id="hiitProgressFill" style="width:100%;background:var(--yellow)"></div>
+  </div>
+  <div class="hiit-controls">
+    <button class="hiit-ctrl-btn skip" id="hiitSkip">SKIP ▶</button>
+    <button class="hiit-ctrl-btn stop" id="hiitStop">✕ STOP</button>
+  </div>
+</div>
 
 <!-- Rest Timer -->
 <div class="rest-timer-bar" id="restTimer">
@@ -183,18 +227,18 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 var DB={_cache:{},_base:"/.netlify/functions/data",dayKey:function(off){off=off||0;var d=new Date();d.setDate(d.getDate()+off);return d.toISOString().split("T")[0];},_ls:function(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem("dw_"+k)||"null");localStorage.setItem("dw_"+k,JSON.stringify(v));}catch(e){return null;}},get:function(k,cb){if(!cb)return this._ls(k);var self=this;var local=this._ls(k);fetch(this._base+"?key="+encodeURIComponent(k)).then(function(r){return r.json();}).then(function(d){var val=(d.value!==undefined&&d.value!==null)?d.value:local;self._ls(k,val);if(cb)cb(val);}).catch(function(){if(cb)cb(local);});},set:function(k,v,cb){this._ls(k,v);fetch(this._base,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:k,value:v})}).then(function(){if(cb)cb(true);}).catch(function(){if(cb)cb(false);});}};
 
 const TEMPLATES=[
-  {id:'push',name:'PUSH',icon:'🔺',desc:'Chest · Shoulders · Triceps',exercises:['Bench Press','Incline Dumbbell Press','Overhead Press','Lateral Raises','Tricep Pushdown','Skull Crushers']},
-  {id:'pull',name:'PULL',icon:'🔻',desc:'Back · Biceps · Rear Delts',exercises:['Deadlift','Pull-Ups','Barbell Row','Seated Cable Row','Face Pulls','Barbell Curl']},
-  {id:'legs',name:'LEGS',icon:'⚡',desc:'Quads · Hamstrings · Glutes · Calves',exercises:['Squat','Romanian Deadlift','Leg Press','Leg Curl','Walking Lunges','Calf Raises']},
-  {id:'upper',name:'UPPER',icon:'💪',desc:'Full upper body compound',exercises:['Bench Press','Pull-Ups','Overhead Press','Barbell Row','Dips','Barbell Curl']},
-  {id:'lower',name:'LOWER',icon:'🦵',desc:'Full lower body compound',exercises:['Squat','Romanian Deadlift','Leg Press','Leg Curl','Hip Thrust','Calf Raises']},
-  {id:'full',name:'FULL BODY',icon:'🔥',desc:'Total body strength session',exercises:['Squat','Bench Press','Deadlift','Pull-Ups','Overhead Press','Plank']},
-  {id:'hiit1',name:'HIIT BURN',icon:'🌶️',desc:'20 min · High intensity intervals',exercises:['Burpees','Jump Squats','Mountain Climbers','High Knees','Box Jumps','Battle Ropes','Kettlebell Swings','Sprint Intervals']},
-  {id:'hiit2',name:'TABATA',icon:'⏱️',desc:'20s on / 10s off · 8 rounds',exercises:['Jump Squats','Push-Ups','Burpees','Mountain Climbers','Jump Lunges','Plank Hold','High Knees','Squat Jumps']},
-  {id:'hiit3',name:'CIRCUIT',icon:'🔄',desc:'Full body circuit · Minimal rest',exercises:['Kettlebell Swings','Push-Ups','Box Jumps','Dumbbell Thrusters','Pull-Ups','Battle Ropes','Sled Push','Med Ball Slams']},
-  {id:'hiit4',name:'METCON',icon:'💥',desc:'Metabolic conditioning',exercises:['Deadlift','Box Jumps','Barbell Thruster','Rowing Machine','Toes to Bar','Double Unders','Wall Balls','Assault Bike']},
-  {id:'cardio',name:'CARDIO',icon:'🏃',desc:'Conditioning & cardio',exercises:['Treadmill Run','Rowing Machine','Bike','Jump Rope','Box Jumps','Burpees']},
-  {id:'custom',name:'CUSTOM',icon:'✏️',desc:'Build your own session',exercises:[]},
+  {id:'push',name:'PUSH',icon:'🔺',desc:'Chest · Shoulders · Triceps',type:'strength',exercises:['Bench Press','Incline Dumbbell Press','Overhead Press','Lateral Raises','Tricep Pushdown','Skull Crushers']},
+  {id:'pull',name:'PULL',icon:'🔻',desc:'Back · Biceps · Rear Delts',type:'strength',exercises:['Deadlift','Pull-Ups','Barbell Row','Seated Cable Row','Face Pulls','Barbell Curl']},
+  {id:'legs',name:'LEGS',icon:'⚡',desc:'Quads · Hamstrings · Glutes · Calves',type:'strength',exercises:['Squat','Romanian Deadlift','Leg Press','Leg Curl','Walking Lunges','Calf Raises']},
+  {id:'upper',name:'UPPER',icon:'💪',desc:'Full upper body compound',type:'strength',exercises:['Bench Press','Pull-Ups','Overhead Press','Barbell Row','Dips','Barbell Curl']},
+  {id:'lower',name:'LOWER',icon:'🦵',desc:'Full lower body compound',type:'strength',exercises:['Squat','Romanian Deadlift','Leg Press','Leg Curl','Hip Thrust','Calf Raises']},
+  {id:'full',name:'FULL BODY',icon:'🔥',desc:'Total body strength session',type:'strength',exercises:['Squat','Bench Press','Deadlift','Pull-Ups','Overhead Press','Plank']},
+  {id:'hiit1',name:'HIIT BURN',icon:'🌶️',desc:'40s work · 20s rest · 3 rounds',type:'hiit',workOn:40,workRest:20,rounds:3,exercises:['Burpees','Jump Squats','Mountain Climbers','High Knees','Box Jumps','Battle Ropes','Kettlebell Swings','Sprint Intervals']},
+  {id:'tabata',name:'TABATA',icon:'⏱️',desc:'20s work · 10s rest · 8 rounds',type:'hiit',workOn:20,workRest:10,rounds:8,exercises:['Jump Squats','Push-Ups','Burpees','Mountain Climbers','Jump Lunges','Plank Hold','High Knees','Squat Jumps']},
+  {id:'hiit3',name:'CIRCUIT',icon:'🔄',desc:'45s work · 15s rest · 3 rounds',type:'hiit',workOn:45,workRest:15,rounds:3,exercises:['Kettlebell Swings','Push-Ups','Box Jumps','Dumbbell Thrusters','Pull-Ups','Battle Ropes','Sled Push','Med Ball Slams']},
+  {id:'metcon',name:'METCON',icon:'💥',desc:'30s work · 30s rest · 4 rounds',type:'hiit',workOn:30,workRest:30,rounds:4,exercises:['Deadlift','Box Jumps','Barbell Thruster','Rowing Machine','Toes to Bar','Double Unders','Wall Balls','Assault Bike']},
+  {id:'cardio',name:'CARDIO',icon:'🏃',desc:'Conditioning & cardio',type:'strength',exercises:['Treadmill Run','Rowing Machine','Bike','Jump Rope','Box Jumps','Burpees']},
+  {id:'custom',name:'CUSTOM',icon:'✏️',desc:'Build your own session',type:'strength',exercises:[]},
 ];
 
 const EXERCISE_DB=[
@@ -222,14 +266,20 @@ function renderTemplates(){
   const grid=document.getElementById('templateGrid');
   grid.innerHTML='';
   TEMPLATES.forEach(t=>{
-    const btn=document.createElement('div');btn.className='tpl-btn';
-    btn.innerHTML=`<div class="tpl-icon">${t.icon}</div><div class="tpl-name">${t.name}</div><div class="tpl-desc">${t.desc}</div>`;
+    const isHiit=t.type==='hiit';
+    const btn=document.createElement('div');
+    btn.className='tpl-btn'+(isHiit?' hiit':'');
+    btn.innerHTML=`<div class="tpl-icon">${t.icon}</div><div class="tpl-name">${t.name}</div><div class="tpl-desc">${t.desc}</div><div class="tpl-badge ${isHiit?'hiit-badge':'strength-badge'}">${isHiit?'TIMED':'STRENGTH'}</div>`;
     btn.addEventListener('click',()=>startSession(t));
     grid.appendChild(btn);
   });
 }
 
 function startSession(template){
+  if(template.type==='hiit'&&template.exercises.length>0){
+    startHIITTimer(template);
+    return;
+  }
   activeSession={
     id:Date.now(),
     name:template.name,
@@ -350,6 +400,111 @@ function finishSession(){
   stopRestTimer();
   alert(`Workout saved! ${duration} min session logged. 💪`);
 }
+
+// ── HIIT Timer ──
+let hiitInterval=null;
+let hiitState={};
+
+function startHIITTimer(template){
+  hiitState={
+    template,
+    exercises:template.exercises,
+    workOn:template.workOn||40,
+    workRest:template.workRest||20,
+    totalRounds:template.rounds||3,
+    currentRound:1,
+    currentExIdx:0,
+    phase:'getready', // getready | work | rest | done
+    timeLeft:5,
+    totalTime:5
+  };
+  document.getElementById('hiitOverlay').classList.add('active');
+  runHIITTick();
+  hiitInterval=setInterval(runHIITTick,1000);
+}
+
+function runHIITTick(){
+  const s=hiitState;
+  const overlay=document.getElementById('hiitOverlay');
+  const phaseEl=document.getElementById('hiitPhase');
+  const bigTime=document.getElementById('hiitBigTime');
+  const exName=document.getElementById('hiitExName');
+  const nextEl=document.getElementById('hiitNext');
+  const roundInfo=document.getElementById('hiitRoundInfo');
+  const progressFill=document.getElementById('hiitProgressFill');
+
+  if(s.timeLeft<=0){
+    // Advance phase
+    if(s.phase==='getready'){
+      s.phase='work';s.timeLeft=s.workOn;s.totalTime=s.workOn;
+    } else if(s.phase==='work'){
+      // Move to rest or next exercise
+      s.phase='rest';s.timeLeft=s.workRest;s.totalTime=s.workRest;
+    } else if(s.phase==='rest'){
+      s.currentExIdx++;
+      if(s.currentExIdx>=s.exercises.length){
+        s.currentExIdx=0;s.currentRound++;
+      }
+      if(s.currentRound>s.totalRounds){
+        stopHIITTimer(true);return;
+      }
+      s.phase='work';s.timeLeft=s.workOn;s.totalTime=s.workOn;
+    }
+  }
+
+  // Update UI
+  const ex=s.exercises[s.currentExIdx];
+  const nextExIdx=s.currentExIdx+1<s.exercises.length?s.currentExIdx+1:0;
+  const nextEx=s.exercises[nextExIdx];
+
+  if(s.phase==='getready'){
+    phaseEl.className='hiit-phase get-ready';phaseEl.textContent='GET READY';
+    bigTime.className='hiit-big-time get-ready';
+    progressFill.style.background='var(--yellow)';
+    exName.textContent=ex;
+    nextEl.textContent='Starting in...';
+  } else if(s.phase==='work'){
+    phaseEl.className='hiit-phase work';phaseEl.textContent='WORK';
+    bigTime.className='hiit-big-time work';
+    progressFill.style.background='var(--red)';
+    exName.textContent=ex;
+    nextEl.textContent='Next: REST '+s.workRest+'s';
+  } else if(s.phase==='rest'){
+    phaseEl.className='hiit-phase rest';phaseEl.textContent='REST';
+    bigTime.className='hiit-big-time rest';
+    progressFill.style.background='var(--green)';
+    exName.textContent='REST';
+    nextEl.textContent='Next: '+nextEx;
+  }
+
+  bigTime.textContent=s.timeLeft;
+  roundInfo.textContent='Round '+s.currentRound+' of '+s.totalRounds+' · Exercise '+(s.currentExIdx+1)+' of '+s.exercises.length;
+  progressFill.style.width=(s.timeLeft/s.totalTime*100)+'%';
+  s.timeLeft--;
+}
+
+function stopHIITTimer(completed){
+  if(hiitInterval){clearInterval(hiitInterval);hiitInterval=null;}
+  document.getElementById('hiitOverlay').classList.remove('active');
+  if(completed){
+    // Log as workout
+    const t=hiitState.template;
+    const session={
+      id:Date.now(),name:t.name,templateId:t.id,
+      startTime:new Date(Date.now()-(t.exercises.length*t.totalRounds*(t.workOn+t.workRest)*1000)).toISOString(),
+      endTime:new Date().toISOString(),
+      duration:Math.round(t.exercises.length*t.totalRounds*(t.workOn+t.workRest)/60),
+      exercises:t.exercises.map(name=>({name,category:'HIIT',sets:[{reps:t.totalRounds,weight:0,done:true}]}))
+    };
+    const workouts=getWorkouts();workouts.push(session);saveWorkouts(workouts);
+    renderChart();
+    alert(`HIIT Complete! 🔥 ${session.duration} min session logged.`);
+  }
+  hiitState={};
+}
+
+document.getElementById('hiitStop').addEventListener('click',()=>stopHIITTimer(false));
+document.getElementById('hiitSkip').addEventListener('click',()=>{hiitState.timeLeft=0;});
 
 // ── Rest Timer ──
 function startRestTimer(seconds){
