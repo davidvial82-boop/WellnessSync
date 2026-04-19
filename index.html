@@ -72,6 +72,9 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .if-settings label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
 .if-settings input{width:100%;background:var(--s3);border:1px solid var(--border2);border-radius:8px;padding:9px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:14px;outline:none}
 .if-settings input:focus{border-color:var(--accent)}
+.if-time-select{background:var(--s3);border:1px solid var(--border2);border-radius:8px;padding:9px 8px;color:var(--text);font-family:'DM Mono',monospace;font-size:14px;outline:none;width:calc(50% - 4px);margin-right:4px;cursor:pointer}
+.if-time-select:last-child{margin-right:0}
+.if-time-select:focus{border-color:var(--accent)}
 .if-save-btn{width:100%;background:var(--accent);color:var(--bg);border:none;border-radius:10px;padding:10px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer}
 .if-gear{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:6px;transition:color 0.2s}
 .if-gear:hover{color:var(--accent)}
@@ -198,12 +201,14 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
     <div class="if-settings" id="ifSettings">
       <div class="if-settings-grid">
         <div>
-          <label>Eating Window Opens</label>
-          <input type="time" id="ifStart" value="12:00">
+          <label>Window Opens</label>
+          <select class="if-time-select" id="ifStartH"></select>
+          <select class="if-time-select" id="ifStartM"></select>
         </div>
         <div>
-          <label>Eating Window Closes</label>
-          <input type="time" id="ifEnd" value="20:00">
+          <label>Window Closes</label>
+          <select class="if-time-select" id="ifEndH"></select>
+          <select class="if-time-select" id="ifEndM"></select>
         </div>
       </div>
       <button class="if-save-btn" id="ifSaveBtn">SAVE WINDOW</button>
@@ -506,8 +511,7 @@ init();
   function updateIF(){
     var s=getIFSettings();
     toggle.checked=s.enabled;
-    document.getElementById('ifStart').value=s.start||'12:00';
-    document.getElementById('ifEnd').value=s.end||'20:00';
+    setDropdowns(s.start||'12:00', s.end||'20:00');
     label.textContent=s.enabled?'ON':'OFF';
 
     if(!s.enabled){
@@ -587,9 +591,8 @@ init();
   });
 
   saveBtn.addEventListener('click',function(){
-    var startVal=document.getElementById('ifStart').value;
-    var endVal=document.getElementById('ifEnd').value;
-    if(!startVal||!endVal){alert('Please set both start and end times.');return;}
+    var startVal=getDropdownTime('ifStartH','ifStartM');
+    var endVal=getDropdownTime('ifEndH','ifEndM');
     var s=getIFSettings();
     s.start=startVal;
     s.end=endVal;
@@ -600,6 +603,47 @@ init();
     setTimeout(function(){saveBtn.textContent='SAVE WINDOW';},2000);
   });
 
+  // Build hour/minute dropdowns
+  function buildDropdowns(){
+    var hours=['ifStartH','ifEndH'];
+    var mins=['ifStartM','ifEndM'];
+    hours.forEach(function(id){
+      var sel=document.getElementById(id);
+      for(var h=0;h<24;h++){
+        var opt=document.createElement('option');
+        opt.value=h<10?'0'+h:String(h);
+        var ampm=h>=12?'PM':'AM';var h12=h%12||12;
+        opt.textContent=h12+':00 '+ampm;
+        sel.appendChild(opt);
+      }
+    });
+    mins.forEach(function(id){
+      var sel=document.getElementById(id);
+      [0,15,30,45].forEach(function(m){
+        var opt=document.createElement('option');
+        opt.value=m<10?'0'+m:String(m);
+        opt.textContent=':'+( m<10?'0'+m:String(m));
+        sel.appendChild(opt);
+      });
+    });
+  }
+
+  function setDropdowns(start,end){
+    var sp=start.split(':');var ep=end.split(':');
+    // Find closest 15-min interval for minutes
+    var sm=Math.round(parseInt(sp[1])/15)*15;if(sm===60)sm=45;
+    var em=Math.round(parseInt(ep[1])/15)*15;if(em===60)em=45;
+    document.getElementById('ifStartH').value=sp[0];
+    document.getElementById('ifStartM').value=sm<10?'0'+sm:String(sm);
+    document.getElementById('ifEndH').value=ep[0];
+    document.getElementById('ifEndM').value=em<10?'0'+em:String(em);
+  }
+
+  function getDropdownTime(hId,mId){
+    return document.getElementById(hId).value+':'+document.getElementById(mId).value;
+  }
+
+  buildDropdowns();
   // Load from localStorage first for instant display
   loadIFSettings();
   updateIF();
