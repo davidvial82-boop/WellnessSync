@@ -189,19 +189,24 @@ const TEMPLATES=[
   {id:'upper',name:'UPPER',icon:'💪',desc:'Full upper body compound',exercises:['Bench Press','Pull-Ups','Overhead Press','Barbell Row','Dips','Barbell Curl']},
   {id:'lower',name:'LOWER',icon:'🦵',desc:'Full lower body compound',exercises:['Squat','Romanian Deadlift','Leg Press','Leg Curl','Hip Thrust','Calf Raises']},
   {id:'full',name:'FULL BODY',icon:'🔥',desc:'Total body strength session',exercises:['Squat','Bench Press','Deadlift','Pull-Ups','Overhead Press','Plank']},
+  {id:'hiit1',name:'HIIT BURN',icon:'🌶️',desc:'20 min · High intensity intervals',exercises:['Burpees','Jump Squats','Mountain Climbers','High Knees','Box Jumps','Battle Ropes','Kettlebell Swings','Sprint Intervals']},
+  {id:'hiit2',name:'TABATA',icon:'⏱️',desc:'20s on / 10s off · 8 rounds',exercises:['Jump Squats','Push-Ups','Burpees','Mountain Climbers','Jump Lunges','Plank Hold','High Knees','Squat Jumps']},
+  {id:'hiit3',name:'CIRCUIT',icon:'🔄',desc:'Full body circuit · Minimal rest',exercises:['Kettlebell Swings','Push-Ups','Box Jumps','Dumbbell Thrusters','Pull-Ups','Battle Ropes','Sled Push','Med Ball Slams']},
+  {id:'hiit4',name:'METCON',icon:'💥',desc:'Metabolic conditioning',exercises:['Deadlift','Box Jumps','Barbell Thruster','Rowing Machine','Toes to Bar','Double Unders','Wall Balls','Assault Bike']},
   {id:'cardio',name:'CARDIO',icon:'🏃',desc:'Conditioning & cardio',exercises:['Treadmill Run','Rowing Machine','Bike','Jump Rope','Box Jumps','Burpees']},
   {id:'custom',name:'CUSTOM',icon:'✏️',desc:'Build your own session',exercises:[]},
 ];
 
 const EXERCISE_DB=[
-  {name:'Bench Press',cat:'Chest'},{name:'Incline Bench Press',cat:'Chest'},{name:'Decline Bench Press',cat:'Chest'},{name:'Dumbbell Fly',cat:'Chest'},{name:'Cable Crossover',cat:'Chest'},
-  {name:'Squat',cat:'Legs'},{name:'Romanian Deadlift',cat:'Legs'},{name:'Leg Press',cat:'Legs'},{name:'Leg Curl',cat:'Legs'},{name:'Leg Extension',cat:'Legs'},{name:'Walking Lunges',cat:'Legs'},{name:'Hip Thrust',cat:'Legs'},{name:'Calf Raises',cat:'Legs'},
+  {name:'Bench Press',cat:'Chest'},{name:'Incline Bench Press',cat:'Chest'},{name:'Decline Bench Press',cat:'Chest'},{name:'Dumbbell Fly',cat:'Chest'},{name:'Cable Crossover',cat:'Chest'},{name:'Incline Dumbbell Press',cat:'Chest'},{name:'Push-Ups',cat:'Chest'},
+  {name:'Squat',cat:'Legs'},{name:'Romanian Deadlift',cat:'Legs'},{name:'Leg Press',cat:'Legs'},{name:'Leg Curl',cat:'Legs'},{name:'Leg Extension',cat:'Legs'},{name:'Walking Lunges',cat:'Legs'},{name:'Hip Thrust',cat:'Legs'},{name:'Calf Raises',cat:'Legs'},{name:'Jump Squats',cat:'Legs'},{name:'Jump Lunges',cat:'Legs'},{name:'Squat Jumps',cat:'Legs'},
   {name:'Deadlift',cat:'Back'},{name:'Pull-Ups',cat:'Back'},{name:'Chin-Ups',cat:'Back'},{name:'Barbell Row',cat:'Back'},{name:'Seated Cable Row',cat:'Back'},{name:'Lat Pulldown',cat:'Back'},{name:'Single Arm Row',cat:'Back'},
   {name:'Overhead Press',cat:'Shoulders'},{name:'Lateral Raises',cat:'Shoulders'},{name:'Front Raises',cat:'Shoulders'},{name:'Face Pulls',cat:'Shoulders'},{name:'Arnold Press',cat:'Shoulders'},
   {name:'Tricep Pushdown',cat:'Triceps'},{name:'Skull Crushers',cat:'Triceps'},{name:'Dips',cat:'Triceps'},{name:'Overhead Tricep Extension',cat:'Triceps'},
   {name:'Barbell Curl',cat:'Biceps'},{name:'Dumbbell Curl',cat:'Biceps'},{name:'Hammer Curl',cat:'Biceps'},{name:'Preacher Curl',cat:'Biceps'},
-  {name:'Plank',cat:'Core'},{name:'Ab Rollout',cat:'Core'},{name:'Cable Crunch',cat:'Core'},{name:'Hanging Leg Raise',cat:'Core'},
-  {name:'Treadmill Run',cat:'Cardio'},{name:'Rowing Machine',cat:'Cardio'},{name:'Bike',cat:'Cardio'},{name:'Jump Rope',cat:'Cardio'},{name:'Box Jumps',cat:'Cardio'},{name:'Burpees',cat:'Cardio'},
+  {name:'Plank',cat:'Core'},{name:'Ab Rollout',cat:'Core'},{name:'Cable Crunch',cat:'Core'},{name:'Hanging Leg Raise',cat:'Core'},{name:'Toes to Bar',cat:'Core'},{name:'Plank Hold',cat:'Core'},{name:'Med Ball Slams',cat:'Core'},
+  {name:'Treadmill Run',cat:'Cardio'},{name:'Rowing Machine',cat:'Cardio'},{name:'Bike',cat:'Cardio'},{name:'Jump Rope',cat:'Cardio'},{name:'Box Jumps',cat:'Cardio'},{name:'Burpees',cat:'Cardio'},{name:'Assault Bike',cat:'Cardio'},{name:'Double Unders',cat:'Cardio'},
+  {name:'Kettlebell Swings',cat:'HIIT'},{name:'Battle Ropes',cat:'HIIT'},{name:'Mountain Climbers',cat:'HIIT'},{name:'High Knees',cat:'HIIT'},{name:'Sprint Intervals',cat:'HIIT'},{name:'Dumbbell Thrusters',cat:'HIIT'},{name:'Barbell Thruster',cat:'HIIT'},{name:'Sled Push',cat:'HIIT'},{name:'Wall Balls',cat:'HIIT'},{name:'Sandbag Carries',cat:'HIIT'},{name:'Tire Flips',cat:'HIIT'},{name:'Sledgehammer Slams',cat:'HIIT'},
 ];
 
 let offset=0,activeSession=null,restInterval=null,restTotal=0,restRemaining=0;
