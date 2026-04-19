@@ -126,7 +126,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .tpl-btn.hiit .tpl-name{color:var(--red)}
 .tpl-badge{display:inline-block;font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:4px;margin-top:4px;font-family:'DM Mono',monospace}
 .tpl-badge.hiit-badge{background:rgba(255,61,113,0.15);color:var(--red)}
-.tpl-badge.strength-badge{background:rgba(179,136,255,0.15);color:var(--purple)}
+.tpl-badge.cardio-badge{background:rgba(255,214,0,0.15);color:var(--yellow)}
 
 /* FINISH BTN */
 .finish-btn{width:100%;background:linear-gradient(135deg,var(--purple),var(--accent));color:var(--bg);border:none;border-radius:14px;padding:16px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;transition:opacity 0.2s;margin-bottom:14px}
@@ -237,7 +237,7 @@ const TEMPLATES=[
   {id:'tabata',name:'TABATA',icon:'⏱️',desc:'20s work · 10s rest · 8 rounds',type:'hiit',workOn:20,workRest:10,rounds:8,exercises:['Jump Squats','Push-Ups','Burpees','Mountain Climbers','Jump Lunges','Plank Hold','High Knees','Squat Jumps']},
   {id:'hiit3',name:'CIRCUIT',icon:'🔄',desc:'45s work · 15s rest · 3 rounds',type:'hiit',workOn:45,workRest:15,rounds:3,exercises:['Kettlebell Swings','Push-Ups','Box Jumps','Dumbbell Thrusters','Pull-Ups','Battle Ropes','Sled Push','Med Ball Slams']},
   {id:'metcon',name:'METCON',icon:'💥',desc:'30s work · 30s rest · 4 rounds',type:'hiit',workOn:30,workRest:30,rounds:4,exercises:['Deadlift','Box Jumps','Barbell Thruster','Rowing Machine','Toes to Bar','Double Unders','Wall Balls','Assault Bike']},
-  {id:'cardio',name:'CARDIO',icon:'🏃',desc:'Conditioning & cardio',type:'strength',exercises:['Treadmill Run','Rowing Machine','Bike','Jump Rope','Box Jumps','Burpees']},
+  {id:'cardio',name:'CARDIO',icon:'🏃',desc:'Conditioning & cardio',type:'cardio',exercises:['Treadmill Run','Rowing Machine','Bike','Jump Rope','Box Jumps','Burpees']},
   {id:'custom',name:'CUSTOM',icon:'✏️',desc:'Build your own session',type:'strength',exercises:[]},
 ];
 
@@ -267,9 +267,12 @@ function renderTemplates(){
   grid.innerHTML='';
   TEMPLATES.forEach(t=>{
     const isHiit=t.type==='hiit';
+    const isCardio=t.type==='cardio';
+    const badgeClass=isHiit?'hiit-badge':isCardio?'cardio-badge':'strength-badge';
+    const badgeLabel=isHiit?'TIMED':isCardio?'CARDIO':'STRENGTH';
     const btn=document.createElement('div');
     btn.className='tpl-btn'+(isHiit?' hiit':'');
-    btn.innerHTML=`<div class="tpl-icon">${t.icon}</div><div class="tpl-name">${t.name}</div><div class="tpl-desc">${t.desc}</div><div class="tpl-badge ${isHiit?'hiit-badge':'strength-badge'}">${isHiit?'TIMED':'STRENGTH'}</div>`;
+    btn.innerHTML=`<div class="tpl-icon">${t.icon}</div><div class="tpl-name">${t.name}</div><div class="tpl-desc">${t.desc}</div><div class="tpl-badge ${badgeClass}">${badgeLabel}</div>`;
     btn.addEventListener('click',()=>startSession(t));
     grid.appendChild(btn);
   });
