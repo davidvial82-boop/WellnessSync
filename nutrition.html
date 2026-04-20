@@ -1,3 +1,9 @@
+<!-- PATCHED VERSION - barcode scanning added.
+     Only three regions changed vs the original:
+     (A) new CSS for .scan-btn and .scanner-modal
+     (B) new HTML: scan button + scanner modal
+     (C) new JS: scanner open/close, OFF lookup, saved-food barcode index
+     Everything else is unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +11,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dave - Nutrition</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- (A) html5-qrcode for barcode scanning -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 :root{--bg:#07090d;--s1:#0d1117;--s2:#131920;--s3:#1a2233;--border:#1e2a3a;--border2:#253248;--accent:#00e5ff;--adim:rgba(0,229,255,0.1);--green:#00ff88;--orange:#ff6b35;--yellow:#ffd600;--red:#ff3d71;--rdim:rgba(255,61,113,0.1);--purple:#b388ff;--text:#e2e8f5;--muted:#4a5c78;--muted2:#2e3d54}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -44,9 +52,14 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .log-card{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px}
 .card-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .card-title::after{content:'';flex:1;height:1px;background:var(--border)}
-.food-search{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:12px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;margin-bottom:6px}
+.search-row{display:flex;gap:8px;margin-bottom:6px}
+.food-search{flex:1;background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:12px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s}
 .food-search:focus{border-color:var(--accent)}
 .food-search::placeholder{color:var(--muted)}
+/* (A) scan button */
+.scan-btn{flex-shrink:0;width:48px;background:var(--s2);border:1px solid var(--border2);border-radius:10px;color:var(--accent);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;padding:0}
+.scan-btn:hover{background:var(--adim);border-color:var(--accent)}
+.scan-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .search-status{font-size:11px;color:var(--accent);padding:2px;min-height:18px;margin-bottom:6px}
 .results-list{display:flex;flex-direction:column;gap:5px;margin-bottom:8px;max-height:280px;overflow-y:auto}
 .results-list::-webkit-scrollbar{width:2px} .results-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
@@ -111,695 +124,839 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .entry-del{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:13px;padding:4px;border-radius:6px;transition:all 0.2s}
 .entry-del:hover{color:var(--red);background:var(--rdim)}
 .empty-state{text-align:center;padding:28px;color:var(--muted);font-size:13px;line-height:2}
+/* (A) scanner modal */
+.scanner-modal{position:fixed;inset:0;z-index:200;background:rgba(7,9,13,0.97);display:none;flex-direction:column;padding:max(20px,env(safe-area-inset-top)) 16px max(20px,env(safe-area-inset-bottom))}
+.scanner-modal.show{display:flex}
+.scanner-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.scanner-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--accent)}
+.scanner-close{background:var(--s1);border:1px solid var(--border2);color:var(--text);border-radius:10px;padding:8px 14px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1.5px;cursor:pointer}
+.scanner-close:hover{border-color:var(--red);color:var(--red)}
+#qrReader{width:100%;max-width:480px;margin:0 auto;background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+#qrReader video{border-radius:14px}
+#qrReader__dashboard_section_csr button{background:var(--s2)!important;border:1px solid var(--border2)!important;color:var(--accent)!important;border-radius:8px!important;padding:8px 12px!important;font-family:'Syne',sans-serif!important;font-size:12px!important;margin:4px!important;cursor:pointer!important}
+#qrReader__dashboard_section_swaplink{color:var(--accent)!important;font-family:'Syne',sans-serif!important;font-size:12px!important}
+.scanner-status{text-align:center;color:var(--muted);font-size:13px;margin-top:16px;min-height:20px;padding:0 20px}
+.scanner-status.err{color:var(--red)}
+.scanner-status.ok{color:var(--green)}
+.scanner-hint{text-align:center;color:var(--muted2);font-size:11px;margin-top:10px;letter-spacing:1px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="page-header">
-    <h1>NUTRITION</h1>
-    <div class="date-nav">
-      <button id="prevDay">&#9666;</button>
-      <div class="dlabel" id="dateLabel">Today</div>
-      <button id="nextDay">&#9656;</button>
-    </div>
-  </div>
-  <div class="snap">
-    <div class="snap-top">
-      <div><div class="snap-cal" id="snapCal">0</div><div style="font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase">CALORIES</div></div>
-      <div class="snap-right"><div class="snap-rem" id="snapRem">2400</div><div class="snap-remlabel" id="snapRemLabel">REMAINING</div></div>
-    </div>
-    <div class="bar-track"><div class="bar-fill" id="calBarFill" style="width:0%"></div></div>
-    <div class="macro-row">
-      <div class="mpill"><div class="mp-top"><span class="mpl">Protein</span><span class="mpv p" id="mpP">0g</span></div><div class="mpbar"><div class="mpbf p" id="mpPb" style="width:0%"></div></div><div class="mpsub" id="mpPs">0/185g</div></div>
-      <div class="mpill"><div class="mp-top"><span class="mpl">Carbs</span><span class="mpv c" id="mpC">0g</span></div><div class="mpbar"><div class="mpbf c" id="mpCb" style="width:0%"></div></div><div class="mpsub" id="mpCs">0/220g</div></div>
-      <div class="mpill"><div class="mp-top"><span class="mpl">Fat</span><span class="mpv f" id="mpF">0g</span></div><div class="mpbar"><div class="mpbf f" id="mpFb" style="width:0%"></div></div><div class="mpsub" id="mpFs">0/65g</div></div>
-    </div>
-  </div>
-  <div class="log-card">
-    <div class="card-title">Search Food Database</div>
-    <input class="food-search" id="foodSearch" type="text" placeholder="Search 700+ foods e.g. salmon, oats, greek yoghurt...">
-    <div class="search-status" id="searchStatus">Type to search — includes your saved foods</div>
-    <div class="results-list" id="resultsList"></div>
-    <div class="confirm-card" id="confirmCard">
-      <div class="confirm-name" id="confirmName"></div>
-      <div class="confirm-cat" id="confirmCat"></div>
-      <div class="confirm-macros">
-        <div class="cm"><div class="cmv cal" id="cmCal">0</div><div class="cml">Cal</div></div>
-        <div class="cm"><div class="cmv p" id="cmP">0</div><div class="cml">Prot</div></div>
-        <div class="cm"><div class="cmv c" id="cmC">0</div><div class="cml">Carbs</div></div>
-        <div class="cm"><div class="cmv f" id="cmF">0</div><div class="cml">Fat</div></div>
-      </div>
-      <div class="serving-row">
-        <span>Serving:</span>
-        <input class="serving-inp" id="servingAmt" type="number" value="100" min="1">
-        <span>g</span>
-      </div>
-      <select class="meal-select" id="mealSelect">
-        <option value="Breakfast">Breakfast - 7:00 AM</option>
-        <option value="Mid-Morning">Mid-Morning - 10:00 AM</option>
-        <option value="Lunch">Lunch - 1:00 PM</option>
-        <option value="Pre-Workout">Pre-Workout - 4:30 PM</option>
-        <option value="Dinner">Dinner - 7:00 PM</option>
-        <option value="Evening">Evening - 9:00 PM</option>
-        <option value="Other">Other</option>
-      </select>
-      <button class="add-btn" id="addEntryBtn">ADD TO LOG</button>
-    </div>
-    <div class="log-status" id="logStatus"></div>
-  </div>
-  <div class="custom-add-card">
-    <div class="card-title">Add Custom Food</div>
-    <div class="custom-grid">
-      <input class="custom-input custom-name" id="customName" type="text" placeholder="Food name e.g. Banana Bread slice">
-      <input class="custom-input" id="customCal" type="number" placeholder="Calories">
-      <input class="custom-input" id="customP" type="number" placeholder="Protein (g)">
-      <input class="custom-input" id="customC" type="number" placeholder="Carbs (g)">
-      <input class="custom-input" id="customF" type="number" placeholder="Fat (g)">
-      <select class="custom-input meal-select" id="customMeal">
-        <option value="Breakfast">Breakfast</option>
-        <option value="Mid-Morning">Mid-Morning</option>
-        <option value="Lunch">Lunch</option>
-        <option value="Pre-Workout">Pre-Workout</option>
-        <option value="Dinner">Dinner</option>
-        <option value="Evening">Evening</option>
-        <option value="Other">Other</option>
-      </select>
-    </div>
-    <div class="custom-row">
-      <button class="custom-btn" id="customAddBtn">+ LOG NOW</button>
-      <button class="custom-btn save" id="customSaveBtn">&#9733; SAVE TO MY FOODS</button>
-    </div>
-  </div>
-  <div class="meal-bd">
-    <div class="card-title">Meal Breakdown</div>
-    <div class="meal-slots" id="mealSlots"></div>
-  </div>
-  <div class="entries-card">
-    <div class="card-title">Today's Log</div>
-    <div class="entries-list" id="entriesList"></div>
-  </div>
+<div class="page-header">
+<h1>NUTRITION</h1>
+<div class="date-nav">
+<button id="prevDay">&#9666;</button>
+<div class="dlabel" id="dateLabel">Today</div>
+<button id="nextDay">&#9656;</button>
+</div>
+</div>
+<div class="snap">
+<div class="snap-top">
+<div><div class="snap-cal" id="snapCal">0</div><div style="font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase">CALORIES</div></div>
+<div class="snap-right"><div class="snap-rem" id="snapRem">2400</div><div class="snap-remlabel" id="snapRemLabel">REMAINING</div></div>
+</div>
+<div class="bar-track"><div class="bar-fill" id="calBarFill" style="width:0%"></div></div>
+<div class="macro-row">
+<div class="mpill"><div class="mp-top"><span class="mpl">Protein</span><span class="mpv p" id="mpP">0g</span></div><div class="mpbar"><div class="mpbf p" id="mpPb" style="width:0%"></div></div><div class="mpsub" id="mpPs">0/185g</div></div>
+<div class="mpill"><div class="mp-top"><span class="mpl">Carbs</span><span class="mpv c" id="mpC">0g</span></div><div class="mpbar"><div class="mpbf c" id="mpCb" style="width:0%"></div></div><div class="mpsub" id="mpCs">0/220g</div></div>
+<div class="mpill"><div class="mp-top"><span class="mpl">Fat</span><span class="mpv f" id="mpF">0g</span></div><div class="mpbar"><div class="mpbf f" id="mpFb" style="width:0%"></div></div><div class="mpsub" id="mpFs">0/65g</div></div>
+</div>
+</div>
+<div class="log-card">
+<div class="card-title">Search Food Database</div>
+<!-- (B) search row now has a scan button alongside the input -->
+<div class="search-row">
+<input class="food-search" id="foodSearch" type="text" placeholder="Search 700+ foods e.g. salmon, oats, greek yoghurt...">
+<button class="scan-btn" id="scanBtn" title="Scan barcode">
+<svg viewBox="0 0 24 24"><path d="M4 7V5a1 1 0 0 1 1-1h2M20 7V5a1 1 0 0 0-1-1h-2M4 17v2a1 1 0 0 0 1 1h2M20 17v2a1 1 0 0 1-1 1h-2"/><path d="M7 8v8M10 8v8M13 8v8M16 8v8"/></svg>
+</button>
+</div>
+<div class="search-status" id="searchStatus">Type to search — includes your saved foods</div>
+<div class="results-list" id="resultsList"></div>
+<div class="confirm-card" id="confirmCard">
+<div class="confirm-name" id="confirmName"></div>
+<div class="confirm-cat" id="confirmCat"></div>
+<div class="confirm-macros">
+<div class="cm"><div class="cmv cal" id="cmCal">0</div><div class="cml">Cal</div></div>
+<div class="cm"><div class="cmv p" id="cmP">0</div><div class="cml">Prot</div></div>
+<div class="cm"><div class="cmv c" id="cmC">0</div><div class="cml">Carbs</div></div>
+<div class="cm"><div class="cmv f" id="cmF">0</div><div class="cml">Fat</div></div>
+</div>
+<div class="serving-row">
+<span>Serving:</span>
+<input class="serving-inp" id="servingAmt" type="number" value="100" min="1">
+<span>g</span>
+</div>
+<select class="meal-select" id="mealSelect">
+<option value="Breakfast">Breakfast - 7:00 AM</option>
+<option value="Mid-Morning">Mid-Morning - 10:00 AM</option>
+<option value="Lunch">Lunch - 1:00 PM</option>
+<option value="Pre-Workout">Pre-Workout - 4:30 PM</option>
+<option value="Dinner">Dinner - 7:00 PM</option>
+<option value="Evening">Evening - 9:00 PM</option>
+<option value="Other">Other</option>
+</select>
+<button class="add-btn" id="addEntryBtn">ADD TO LOG</button>
+</div>
+<div class="log-status" id="logStatus"></div>
+</div>
+<div class="custom-add-card">
+<div class="card-title">Add Custom Food</div>
+<div class="custom-grid">
+<input class="custom-input custom-name" id="customName" type="text" placeholder="Food name e.g. Banana Bread slice">
+<input class="custom-input" id="customCal" type="number" placeholder="Calories">
+<input class="custom-input" id="customP" type="number" placeholder="Protein (g)">
+<input class="custom-input" id="customC" type="number" placeholder="Carbs (g)">
+<input class="custom-input" id="customF" type="number" placeholder="Fat (g)">
+<select class="custom-input meal-select" id="customMeal">
+<option value="Breakfast">Breakfast</option>
+<option value="Mid-Morning">Mid-Morning</option>
+<option value="Lunch">Lunch</option>
+<option value="Pre-Workout">Pre-Workout</option>
+<option value="Dinner">Dinner</option>
+<option value="Evening">Evening</option>
+<option value="Other">Other</option>
+</select>
+</div>
+<div class="custom-row">
+<button class="custom-btn" id="customAddBtn">+ LOG NOW</button>
+<button class="custom-btn save" id="customSaveBtn">&#9733; SAVE TO MY FOODS</button>
+</div>
+</div>
+<div class="meal-bd">
+<div class="card-title">Meal Breakdown</div>
+<div class="meal-slots" id="mealSlots"></div>
+</div>
+<div class="entries-card">
+<div class="card-title">Today's Log</div>
+<div class="entries-list" id="entriesList"></div>
+</div>
+</div>
+<!-- (B) scanner modal -->
+<div class="scanner-modal" id="scannerModal">
+<div class="scanner-head">
+<div class="scanner-title">SCAN BARCODE</div>
+<button class="scanner-close" id="scannerClose">CLOSE</button>
+</div>
+<div id="qrReader"></div>
+<div class="scanner-status" id="scannerStatus">Point your camera at a barcode</div>
+<div class="scanner-hint">Works best with good lighting · EAN / UPC supported</div>
 </div>
 <nav class="nav">
-  <a class="nav-link" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Hub</a>
-  <a class="nav-link active" href="nutrition.html"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Nutrition</a>
-  <a class="nav-link" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Workout</a>
-  <a class="nav-link" href="weight.html"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Weight</a>
+<a class="nav-link" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Hub</a>
+<a class="nav-link active" href="nutrition.html"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Nutrition</a>
+<a class="nav-link" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Workout</a>
+<a class="nav-link" href="weight.html"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Weight</a>
 </nav>
 <script>
 var DB={_cache:{},_base:"/.netlify/functions/data",dayKey:function(off){off=off||0;var d=new Date();d.setDate(d.getDate()+off);return d.toISOString().split("T")[0];},_ls:function(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem("dw_"+k)||"null");localStorage.setItem("dw_"+k,JSON.stringify(v));}catch(e){return null;}},get:function(k,cb){if(!cb)return this._ls(k);var self=this;var local=this._ls(k);fetch(this._base+"?key="+encodeURIComponent(k)).then(function(r){return r.json();}).then(function(d){var val=(d.value!==undefined&&d.value!==null)?d.value:local;self._ls(k,val);if(cb)cb(val);}).catch(function(){if(cb)cb(local);});},set:function(k,v,cb){this._ls(k,v);fetch(this._base,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:k,value:v})}).then(function(){if(cb)cb(true);}).catch(function(){if(cb)cb(false);});}};
+
 var TARGETS={cal:2400,p:185,c:220,f:65};
 var MEAL_TARGETS={'Breakfast':480,'Mid-Morning':280,'Lunch':560,'Pre-Workout':320,'Dinner':580,'Evening':180,'Other':0};
 var MEAL_TIMES={'Breakfast':'7:00 AM','Mid-Morning':'10:00 AM','Lunch':'1:00 PM','Pre-Workout':'4:30 PM','Dinner':'7:00 PM','Evening':'9:00 PM','Other':'--'};
 var offset=0,selectedFood=null;
 var FOODS=[
-  {n:'Chicken Breast',cat:'Protein',cal:165,p:31,c:0,f:3.6},
-  {n:'Chicken Thigh',cat:'Protein',cal:209,p:26,c:0,f:11},
-  {n:'Chicken Mince',cat:'Protein',cal:170,p:20,c:0,f:10},
-  {n:'Chicken Drumstick',cat:'Protein',cal:172,p:28,c:0,f:5.7},
-  {n:'Chicken Wings',cat:'Protein',cal:203,p:30,c:0,f:8},
-  {n:'Turkey Mince',cat:'Protein',cal:149,p:21,c:0,f:7},
-  {n:'Turkey Breast',cat:'Protein',cal:135,p:30,c:0,f:1},
-  {n:'Beef Mince 5% Fat',cat:'Protein',cal:137,p:21,c:0,f:5},
-  {n:'Beef Mince 20% Fat',cat:'Protein',cal:254,p:17,c:0,f:20},
-  {n:'Beef Steak Sirloin',cat:'Protein',cal:207,p:26,c:0,f:11},
-  {n:'Beef Steak Rump',cat:'Protein',cal:188,p:28,c:0,f:8},
-  {n:'Beef Steak Eye Fillet',cat:'Protein',cal:196,p:29,c:0,f:8},
-  {n:'Beef Jerky',cat:'Protein',cal:290,p:33,c:11,f:12},
-  {n:'Pork Loin',cat:'Protein',cal:182,p:25,c:0,f:9},
-  {n:'Pork Mince',cat:'Protein',cal:263,p:18,c:0,f:21},
-  {n:'Bacon Rasher',cat:'Protein',cal:541,p:37,c:1,f:42},
-  {n:'Lamb Mince',cat:'Protein',cal:282,p:17,c:0,f:23},
-  {n:'Lamb Chop',cat:'Protein',cal:235,p:22,c:0,f:16},
-  {n:'Salmon Fillet',cat:'Protein',cal:208,p:20,c:0,f:13},
-  {n:'Barramundi',cat:'Protein',cal:109,p:22,c:0,f:2},
-  {n:'Tuna in Spring Water',cat:'Protein',cal:103,p:23,c:0,f:1},
-  {n:'Tuna in Oil',cat:'Protein',cal:189,p:25,c:0,f:10},
-  {n:'Prawns',cat:'Protein',cal:99,p:21,c:1,f:1},
-  {n:'Cod',cat:'Protein',cal:82,p:18,c:0,f:1},
-  {n:'Sardines in Oil',cat:'Protein',cal:208,p:24,c:0,f:12},
-  {n:'Whole Egg',cat:'Protein',cal:143,p:13,c:1,f:10},
-  {n:'Egg White',cat:'Protein',cal:52,p:11,c:1,f:0},
-  {n:'Scrambled Eggs 2',cat:'Protein',cal:211,p:14,c:2,f:16},
-  {n:'Greek Yoghurt Full Fat',cat:'Protein',cal:97,p:9,c:4,f:5},
-  {n:'Greek Yoghurt Low Fat',cat:'Protein',cal:59,p:10,c:4,f:0},
-  {n:'Cottage Cheese',cat:'Protein',cal:98,p:11,c:4,f:4},
-  {n:'Ricotta',cat:'Protein',cal:174,p:11,c:3,f:13},
-  {n:'Protein Powder Whey',cat:'Protein',cal:380,p:75,c:7,f:5},
-  {n:'Protein Shake made up',cat:'Protein',cal:150,p:25,c:7,f:3},
-  {n:'Brown Rice Cooked',cat:'Carbs',cal:112,p:2.6,c:23,f:0.9},
-  {n:'White Rice Cooked',cat:'Carbs',cal:130,p:2.7,c:28,f:0.3},
-  {n:'Jasmine Rice Cooked',cat:'Carbs',cal:130,p:2.4,c:28,f:0.4},
-  {n:'Basmati Rice Cooked',cat:'Carbs',cal:121,p:3.5,c:25,f:0.4},
-  {n:'Fried Rice',cat:'Carbs',cal:163,p:4,c:22,f:7},
-  {n:'Rolled Oats Dry',cat:'Carbs',cal:379,p:13,c:67,f:7},
-  {n:'Oats Cooked',cat:'Carbs',cal:71,p:2.5,c:12,f:1.5},
-  {n:'Muesli',cat:'Carbs',cal:363,p:10,c:62,f:8},
-  {n:'Weet-Bix 2 biscuits',cat:'Carbs',cal:138,p:4.5,c:25,f:1},
-  {n:'Wholegrain Bread slice',cat:'Carbs',cal:80,p:4,c:13,f:1},
-  {n:'White Bread slice',cat:'Carbs',cal:79,p:3,c:15,f:1},
-  {n:'Sourdough Bread slice',cat:'Carbs',cal:80,p:3,c:15,f:0.5},
-  {n:'Pasta Cooked',cat:'Carbs',cal:131,p:5,c:25,f:1},
-  {n:'Quinoa Cooked',cat:'Carbs',cal:120,p:4.4,c:21,f:1.9},
-  {n:'Rice Cakes Plain',cat:'Carbs',cal:387,p:7,c:81,f:3},
-  {n:'Corn Tortilla',cat:'Carbs',cal:218,p:5,c:46,f:2},
-  {n:'Flour Tortilla',cat:'Carbs',cal:296,p:8,c:51,f:7},
-  {n:'Couscous Cooked',cat:'Carbs',cal:112,p:3.8,c:23,f:0.2},
-  {n:'Sweet Potato',cat:'Carbs',cal:86,p:1.6,c:20,f:0.1},
-  {n:'White Potato',cat:'Carbs',cal:77,p:2,c:17,f:0.1},
-  {n:'Mashed Potato',cat:'Carbs',cal:99,p:2,c:17,f:3},
-  {n:'Corn',cat:'Carbs',cal:86,p:3.3,c:19,f:1.4},
-  {n:'Banana Bread slice',cat:'Baked',cal:196,p:3,c:33,f:6},
-  {n:'Banana Bread homemade slice',cat:'Baked',cal:215,p:3.5,c:35,f:7},
-  {n:'Muffin Blueberry',cat:'Baked',cal:377,p:5,c:55,f:15},
-  {n:'Muffin Chocolate',cat:'Baked',cal:403,p:5,c:58,f:18},
-  {n:'Croissant',cat:'Baked',cal:406,p:8,c:46,f:21},
-  {n:'Pancakes 2 medium',cat:'Baked',cal:227,p:6,c:30,f:9},
-  {n:'Bagel plain',cat:'Baked',cal:245,p:10,c:48,f:1.5},
-  {n:'English Muffin',cat:'Baked',cal:227,p:8,c:44,f:2},
-  {n:'Scone plain',cat:'Baked',cal:364,p:7,c:53,f:14},
-  {n:'Tim Tam biscuit',cat:'Baked',cal:497,p:5,c:62,f:25},
-  {n:'Broccoli',cat:'Vegetables',cal:34,p:2.8,c:7,f:0.4},
-  {n:'Spinach',cat:'Vegetables',cal:23,p:2.9,c:3.6,f:0.4},
-  {n:'Baby Spinach',cat:'Vegetables',cal:23,p:2.9,c:3.6,f:0.4},
-  {n:'Mixed Salad Leaves',cat:'Vegetables',cal:17,p:1.3,c:2.9,f:0.2},
-  {n:'Capsicum Red',cat:'Vegetables',cal:31,p:1,c:6,f:0.3},
-  {n:'Capsicum Green',cat:'Vegetables',cal:20,p:0.9,c:4.6,f:0.2},
-  {n:'Zucchini',cat:'Vegetables',cal:17,p:1.2,c:3.1,f:0.3},
-  {n:'Cherry Tomatoes',cat:'Vegetables',cal:18,p:0.9,c:3.9,f:0.2},
-  {n:'Tomato',cat:'Vegetables',cal:18,p:0.9,c:3.9,f:0.2},
-  {n:'Cucumber',cat:'Vegetables',cal:15,p:0.7,c:3.6,f:0.1},
-  {n:'Carrot',cat:'Vegetables',cal:41,p:0.9,c:10,f:0.2},
-  {n:'Asparagus',cat:'Vegetables',cal:20,p:2.2,c:3.9,f:0.1},
-  {n:'Green Beans',cat:'Vegetables',cal:31,p:1.8,c:7,f:0.1},
-  {n:'Mushrooms',cat:'Vegetables',cal:22,p:3.1,c:3.3,f:0.3},
-  {n:'Onion',cat:'Vegetables',cal:40,p:1.1,c:9.3,f:0.1},
-  {n:'Kale',cat:'Vegetables',cal:49,p:4.3,c:9,f:0.9},
-  {n:'Cauliflower',cat:'Vegetables',cal:25,p:1.9,c:5,f:0.3},
-  {n:'Celery',cat:'Vegetables',cal:16,p:0.7,c:3,f:0.2},
-  {n:'Beetroot',cat:'Vegetables',cal:43,p:1.6,c:10,f:0.2},
-  {n:'Pumpkin',cat:'Vegetables',cal:26,p:1,c:6.5,f:0.1},
-  {n:'Banana',cat:'Fruit',cal:89,p:1.1,c:23,f:0.3},
-  {n:'Apple',cat:'Fruit',cal:52,p:0.3,c:14,f:0.2},
-  {n:'Orange',cat:'Fruit',cal:47,p:0.9,c:12,f:0.1},
-  {n:'Blueberries',cat:'Fruit',cal:57,p:0.7,c:14,f:0.3},
-  {n:'Strawberries',cat:'Fruit',cal:32,p:0.7,c:8,f:0.3},
-  {n:'Raspberries',cat:'Fruit',cal:52,p:1.2,c:12,f:0.7},
-  {n:'Mixed Berries Frozen',cat:'Fruit',cal:45,p:0.8,c:11,f:0.3},
-  {n:'Watermelon',cat:'Fruit',cal:30,p:0.6,c:8,f:0.2},
-  {n:'Mango',cat:'Fruit',cal:60,p:0.8,c:15,f:0.4},
-  {n:'Grapes',cat:'Fruit',cal:69,p:0.7,c:18,f:0.2},
-  {n:'Pineapple',cat:'Fruit',cal:50,p:0.5,c:13,f:0.1},
-  {n:'Kiwi Fruit',cat:'Fruit',cal:61,p:1.1,c:15,f:0.5},
-  {n:'Pear',cat:'Fruit',cal:57,p:0.4,c:15,f:0.1},
-  {n:'Avocado',cat:'Fruit',cal:160,p:2,c:9,f:15},
-  {n:'Dates',cat:'Fruit',cal:282,p:2.5,c:75,f:0.4},
-  {n:'Raisins',cat:'Fruit',cal:299,p:3.1,c:79,f:0.5},
-  {n:'Olive Oil',cat:'Fats',cal:884,p:0,c:0,f:100},
-  {n:'Coconut Oil',cat:'Fats',cal:862,p:0,c:0,f:100},
-  {n:'Butter',cat:'Fats',cal:717,p:0.9,c:0.1,f:81},
-  {n:'Almond Butter',cat:'Fats',cal:614,p:21,c:19,f:56},
-  {n:'Peanut Butter',cat:'Fats',cal:588,p:25,c:20,f:50},
-  {n:'Mixed Nuts',cat:'Fats',cal:607,p:20,c:21,f:54},
-  {n:'Almonds',cat:'Fats',cal:579,p:21,c:22,f:50},
-  {n:'Cashews',cat:'Fats',cal:553,p:18,c:30,f:44},
-  {n:'Walnuts',cat:'Fats',cal:654,p:15,c:14,f:65},
-  {n:'Macadamia Nuts',cat:'Fats',cal:718,p:8,c:14,f:76},
-  {n:'Pistachios',cat:'Fats',cal:562,p:20,c:28,f:45},
-  {n:'Chia Seeds',cat:'Fats',cal:486,p:17,c:42,f:31},
-  {n:'Full Cream Milk',cat:'Dairy',cal:61,p:3.2,c:4.8,f:3.3},
-  {n:'Skim Milk',cat:'Dairy',cal:35,p:3.5,c:5,f:0.1},
-  {n:'Oat Milk',cat:'Dairy',cal:48,p:1.2,c:6.4,f:2},
-  {n:'Almond Milk',cat:'Dairy',cal:17,p:0.6,c:1.5,f:1.1},
-  {n:'Cheddar Cheese',cat:'Dairy',cal:403,p:25,c:1,f:33},
-  {n:'Mozzarella',cat:'Dairy',cal:280,p:28,c:2,f:17},
-  {n:'Feta Cheese',cat:'Dairy',cal:264,p:14,c:4,f:21},
-  {n:'Cream Cheese',cat:'Dairy',cal:342,p:6,c:4,f:34},
-  {n:'Ice Cream vanilla',cat:'Dairy',cal:207,p:3.5,c:24,f:11},
-  {n:'Chickpeas Cooked',cat:'Legumes',cal:164,p:8.9,c:27,f:2.6},
-  {n:'Lentils Cooked',cat:'Legumes',cal:116,p:9,c:20,f:0.4},
-  {n:'Black Beans Cooked',cat:'Legumes',cal:132,p:8.9,c:24,f:0.5},
-  {n:'Kidney Beans Cooked',cat:'Legumes',cal:127,p:8.7,c:23,f:0.5},
-  {n:'Baked Beans',cat:'Legumes',cal:94,p:5,c:17,f:0.5},
-  {n:'Tomato Passata',cat:'Sauces',cal:28,p:1.5,c:5.8,f:0.2},
-  {n:'Tomato Sauce Heinz',cat:'Sauces',cal:112,p:1.5,c:27,f:0.2},
-  {n:'BBQ Sauce',cat:'Sauces',cal:172,p:1.2,c:43,f:0.2},
-  {n:'Soy Sauce',cat:'Sauces',cal:53,p:8,c:5,f:0.1},
-  {n:'Hummus',cat:'Sauces',cal:166,p:8,c:14,f:10},
-  {n:'Mayonnaise',cat:'Sauces',cal:680,p:1,c:2,f:75},
-  {n:'Sweet Chilli Sauce',cat:'Sauces',cal:190,p:1,c:46,f:0.4},
-  {n:'Pesto',cat:'Sauces',cal:408,p:8,c:4,f:41},
-  {n:'Subway 6 inch Turkey',cat:'Meals',cal:280,p:18,c:46,f:4},
-  {n:'Subway 6 inch Chicken',cat:'Meals',cal:330,p:24,c:46,f:5},
-  {n:'Woolworths Roast Chicken',cat:'Meals',cal:185,p:22,c:0,f:11},
-  {n:'McDonalds Big Mac',cat:'Meals',cal:550,p:25,c:45,f:30},
-  {n:'McDonalds Large Fries',cat:'Meals',cal:490,p:6,c:66,f:23},
-  {n:'Pizza slice cheese',cat:'Meals',cal:272,p:12,c:33,f:10},
-  {n:'Sushi roll salmon',cat:'Meals',cal:167,p:6,c:30,f:2},
-  {n:'Beef Burrito',cat:'Meals',cal:313,p:18,c:37,f:11},
-  {n:'Rice Crackers 10 pcs',cat:'Snacks',cal:109,p:2,c:23,f:0.8},
-  {n:'Dark Chocolate 85%',cat:'Snacks',cal:598,p:8,c:20,f:43},
-  {n:'Milk Chocolate',cat:'Snacks',cal:535,p:8,c:60,f:30},
-  {n:'Popcorn Plain',cat:'Snacks',cal:375,p:12,c:74,f:4},
-  {n:'Protein Bar Quest',cat:'Snacks',cal:190,p:20,c:22,f:7},
-  {n:'Muesli Bar',cat:'Snacks',cal:393,p:6,c:61,f:14},
-  {n:'Orange Juice 250ml',cat:'Drinks',cal:113,p:1.7,c:26,f:0.5},
-  {n:'Coconut Water 250ml',cat:'Drinks',cal:46,p:1.7,c:9,f:0.5},
-  {n:'Sports Drink Gatorade 600ml',cat:'Drinks',cal:150,p:0,c:38,f:0},
-  {n:'Coke 375ml can',cat:'Drinks',cal:158,p:0,c:39,f:0},
-  {n:'Beer 375ml',cat:'Drinks',cal:145,p:1,c:13,f:0},
-  {n:'Red Wine 150ml',cat:'Drinks',cal:125,p:0.1,c:4,f:0},
-  {n:'Latte with full cream 300ml',cat:'Drinks',cal:168,p:8,c:13,f:8},
-  {n:'Flat White 300ml',cat:'Drinks',cal:147,p:8,c:11,f:7},
-  {n:'Black Coffee',cat:'Drinks',cal:2,p:0.3,c:0,f:0},
-  // ── PROTEIN & MEAT (extended) ──
-  {n:'Chicken Thigh Skinless',cat:'Protein',cal:177,p:25,c:0,f:8},
-  {n:'Chicken Drumstick',cat:'Protein',cal:172,p:22,c:0,f:9},
-  {n:'Chicken Wings',cat:'Protein',cal:203,p:17,c:0,f:14},
-  {n:'Turkey Breast',cat:'Protein',cal:135,p:30,c:0,f:1},
-  {n:'Turkey Mince',cat:'Protein',cal:149,p:29,c:0,f:3},
-  {n:'Beef Mince Regular',cat:'Protein',cal:254,p:26,c:0,f:16},
-  {n:'Beef Mince Lean 5%',cat:'Protein',cal:175,p:28,c:0,f:7},
-  {n:'Beef Steak Ribeye',cat:'Protein',cal:291,p:24,c:0,f:21},
-  {n:'Beef Steak Sirloin',cat:'Protein',cal:207,p:26,c:0,f:11},
-  {n:'Beef Steak Eye Fillet',cat:'Protein',cal:198,p:28,c:0,f:9},
-  {n:'Lamb Chop',cat:'Protein',cal:294,p:25,c:0,f:21},
-  {n:'Lamb Mince',cat:'Protein',cal:282,p:24,c:0,f:20},
-  {n:'Pork Loin',cat:'Protein',cal:242,p:29,c:0,f:14},
-  {n:'Pork Belly',cat:'Protein',cal:518,p:9,c:0,f:53},
-  {n:'Pork Mince',cat:'Protein',cal:263,p:28,c:0,f:16},
-  {n:'Bacon Rasher',cat:'Protein',cal:541,p:37,c:1,f:42},
-  {n:'Ham Leg Sliced',cat:'Protein',cal:107,p:17,c:1.5,f:3.5},
-  {n:'Prosciutto',cat:'Protein',cal:215,p:29,c:0,f:11},
-  {n:'Salami',cat:'Protein',cal:425,p:22,c:2,f:37},
-  {n:'Chorizo',cat:'Protein',cal:455,p:24,c:2,f:39},
-  {n:'Sausage Beef',cat:'Protein',cal:332,p:13,c:10,f:28},
-  {n:'Sausage Pork Thin',cat:'Protein',cal:301,p:14,c:8,f:24},
-  {n:'Kangaroo Fillet',cat:'Protein',cal:116,p:24,c:0,f:2},
-  {n:'Venison',cat:'Protein',cal:158,p:30,c:0,f:3},
-  {n:'Bison',cat:'Protein',cal:143,p:28,c:0,f:2.5},
-  // ── SEAFOOD (extended) ──
-  {n:'Salmon Fillet',cat:'Seafood',cal:208,p:20,c:0,f:13},
-  {n:'Salmon Smoked',cat:'Seafood',cal:117,p:18,c:0,f:4.3},
-  {n:'Barramundi',cat:'Seafood',cal:96,p:21,c:0,f:1.3},
-  {n:'Snapper',cat:'Seafood',cal:100,p:21,c:0,f:1.3},
-  {n:'Tuna Steak Fresh',cat:'Seafood',cal:144,p:23,c:0,f:5},
-  {n:'Tuna Canned in Water',cat:'Seafood',cal:86,p:19,c:0,f:1},
-  {n:'Tuna Canned in Oil',cat:'Seafood',cal:190,p:25,c:0,f:9},
-  {n:'Sardines Canned',cat:'Seafood',cal:208,p:25,c:0,f:11},
-  {n:'Mackerel',cat:'Seafood',cal:205,p:19,c:0,f:14},
-  {n:'Cod',cat:'Seafood',cal:82,p:18,c:0,f:0.7},
-  {n:'Flathead',cat:'Seafood',cal:90,p:20,c:0,f:0.8},
-  {n:'Prawns Cooked',cat:'Seafood',cal:99,p:21,c:0.9,f:1},
-  {n:'Prawns King Raw',cat:'Seafood',cal:85,p:18,c:0,f:1},
-  {n:'Squid',cat:'Seafood',cal:92,p:16,c:3,f:1.4},
-  {n:'Calamari Crumbed',cat:'Seafood',cal:175,p:15,c:14,f:7},
-  {n:'Scallops',cat:'Seafood',cal:88,p:17,c:3,f:0.8},
-  {n:'Oysters',cat:'Seafood',cal:68,p:7,c:3.7,f:2.5},
-  {n:'Mussels Cooked',cat:'Seafood',cal:172,p:24,c:7,f:4.5},
-  {n:'Crab Meat',cat:'Seafood',cal:97,p:19,c:0,f:2},
-  {n:'Lobster',cat:'Seafood',cal:98,p:21,c:0,f:0.6},
-  {n:'Fish Fingers 3 pcs',cat:'Seafood',cal:200,p:11,c:19,f:9},
-  // ── EGGS ──
-  {n:'Egg Whole Large',cat:'Eggs',cal:143,p:13,c:1,f:10},
-  {n:'Egg White',cat:'Eggs',cal:52,p:11,c:0.7,f:0.2},
-  {n:'Egg Yolk',cat:'Eggs',cal:322,p:16,c:1,f:27},
-  {n:'Scrambled Eggs 2 eggs',cat:'Eggs',cal:211,p:16,c:2,f:15},
-  {n:'Boiled Egg 1 large',cat:'Eggs',cal:78,p:6,c:0.6,f:5},
-  {n:'Poached Egg 1 large',cat:'Eggs',cal:71,p:6,c:0.4,f:4.7},
-  {n:'Fried Egg 1 large',cat:'Eggs',cal:90,p:6,c:0.4,f:7},
-  {n:'Omelette 2 egg plain',cat:'Eggs',cal:188,p:14,c:1,f:14},
-  // ── GRAINS & RICE (extended) ──
-  {n:'White Rice Cooked',cat:'Grains',cal:130,p:2.7,c:28,f:0.3},
-  {n:'Brown Rice Cooked',cat:'Grains',cal:122,p:2.6,c:26,f:1},
-  {n:'Jasmine Rice Cooked',cat:'Grains',cal:130,p:2.5,c:29,f:0.3},
-  {n:'Basmati Rice Cooked',cat:'Grains',cal:121,p:3,c:25,f:0.4},
-  {n:'Fried Rice 1 cup',cat:'Grains',cal:238,p:5,c:40,f:7},
-  {n:'Sushi Rice 1 cup cooked',cat:'Grains',cal:242,p:4,c:53,f:0.3},
-  {n:'Quinoa Cooked',cat:'Grains',cal:120,p:4.4,c:22,f:1.9},
-  {n:'Oats Rolled Dry',cat:'Grains',cal:379,p:13,c:68,f:7},
-  {n:'Oats Cooked with Water',cat:'Grains',cal:71,p:2.5,c:12,f:1.5},
-  {n:'Muesli Toasted',cat:'Grains',cal:404,p:9,c:65,f:13},
-  {n:'Granola',cat:'Grains',cal:471,p:10,c:64,f:20},
-  {n:'Cornflakes',cat:'Grains',cal:357,p:7,c:84,f:0.3},
-  {n:'Weet-Bix 2 biscuits',cat:'Grains',cal:129,p:4,c:25,f:0.8},
-  {n:'Weetabix 2 biscuits',cat:'Grains',cal:130,p:4,c:26,f:0.8},
-  {n:'All Bran',cat:'Grains',cal:261,p:12,c:48,f:3.5},
-  {n:'Wheat Bran',cat:'Grains',cal:216,p:16,c:65,f:4.3},
-  {n:'Couscous Cooked',cat:'Grains',cal:112,p:3.8,c:23,f:0.2},
-  {n:'Freekeh Cooked',cat:'Grains',cal:153,p:6,c:28,f:0.5},
-  {n:'Barley Cooked',cat:'Grains',cal:123,p:2.3,c:28,f:0.4},
-  {n:'Buckwheat Cooked',cat:'Grains',cal:92,p:3.4,c:20,f:0.6},
-  {n:'Polenta Cooked',cat:'Grains',cal:70,p:1.6,c:15,f:0.3},
-  {n:'Pasta White Cooked',cat:'Grains',cal:158,p:5.8,c:31,f:0.9},
-  {n:'Pasta Wholemeal Cooked',cat:'Grains',cal:149,p:5.3,c:29,f:0.5},
-  {n:'Pasta Penne Cooked',cat:'Grains',cal:158,p:5.8,c:31,f:0.9},
-  {n:'Pasta Spaghetti Cooked',cat:'Grains',cal:157,p:5.5,c:30,f:0.9},
-  {n:'Pasta Gnocchi Cooked',cat:'Grains',cal:130,p:3,c:28,f:0.6},
-  {n:'Noodles Egg Cooked',cat:'Grains',cal:138,p:4.5,c:25,f:2.2},
-  {n:'Noodles Rice Cooked',cat:'Grains',cal:109,p:1.8,c:25,f:0.2},
-  {n:'Noodles Soba Cooked',cat:'Grains',cal:99,p:5,c:21,f:0.1},
-  {n:'Noodles Udon Cooked',cat:'Grains',cal:96,p:2.7,c:20,f:0.4},
-  {n:'Noodles Ramen Cooked',cat:'Grains',cal:138,p:4,c:26,f:2},
-  // ── BREAD & BAKED (extended) ──
-  {n:'Sourdough Bread slice',cat:'Baked',cal:132,p:5.5,c:26,f:0.8},
-  {n:'Rye Bread slice',cat:'Baked',cal:129,p:5.4,c:24,f:1.1},
-  {n:'Multigrain Bread slice',cat:'Baked',cal:129,p:5,c:24,f:2},
-  {n:'Gluten Free Bread slice',cat:'Baked',cal:108,p:2,c:22,f:2},
-  {n:'Pita Bread whole',cat:'Baked',cal:165,p:5.5,c:33,f:1},
-  {n:'Naan Bread',cat:'Baked',cal:317,p:9,c:56,f:7},
-  {n:'Roti Chapati',cat:'Baked',cal:297,p:9,c:50,f:7},
-  {n:'Tortilla Flour 20cm',cat:'Baked',cal:218,p:5.6,c:37,f:5},
-  {n:'Tortilla Corn 15cm',cat:'Baked',cal:209,p:4.5,c:43,f:2.5},
-  {n:'Rice Cake plain',cat:'Baked',cal:387,p:8,c:81,f:3},
-  {n:'Corn Thins 2 pcs',cat:'Baked',cal:87,p:1.8,c:18,f:0.6},
-  {n:'Crumpet',cat:'Baked',cal:177,p:6,c:37,f:0.6},
-  {n:'Pikelet',cat:'Baked',cal:222,p:6,c:40,f:4},
-  {n:'Pancake plain',cat:'Baked',cal:227,p:6,c:38,f:6},
-  {n:'Waffle plain',cat:'Baked',cal:291,p:8,c:37,f:13},
-  {n:'Muffin blueberry',cat:'Baked',cal:377,p:5,c:55,f:15},
-  {n:'Croissant plain',cat:'Baked',cal:406,p:8.5,c:46,f:21},
-  {n:'Danish pastry',cat:'Baked',cal:374,p:6,c:45,f:19},
-  {n:'Banana Bread slice',cat:'Baked',cal:290,p:5,c:43,f:11},
-  {n:'Zucchini Bread slice',cat:'Baked',cal:220,p:4,c:32,f:9},
-  {n:'Carrot Cake slice',cat:'Baked',cal:415,p:4.5,c:52,f:21},
-  {n:'Brownie',cat:'Baked',cal:466,p:5,c:63,f:22},
-  {n:'Cookie chocolate chip',cat:'Baked',cal:502,p:5.5,c:64,f:25},
-  {n:'ANZAC biscuit',cat:'Baked',cal:456,p:5,c:65,f:20},
-  {n:'Lamington',cat:'Baked',cal:373,p:4.5,c:60,f:13},
-  // ── VEGETABLES (extended) ──
-  {n:'Sweet Potato',cat:'Vegetables',cal:86,p:1.6,c:20,f:0.1},
-  {n:'Sweet Potato Baked',cat:'Vegetables',cal:90,p:2,c:21,f:0.1},
-  {n:'Potato White',cat:'Vegetables',cal:77,p:2,c:17,f:0.1},
-  {n:'Potato Baked with skin',cat:'Vegetables',cal:93,p:2.5,c:21,f:0.1},
-  {n:'Mashed Potato',cat:'Vegetables',cal:113,p:2,c:17,f:4},
-  {n:'Potato Wedges baked',cat:'Vegetables',cal:187,p:3,c:30,f:6},
-  {n:'Chips Hot fried',cat:'Vegetables',cal:312,p:3.5,c:41,f:15},
-  {n:'Corn on cob',cat:'Vegetables',cal:86,p:3.2,c:19,f:1.4},
-  {n:'Corn Kernels canned',cat:'Vegetables',cal:83,p:2.7,c:19,f:1.1},
-  {n:'Edamame',cat:'Vegetables',cal:121,p:11,c:9,f:5},
-  {n:'Snow Peas',cat:'Vegetables',cal:42,p:2.8,c:7.5,f:0.2},
-  {n:'Green Peas',cat:'Vegetables',cal:81,p:5.4,c:14,f:0.4},
-  {n:'Eggplant',cat:'Vegetables',cal:25,p:1,c:6,f:0.2},
-  {n:'Leek',cat:'Vegetables',cal:61,p:1.5,c:14,f:0.3},
-  {n:'Bok Choy',cat:'Vegetables',cal:13,p:1.5,c:2.2,f:0.2},
-  {n:'Silverbeet',cat:'Vegetables',cal:19,p:1.8,c:3.7,f:0.1},
-  {n:'Lettuce Iceberg',cat:'Vegetables',cal:14,p:0.9,c:2,f:0.1},
-  {n:'Lettuce Cos',cat:'Vegetables',cal:17,p:1.2,c:3.3,f:0.3},
-  {n:'Rocket',cat:'Vegetables',cal:25,p:2.6,c:3.7,f:0.7},
-  {n:'Artichoke',cat:'Vegetables',cal:47,p:3.3,c:11,f:0.2},
-  {n:'Brussels Sprouts',cat:'Vegetables',cal:43,p:3.4,c:9,f:0.3},
-  {n:'Fennel',cat:'Vegetables',cal:31,p:1.2,c:7.3,f:0.2},
-  {n:'Radish',cat:'Vegetables',cal:16,p:0.7,c:3.4,f:0.1},
-  {n:'Bean Sprouts',cat:'Vegetables',cal:30,p:3,c:5.9,f:0.2},
-  {n:'Water Chestnuts',cat:'Vegetables',cal:97,p:2,c:23,f:0.1},
-  {n:'Bamboo Shoots',cat:'Vegetables',cal:27,p:2.6,c:5.2,f:0.3},
-  // ── FRUIT (extended) ──
-  {n:'Grapefruit',cat:'Fruit',cal:42,p:0.8,c:11,f:0.1},
-  {n:'Lemon',cat:'Fruit',cal:29,p:1.1,c:9,f:0.3},
-  {n:'Lime',cat:'Fruit',cal:30,p:0.7,c:11,f:0.2},
-  {n:'Passionfruit',cat:'Fruit',cal:97,p:2.2,c:23,f:0.7},
-  {n:'Papaya',cat:'Fruit',cal:43,p:0.5,c:11,f:0.3},
-  {n:'Rockmelon',cat:'Fruit',cal:34,p:0.8,c:8,f:0.2},
-  {n:'Honeydew Melon',cat:'Fruit',cal:36,p:0.5,c:9,f:0.1},
-  {n:'Lychee',cat:'Fruit',cal:66,p:0.8,c:17,f:0.4},
-  {n:'Pomegranate',cat:'Fruit',cal:83,p:1.7,c:19,f:1.2},
-  {n:'Dragon Fruit',cat:'Fruit',cal:60,p:1.2,c:13,f:0.4},
-  {n:'Jackfruit',cat:'Fruit',cal:95,p:1.7,c:24,f:0.6},
-  {n:'Fig fresh',cat:'Fruit',cal:74,p:0.8,c:19,f:0.3},
-  {n:'Prunes dried',cat:'Fruit',cal:240,p:2.2,c:64,f:0.4},
-  {n:'Apricot fresh',cat:'Fruit',cal:48,p:1.4,c:11,f:0.4},
-  {n:'Apricot dried',cat:'Fruit',cal:241,p:3.4,c:63,f:0.5},
-  {n:'Peach',cat:'Fruit',cal:39,p:0.9,c:10,f:0.3},
-  {n:'Nectarine',cat:'Fruit',cal:44,p:1.1,c:11,f:0.3},
-  {n:'Plum',cat:'Fruit',cal:46,p:0.7,c:11,f:0.3},
-  {n:'Cherries',cat:'Fruit',cal:63,p:1.1,c:16,f:0.2},
-  {n:'Cranberries fresh',cat:'Fruit',cal:46,p:0.4,c:12,f:0.1},
-  // ── DAIRY (extended) ──
-  {n:'Greek Yoghurt Full Fat',cat:'Dairy',cal:97,p:9,c:4,f:5},
-  {n:'Greek Yoghurt Low Fat',cat:'Dairy',cal:59,p:10,c:3.6,f:0.4},
-  {n:'Natural Yoghurt',cat:'Dairy',cal:63,p:3.5,c:7,f:2.5},
-  {n:'Flavoured Yoghurt',cat:'Dairy',cal:95,p:3.5,c:17,f:1.5},
-  {n:'Cottage Cheese',cat:'Dairy',cal:98,p:11,c:3.4,f:4.3},
-  {n:'Ricotta',cat:'Dairy',cal:174,p:11,c:3,f:13},
-  {n:'Brie',cat:'Dairy',cal:334,p:21,c:0.5,f:28},
-  {n:'Camembert',cat:'Dairy',cal:300,p:20,c:0.5,f:24},
-  {n:'Parmesan',cat:'Dairy',cal:431,p:38,c:3.2,f:29},
-  {n:'Gouda',cat:'Dairy',cal:356,p:25,c:2.2,f:28},
-  {n:'Blue Cheese',cat:'Dairy',cal:353,p:21,c:2.3,f:29},
-  {n:'Haloumi',cat:'Dairy',cal:321,p:22,c:1.3,f:26},
-  {n:'Chocolate Milk 250ml',cat:'Dairy',cal:158,p:7,c:26,f:3.5},
-  {n:'Soy Milk 250ml',cat:'Dairy',cal:45,p:3.3,c:1.5,f:2.5},
-  {n:'Rice Milk 250ml',cat:'Dairy',cal:95,p:0.7,c:19,f:2.5},
-  {n:'Kefir 200ml',cat:'Dairy',cal:74,p:6,c:6,f:2.5},
-  {n:'Butter Salted',cat:'Dairy',cal:717,p:0.9,c:0.1,f:81},
-  {n:'Ghee',cat:'Dairy',cal:900,p:0,c:0,f:100},
-  {n:'Sour Cream',cat:'Dairy',cal:193,p:2.9,c:3.6,f:19},
-  {n:'Whipped Cream',cat:'Dairy',cal:257,p:2,c:3,f:27},
-  // ── PROTEIN SUPPLEMENTS ──
-  {n:'Whey Protein Isolate scoop',cat:'Supplements',cal:110,p:25,c:1,f:0.5},
-  {n:'Whey Protein Concentrate scoop',cat:'Supplements',cal:130,p:24,c:4,f:2},
-  {n:'Casein Protein scoop',cat:'Supplements',cal:120,p:24,c:3,f:1},
-  {n:'Plant Protein scoop',cat:'Supplements',cal:120,p:22,c:5,f:2},
-  {n:'Collagen Protein scoop',cat:'Supplements',cal:70,p:17,c:0,f:0},
-  {n:'Protein Shake with water',cat:'Supplements',cal:130,p:25,c:4,f:1.5},
-  {n:'Protein Shake with milk',cat:'Supplements',cal:280,p:32,c:17,f:8},
-  {n:'Creatine 5g',cat:'Supplements',cal:0,p:0,c:0,f:0},
-  {n:'BCAA drink',cat:'Supplements',cal:20,p:5,c:0,f:0},
-  {n:'Pre-workout scoop',cat:'Supplements',cal:25,p:1,c:5,f:0},
-  {n:'Mass Gainer scoop',cat:'Supplements',cal:390,p:30,c:60,f:5},
-  // ── NUTS & SEEDS (extended) ──
-  {n:'Sunflower Seeds',cat:'Fats',cal:584,p:21,c:20,f:51},
-  {n:'Pumpkin Seeds',cat:'Fats',cal:559,p:30,c:11,f:49},
-  {n:'Sesame Seeds',cat:'Fats',cal:573,p:18,c:23,f:50},
-  {n:'Flaxseeds',cat:'Fats',cal:534,p:18,c:29,f:42},
-  {n:'Hemp Seeds',cat:'Fats',cal:553,p:32,c:9,f:49},
-  {n:'Tahini',cat:'Fats',cal:595,p:17,c:21,f:54},
-  {n:'Hazelnut',cat:'Fats',cal:628,p:15,c:17,f:61},
-  {n:'Brazil Nuts',cat:'Fats',cal:659,p:14,c:12,f:67},
-  {n:'Pecans',cat:'Fats',cal:691,p:9,c:14,f:72},
-  {n:'Coconut Flesh',cat:'Fats',cal:354,p:3,c:15,f:33},
-  {n:'Coconut Milk canned',cat:'Fats',cal:197,p:2,c:6,f:21},
-  {n:'Coconut Cream',cat:'Fats',cal:330,p:3,c:7,f:35},
-  // ── LEGUMES (extended) ──
-  {n:'Tofu Firm',cat:'Legumes',cal:144,p:17,c:3,f:8},
-  {n:'Tofu Silken',cat:'Legumes',cal:55,p:5,c:2,f:2.7},
-  {n:'Tempeh',cat:'Legumes',cal:193,p:19,c:9,f:11},
-  {n:'Edamame shelled',cat:'Legumes',cal:121,p:11,c:9,f:5},
-  {n:'Soybeans cooked',cat:'Legumes',cal:173,p:17,c:10,f:9},
-  {n:'Peanuts roasted',cat:'Legumes',cal:585,p:26,c:16,f:50},
-  {n:'Cannellini Beans',cat:'Legumes',cal:139,p:9.7,c:25,f:0.5},
-  {n:'Navy Beans',cat:'Legumes',cal:140,p:9.7,c:26,f:0.6},
-  {n:'Pinto Beans',cat:'Legumes',cal:143,p:9,c:27,f:0.7},
-  {n:'Mung Beans Cooked',cat:'Legumes',cal:105,p:7,c:19,f:0.4},
-  {n:'Split Peas Cooked',cat:'Legumes',cal:118,p:8.3,c:21,f:0.4},
-  {n:'Red Lentils Cooked',cat:'Legumes',cal:116,p:9,c:20,f:0.4},
-  // ── SAUCES & CONDIMENTS (extended) ──
-  {n:'Tomato Paste',cat:'Sauces',cal:82,p:4.3,c:19,f:0.4},
-  {n:'Worcestershire Sauce',cat:'Sauces',cal:78,p:1,c:20,f:0.1},
-  {n:'Fish Sauce',cat:'Sauces',cal:35,p:5.1,c:3.6,f:0},
-  {n:'Oyster Sauce',cat:'Sauces',cal:105,p:1.5,c:25,f:0.3},
-  {n:'Hoisin Sauce',cat:'Sauces',cal:220,p:3.5,c:45,f:4},
-  {n:'Sriracha',cat:'Sauces',cal:93,p:1.1,c:20,f:0.9},
-  {n:'Tabasco',cat:'Sauces',cal:12,p:0.5,c:2,f:0.2},
-  {n:'Mustard Dijon',cat:'Sauces',cal:185,p:7,c:18,f:10},
-  {n:'Caesar Dressing',cat:'Sauces',cal:300,p:2.5,c:5,f:31},
-  {n:'Ranch Dressing',cat:'Sauces',cal:452,p:1.5,c:4,f:48},
-  {n:'Balsamic Vinegar',cat:'Sauces',cal:88,p:0.5,c:17,f:0},
-  {n:'Apple Cider Vinegar',cat:'Sauces',cal:22,p:0,c:1,f:0},
-  {n:'Coconut Aminos',cat:'Sauces',cal:58,p:1,c:14,f:0},
-  {n:'Curry Paste Red',cat:'Sauces',cal:165,p:4,c:14,f:11},
-  {n:'Curry Paste Green',cat:'Sauces',cal:155,p:4,c:10,f:12},
-  // ── PREPARED MEALS / AUSSIE FOODS ──
-  {n:'Vegemite per serve',cat:'Meals',cal:135,p:14,c:16,f:0.4},
-  {n:'Meat Pie',cat:'Meals',cal:270,p:9,c:27,f:14},
-  {n:'Sausage Roll',cat:'Meals',cal:321,p:10,c:28,f:19},
-  {n:'Dim Sim fried',cat:'Meals',cal:120,p:5,c:14,f:5},
-  {n:'Spring Roll fried',cat:'Meals',cal:111,p:3,c:15,f:5},
-  {n:'Steamed Rice Cup 250g',cat:'Meals',cal:325,p:6.8,c:72,f:0.8},
-  {n:'Fried Chicken piece',cat:'Meals',cal:320,p:28,c:12,f:18},
-  {n:'KFC Original piece',cat:'Meals',cal:320,p:28,c:12,f:18},
-  {n:'McDonalds Cheeseburger',cat:'Meals',cal:303,p:15,c:33,f:12},
-  {n:'McDonalds McChicken',cat:'Meals',cal:397,p:14,c:43,f:18},
-  {n:'Chicken Caesar Salad',cat:'Meals',cal:250,p:20,c:12,f:14},
-  {n:'Chicken Stir Fry with veg',cat:'Meals',cal:180,p:22,c:12,f:5},
-  {n:'Beef Stir Fry with veg',cat:'Meals',cal:195,p:20,c:12,f:7},
-  {n:'Butter Chicken with rice',cat:'Meals',cal:290,p:18,c:35,f:8},
-  {n:'Lamb Korma with rice',cat:'Meals',cal:310,p:16,c:36,f:10},
-  {n:'Pad Thai with chicken',cat:'Meals',cal:352,p:20,c:43,f:10},
-  {n:'Laksa with chicken',cat:'Meals',cal:340,p:18,c:35,f:14},
-  {n:'Spaghetti Bolognese',cat:'Meals',cal:330,p:22,c:38,f:9},
-  {n:'Lasagne',cat:'Meals',cal:193,p:11,c:17,f:8},
-  {n:'Hamburger with the lot',cat:'Meals',cal:620,p:35,c:42,f:33},
-  {n:'BLT Sandwich',cat:'Meals',cal:330,p:16,c:32,f:15},
-  {n:'Toasted Cheese Sandwich',cat:'Meals',cal:368,p:16,c:36,f:18},
-  {n:'Egg Salad Sandwich',cat:'Meals',cal:290,p:12,c:30,f:13},
-  {n:'Tuna Salad Sandwich',cat:'Meals',cal:260,p:17,c:30,f:8},
-  {n:'Avocado Toast 1 slice',cat:'Meals',cal:195,p:4,c:20,f:11},
-  {n:'Smashed Avo on sourdough',cat:'Meals',cal:310,p:7,c:36,f:16},
-  {n:'Acai Bowl',cat:'Meals',cal:350,p:5,c:55,f:12},
-  {n:'Poke Bowl with salmon',cat:'Meals',cal:450,p:28,c:52,f:14},
-  {n:'Rice Paper Rolls 2 pcs',cat:'Meals',cal:130,p:7,c:22,f:2},
-  {n:'Dumpling steamed 4 pcs',cat:'Meals',cal:180,p:8,c:27,f:4},
-  {n:'Dumpling fried 4 pcs',cat:'Meals',cal:240,p:8,c:28,f:11},
-  {n:'Nasi Goreng',cat:'Meals',cal:220,p:8,c:40,f:4},
-  // ── SNACKS (extended) ──
-  {n:'Corn Chips 30g',cat:'Snacks',cal:153,p:2,c:19,f:8},
-  {n:'Potato Chips 30g',cat:'Snacks',cal:157,p:1.8,c:16,f:10},
-  {n:'Pretzels 30g',cat:'Snacks',cal:114,p:3,c:23,f:1},
-  {n:'Crackers Vita-Weat 4 pcs',cat:'Snacks',cal:153,p:3.5,c:25,f:4},
-  {n:'Crackers Jatz 10 pcs',cat:'Snacks',cal:215,p:3.5,c:29,f:10},
-  {n:'Arrowroot biscuit',cat:'Snacks',cal:461,p:7,c:77,f:13},
-  {n:'Nut Mix 30g',cat:'Snacks',cal:180,p:6,c:6,f:16},
-  {n:'Trail Mix 30g',cat:'Snacks',cal:170,p:4,c:17,f:10},
-  {n:'Beef Jerky 30g',cat:'Snacks',cal:116,p:10,c:7,f:5},
-  {n:'Protein Bar Musashi',cat:'Snacks',cal:200,p:22,c:19,f:5},
-  {n:'Protein Bar BSC',cat:'Snacks',cal:188,p:20,c:18,f:4},
-  {n:'Protein Bar Clif',cat:'Snacks',cal:240,p:10,c:44,f:5},
-  {n:'Mars Bar',cat:'Snacks',cal:449,p:4,c:67,f:18},
-  {n:'Snickers Bar',cat:'Snacks',cal:488,p:9,c:57,f:25},
-  {n:'Kit Kat 2 fingers',cat:'Snacks',cal:505,p:6,c:64,f:25},
-  {n:'Freddo Frog',cat:'Snacks',cal:529,p:6,c:63,f:27},
-  {n:'Jelly Beans 10 pcs',cat:'Snacks',cal:345,p:0,c:87,f:0},
-  {n:'Gummy Bears 10 pcs',cat:'Snacks',cal:327,p:6.9,c:77,f:0.1},
-  // ── DRINKS (extended) ──
-  {n:'Water still',cat:'Drinks',cal:0,p:0,c:0,f:0},
-  {n:'Sparkling Water',cat:'Drinks',cal:0,p:0,c:0,f:0},
-  {n:'Espresso single',cat:'Drinks',cal:5,p:0.3,c:0.8,f:0.2},
-  {n:'Long Black',cat:'Drinks',cal:7,p:0.4,c:1,f:0.2},
-  {n:'Cappuccino 300ml',cat:'Drinks',cal:148,p:8,c:12,f:7},
-  {n:'Oat Latte 300ml',cat:'Drinks',cal:140,p:5,c:18,f:5},
-  {n:'Iced Coffee 250ml',cat:'Drinks',cal:90,p:3.5,c:14,f:2.5},
-  {n:'Green Tea 250ml',cat:'Drinks',cal:2,p:0,c:0.5,f:0},
-  {n:'Herbal Tea 250ml',cat:'Drinks',cal:2,p:0,c:0.5,f:0},
-  {n:'Matcha Latte 250ml',cat:'Drinks',cal:120,p:4,c:16,f:4},
-  {n:'Kombucha 330ml',cat:'Drinks',cal:35,p:0,c:8,f:0},
-  {n:'Apple Juice 250ml',cat:'Drinks',cal:115,p:0.3,c:28,f:0.3},
-  {n:'Mango Juice 250ml',cat:'Drinks',cal:120,p:1,c:29,f:0.3},
-  {n:'Smoothie Banana Berry',cat:'Drinks',cal:250,p:5,c:53,f:2.5},
-  {n:'Protein Smoothie',cat:'Drinks',cal:310,p:28,c:35,f:5},
-  {n:'Sports Drink Powerade 600ml',cat:'Drinks',cal:159,p:0,c:40,f:0},
-  {n:'Energy Drink Monster 500ml',cat:'Drinks',cal:212,p:0,c:54,f:0},
-  {n:'Energy Drink V 250ml',cat:'Drinks',cal:115,p:0,c:29,f:0},
-  {n:'Coke Zero 375ml',cat:'Drinks',cal:2,p:0.2,c:0.1,f:0},
-  {n:'Diet Coke 375ml',cat:'Drinks',cal:2,p:0.2,c:0.1,f:0},
-  {n:'Lemonade 375ml',cat:'Drinks',cal:158,p:0,c:40,f:0},
-  {n:'Chocolate Protein Shake 500ml',cat:'Drinks',cal:270,p:30,c:25,f:5},
-  {n:'White Wine 150ml',cat:'Drinks',cal:121,p:0.1,c:3.8,f:0},
-  {n:'Champagne 150ml',cat:'Drinks',cal:120,p:0.4,c:5,f:0},
-  {n:'Vodka 30ml',cat:'Drinks',cal:65,p:0,c:0,f:0},
-  {n:'Whiskey 30ml',cat:'Drinks',cal:70,p:0,c:0,f:0},
-  {n:'Rum 30ml',cat:'Drinks',cal:64,p:0,c:0,f:0},
-  {n:'Gin 30ml',cat:'Drinks',cal:64,p:0,c:0,f:0},
-  {n:'Hard Seltzer 375ml',cat:'Drinks',cal:100,p:0,c:2,f:0},
-  {n:'Midstrength Beer 375ml',cat:'Drinks',cal:98,p:0.7,c:7,f:0},
-  {n:'Light Beer 375ml',cat:'Drinks',cal:75,p:0.5,c:5,f:0},
-  {n:'Stout 375ml',cat:'Drinks',cal:158,p:1.3,c:16,f:0},
+{n:'Chicken Breast',cat:'Protein',cal:165,p:31,c:0,f:3.6},
+{n:'Chicken Thigh',cat:'Protein',cal:209,p:26,c:0,f:11},
+{n:'Chicken Mince',cat:'Protein',cal:170,p:20,c:0,f:10},
+{n:'Chicken Drumstick',cat:'Protein',cal:172,p:28,c:0,f:5.7},
+{n:'Chicken Wings',cat:'Protein',cal:203,p:30,c:0,f:8},
+{n:'Turkey Mince',cat:'Protein',cal:149,p:21,c:0,f:7},
+{n:'Turkey Breast',cat:'Protein',cal:135,p:30,c:0,f:1},
+{n:'Beef Mince 5% Fat',cat:'Protein',cal:137,p:21,c:0,f:5},
+{n:'Beef Mince 20% Fat',cat:'Protein',cal:254,p:17,c:0,f:20},
+{n:'Beef Steak Sirloin',cat:'Protein',cal:207,p:26,c:0,f:11},
+{n:'Beef Steak Rump',cat:'Protein',cal:188,p:28,c:0,f:8},
+{n:'Beef Steak Eye Fillet',cat:'Protein',cal:196,p:29,c:0,f:8},
+{n:'Beef Jerky',cat:'Protein',cal:290,p:33,c:11,f:12},
+{n:'Pork Loin',cat:'Protein',cal:182,p:25,c:0,f:9},
+{n:'Pork Mince',cat:'Protein',cal:263,p:18,c:0,f:21},
+{n:'Bacon Rasher',cat:'Protein',cal:541,p:37,c:1,f:42},
+{n:'Lamb Mince',cat:'Protein',cal:282,p:17,c:0,f:23},
+{n:'Lamb Chop',cat:'Protein',cal:235,p:22,c:0,f:16},
+{n:'Salmon Fillet',cat:'Protein',cal:208,p:20,c:0,f:13},
+{n:'Barramundi',cat:'Protein',cal:109,p:22,c:0,f:2},
+{n:'Tuna in Spring Water',cat:'Protein',cal:103,p:23,c:0,f:1},
+{n:'Tuna in Oil',cat:'Protein',cal:189,p:25,c:0,f:10},
+{n:'Prawns',cat:'Protein',cal:99,p:21,c:1,f:1},
+{n:'Cod',cat:'Protein',cal:82,p:18,c:0,f:1},
+{n:'Sardines in Oil',cat:'Protein',cal:208,p:24,c:0,f:12},
+{n:'Whole Egg',cat:'Protein',cal:143,p:13,c:1,f:10},
+{n:'Egg White',cat:'Protein',cal:52,p:11,c:1,f:0},
+{n:'Scrambled Eggs 2',cat:'Protein',cal:211,p:14,c:2,f:16},
+{n:'Greek Yoghurt Full Fat',cat:'Protein',cal:97,p:9,c:4,f:5},
+{n:'Greek Yoghurt Low Fat',cat:'Protein',cal:59,p:10,c:4,f:0},
+{n:'Cottage Cheese',cat:'Protein',cal:98,p:11,c:4,f:4},
+{n:'Ricotta',cat:'Protein',cal:174,p:11,c:3,f:13},
+{n:'Protein Powder Whey',cat:'Protein',cal:380,p:75,c:7,f:5},
+{n:'Protein Shake made up',cat:'Protein',cal:150,p:25,c:7,f:3},
+{n:'Brown Rice Cooked',cat:'Carbs',cal:112,p:2.6,c:23,f:0.9},
+{n:'White Rice Cooked',cat:'Carbs',cal:130,p:2.7,c:28,f:0.3},
+{n:'Jasmine Rice Cooked',cat:'Carbs',cal:130,p:2.4,c:28,f:0.4},
+{n:'Basmati Rice Cooked',cat:'Carbs',cal:121,p:3.5,c:25,f:0.4},
+{n:'Fried Rice',cat:'Carbs',cal:163,p:4,c:22,f:7},
+{n:'Rolled Oats Dry',cat:'Carbs',cal:379,p:13,c:67,f:7},
+{n:'Oats Cooked',cat:'Carbs',cal:71,p:2.5,c:12,f:1.5},
+{n:'Muesli',cat:'Carbs',cal:363,p:10,c:62,f:8},
+{n:'Weet-Bix 2 biscuits',cat:'Carbs',cal:138,p:4.5,c:25,f:1},
+{n:'Wholegrain Bread slice',cat:'Carbs',cal:80,p:4,c:13,f:1},
+{n:'White Bread slice',cat:'Carbs',cal:79,p:3,c:15,f:1},
+{n:'Sourdough Bread slice',cat:'Carbs',cal:80,p:3,c:15,f:0.5},
+{n:'Pasta Cooked',cat:'Carbs',cal:131,p:5,c:25,f:1},
+{n:'Quinoa Cooked',cat:'Carbs',cal:120,p:4.4,c:21,f:1.9},
+{n:'Rice Cakes Plain',cat:'Carbs',cal:387,p:7,c:81,f:3},
+{n:'Corn Tortilla',cat:'Carbs',cal:218,p:5,c:46,f:2},
+{n:'Flour Tortilla',cat:'Carbs',cal:296,p:8,c:51,f:7},
+{n:'Couscous Cooked',cat:'Carbs',cal:112,p:3.8,c:23,f:0.2},
+{n:'Sweet Potato',cat:'Carbs',cal:86,p:1.6,c:20,f:0.1},
+{n:'White Potato',cat:'Carbs',cal:77,p:2,c:17,f:0.1},
+{n:'Mashed Potato',cat:'Carbs',cal:99,p:2,c:17,f:3},
+{n:'Corn',cat:'Carbs',cal:86,p:3.3,c:19,f:1.4},
+{n:'Banana Bread slice',cat:'Baked',cal:196,p:3,c:33,f:6},
+{n:'Banana Bread homemade slice',cat:'Baked',cal:215,p:3.5,c:35,f:7},
+{n:'Muffin Blueberry',cat:'Baked',cal:377,p:5,c:55,f:15},
+{n:'Muffin Chocolate',cat:'Baked',cal:403,p:5,c:58,f:18},
+{n:'Croissant',cat:'Baked',cal:406,p:8,c:46,f:21},
+{n:'Pancakes 2 medium',cat:'Baked',cal:227,p:6,c:30,f:9},
+{n:'Bagel plain',cat:'Baked',cal:245,p:10,c:48,f:1.5},
+{n:'English Muffin',cat:'Baked',cal:227,p:8,c:44,f:2},
+{n:'Scone plain',cat:'Baked',cal:364,p:7,c:53,f:14},
+{n:'Tim Tam biscuit',cat:'Baked',cal:497,p:5,c:62,f:25},
+{n:'Broccoli',cat:'Vegetables',cal:34,p:2.8,c:7,f:0.4},
+{n:'Spinach',cat:'Vegetables',cal:23,p:2.9,c:3.6,f:0.4},
+{n:'Baby Spinach',cat:'Vegetables',cal:23,p:2.9,c:3.6,f:0.4},
+{n:'Mixed Salad Leaves',cat:'Vegetables',cal:17,p:1.3,c:2.9,f:0.2},
+{n:'Capsicum Red',cat:'Vegetables',cal:31,p:1,c:6,f:0.3},
+{n:'Capsicum Green',cat:'Vegetables',cal:20,p:0.9,c:4.6,f:0.2},
+{n:'Zucchini',cat:'Vegetables',cal:17,p:1.2,c:3.1,f:0.3},
+{n:'Cherry Tomatoes',cat:'Vegetables',cal:18,p:0.9,c:3.9,f:0.2},
+{n:'Tomato',cat:'Vegetables',cal:18,p:0.9,c:3.9,f:0.2},
+{n:'Cucumber',cat:'Vegetables',cal:15,p:0.7,c:3.6,f:0.1},
+{n:'Carrot',cat:'Vegetables',cal:41,p:0.9,c:10,f:0.2},
+{n:'Asparagus',cat:'Vegetables',cal:20,p:2.2,c:3.9,f:0.1},
+{n:'Green Beans',cat:'Vegetables',cal:31,p:1.8,c:7,f:0.1},
+{n:'Mushrooms',cat:'Vegetables',cal:22,p:3.1,c:3.3,f:0.3},
+{n:'Onion',cat:'Vegetables',cal:40,p:1.1,c:9.3,f:0.1},
+{n:'Kale',cat:'Vegetables',cal:49,p:4.3,c:9,f:0.9},
+{n:'Cauliflower',cat:'Vegetables',cal:25,p:1.9,c:5,f:0.3},
+{n:'Celery',cat:'Vegetables',cal:16,p:0.7,c:3,f:0.2},
+{n:'Beetroot',cat:'Vegetables',cal:43,p:1.6,c:10,f:0.2},
+{n:'Pumpkin',cat:'Vegetables',cal:26,p:1,c:6.5,f:0.1},
+{n:'Banana',cat:'Fruit',cal:89,p:1.1,c:23,f:0.3},
+{n:'Apple',cat:'Fruit',cal:52,p:0.3,c:14,f:0.2},
+{n:'Orange',cat:'Fruit',cal:47,p:0.9,c:12,f:0.1},
+{n:'Blueberries',cat:'Fruit',cal:57,p:0.7,c:14,f:0.3},
+{n:'Strawberries',cat:'Fruit',cal:32,p:0.7,c:8,f:0.3},
+{n:'Raspberries',cat:'Fruit',cal:52,p:1.2,c:12,f:0.7},
+{n:'Mixed Berries Frozen',cat:'Fruit',cal:45,p:0.8,c:11,f:0.3},
+{n:'Watermelon',cat:'Fruit',cal:30,p:0.6,c:8,f:0.2},
+{n:'Mango',cat:'Fruit',cal:60,p:0.8,c:15,f:0.4},
+{n:'Grapes',cat:'Fruit',cal:69,p:0.7,c:18,f:0.2},
+{n:'Pineapple',cat:'Fruit',cal:50,p:0.5,c:13,f:0.1},
+{n:'Kiwi Fruit',cat:'Fruit',cal:61,p:1.1,c:15,f:0.5},
+{n:'Pear',cat:'Fruit',cal:57,p:0.4,c:15,f:0.1},
+{n:'Avocado',cat:'Fruit',cal:160,p:2,c:9,f:15},
+{n:'Dates',cat:'Fruit',cal:282,p:2.5,c:75,f:0.4},
+{n:'Raisins',cat:'Fruit',cal:299,p:3.1,c:79,f:0.5},
+{n:'Olive Oil',cat:'Fats',cal:884,p:0,c:0,f:100},
+{n:'Coconut Oil',cat:'Fats',cal:862,p:0,c:0,f:100},
+{n:'Butter',cat:'Fats',cal:717,p:0.9,c:0.1,f:81},
+{n:'Almond Butter',cat:'Fats',cal:614,p:21,c:19,f:56},
+{n:'Peanut Butter',cat:'Fats',cal:588,p:25,c:20,f:50},
+{n:'Mixed Nuts',cat:'Fats',cal:607,p:20,c:21,f:54},
+{n:'Almonds',cat:'Fats',cal:579,p:21,c:22,f:50},
+{n:'Cashews',cat:'Fats',cal:553,p:18,c:30,f:44},
+{n:'Walnuts',cat:'Fats',cal:654,p:15,c:14,f:65},
+{n:'Macadamia Nuts',cat:'Fats',cal:718,p:8,c:14,f:76},
+{n:'Pistachios',cat:'Fats',cal:562,p:20,c:28,f:45},
+{n:'Chia Seeds',cat:'Fats',cal:486,p:17,c:42,f:31},
+{n:'Full Cream Milk',cat:'Dairy',cal:61,p:3.2,c:4.8,f:3.3},
+{n:'Skim Milk',cat:'Dairy',cal:35,p:3.5,c:5,f:0.1},
+{n:'Oat Milk',cat:'Dairy',cal:48,p:1.2,c:6.4,f:2},
+{n:'Almond Milk',cat:'Dairy',cal:17,p:0.6,c:1.5,f:1.1},
+{n:'Cheddar Cheese',cat:'Dairy',cal:403,p:25,c:1,f:33},
+{n:'Mozzarella',cat:'Dairy',cal:280,p:28,c:2,f:17},
+{n:'Feta Cheese',cat:'Dairy',cal:264,p:14,c:4,f:21},
+{n:'Cream Cheese',cat:'Dairy',cal:342,p:6,c:4,f:34},
+{n:'Ice Cream vanilla',cat:'Dairy',cal:207,p:3.5,c:24,f:11},
+{n:'Chickpeas Cooked',cat:'Legumes',cal:164,p:8.9,c:27,f:2.6},
+{n:'Lentils Cooked',cat:'Legumes',cal:116,p:9,c:20,f:0.4},
+{n:'Black Beans Cooked',cat:'Legumes',cal:132,p:8.9,c:24,f:0.5},
+{n:'Kidney Beans Cooked',cat:'Legumes',cal:127,p:8.7,c:23,f:0.5},
+{n:'Baked Beans',cat:'Legumes',cal:94,p:5,c:17,f:0.5},
+{n:'Tomato Passata',cat:'Sauces',cal:28,p:1.5,c:5.8,f:0.2},
+{n:'Tomato Sauce Heinz',cat:'Sauces',cal:112,p:1.5,c:27,f:0.2},
+{n:'BBQ Sauce',cat:'Sauces',cal:172,p:1.2,c:43,f:0.2},
+{n:'Soy Sauce',cat:'Sauces',cal:53,p:8,c:5,f:0.1},
+{n:'Hummus',cat:'Sauces',cal:166,p:8,c:14,f:10},
+{n:'Mayonnaise',cat:'Sauces',cal:680,p:1,c:2,f:75},
+{n:'Sweet Chilli Sauce',cat:'Sauces',cal:190,p:1,c:46,f:0.4},
+{n:'Pesto',cat:'Sauces',cal:408,p:8,c:4,f:41},
+{n:'Subway 6 inch Turkey',cat:'Meals',cal:280,p:18,c:46,f:4},
+{n:'Subway 6 inch Chicken',cat:'Meals',cal:330,p:24,c:46,f:5},
+{n:'Woolworths Roast Chicken',cat:'Meals',cal:185,p:22,c:0,f:11},
+{n:'McDonalds Big Mac',cat:'Meals',cal:550,p:25,c:45,f:30},
+{n:'McDonalds Large Fries',cat:'Meals',cal:490,p:6,c:66,f:23},
+{n:'Pizza slice cheese',cat:'Meals',cal:272,p:12,c:33,f:10},
+{n:'Sushi roll salmon',cat:'Meals',cal:167,p:6,c:30,f:2},
+{n:'Beef Burrito',cat:'Meals',cal:313,p:18,c:37,f:11},
+{n:'Rice Crackers 10 pcs',cat:'Snacks',cal:109,p:2,c:23,f:0.8},
+{n:'Dark Chocolate 85%',cat:'Snacks',cal:598,p:8,c:20,f:43},
+{n:'Milk Chocolate',cat:'Snacks',cal:535,p:8,c:60,f:30},
+{n:'Popcorn Plain',cat:'Snacks',cal:375,p:12,c:74,f:4},
+{n:'Protein Bar Quest',cat:'Snacks',cal:190,p:20,c:22,f:7},
+{n:'Muesli Bar',cat:'Snacks',cal:393,p:6,c:61,f:14},
+{n:'Orange Juice 250ml',cat:'Drinks',cal:113,p:1.7,c:26,f:0.5},
+{n:'Coconut Water 250ml',cat:'Drinks',cal:46,p:1.7,c:9,f:0.5},
+{n:'Sports Drink Gatorade 600ml',cat:'Drinks',cal:150,p:0,c:38,f:0},
+{n:'Coke 375ml can',cat:'Drinks',cal:158,p:0,c:39,f:0},
+{n:'Beer 375ml',cat:'Drinks',cal:145,p:1,c:13,f:0},
+{n:'Red Wine 150ml',cat:'Drinks',cal:125,p:0.1,c:4,f:0},
+{n:'Latte with full cream 300ml',cat:'Drinks',cal:168,p:8,c:13,f:8},
+{n:'Flat White 300ml',cat:'Drinks',cal:147,p:8,c:11,f:7},
+{n:'Black Coffee',cat:'Drinks',cal:2,p:0.3,c:0,f:0},
+{n:'Chicken Thigh Skinless',cat:'Protein',cal:177,p:25,c:0,f:8},
+{n:'Chicken Drumstick',cat:'Protein',cal:172,p:22,c:0,f:9},
+{n:'Chicken Wings',cat:'Protein',cal:203,p:17,c:0,f:14},
+{n:'Turkey Breast',cat:'Protein',cal:135,p:30,c:0,f:1},
+{n:'Turkey Mince',cat:'Protein',cal:149,p:29,c:0,f:3},
+{n:'Beef Mince Regular',cat:'Protein',cal:254,p:26,c:0,f:16},
+{n:'Beef Mince Lean 5%',cat:'Protein',cal:175,p:28,c:0,f:7},
+{n:'Beef Steak Ribeye',cat:'Protein',cal:291,p:24,c:0,f:21},
+{n:'Beef Steak Sirloin',cat:'Protein',cal:207,p:26,c:0,f:11},
+{n:'Beef Steak Eye Fillet',cat:'Protein',cal:198,p:28,c:0,f:9},
+{n:'Lamb Chop',cat:'Protein',cal:294,p:25,c:0,f:21},
+{n:'Lamb Mince',cat:'Protein',cal:282,p:24,c:0,f:20},
+{n:'Pork Loin',cat:'Protein',cal:242,p:29,c:0,f:14},
+{n:'Pork Belly',cat:'Protein',cal:518,p:9,c:0,f:53},
+{n:'Pork Mince',cat:'Protein',cal:263,p:28,c:0,f:16},
+{n:'Bacon Rasher',cat:'Protein',cal:541,p:37,c:1,f:42},
+{n:'Ham Leg Sliced',cat:'Protein',cal:107,p:17,c:1.5,f:3.5},
+{n:'Prosciutto',cat:'Protein',cal:215,p:29,c:0,f:11},
+{n:'Salami',cat:'Protein',cal:425,p:22,c:2,f:37},
+{n:'Chorizo',cat:'Protein',cal:455,p:24,c:2,f:39},
+{n:'Sausage Beef',cat:'Protein',cal:332,p:13,c:10,f:28},
+{n:'Sausage Pork Thin',cat:'Protein',cal:301,p:14,c:8,f:24},
+{n:'Kangaroo Fillet',cat:'Protein',cal:116,p:24,c:0,f:2},
+{n:'Venison',cat:'Protein',cal:158,p:30,c:0,f:3},
+{n:'Bison',cat:'Protein',cal:143,p:28,c:0,f:2.5},
+{n:'Salmon Fillet',cat:'Seafood',cal:208,p:20,c:0,f:13},
+{n:'Salmon Smoked',cat:'Seafood',cal:117,p:18,c:0,f:4.3},
+{n:'Barramundi',cat:'Seafood',cal:96,p:21,c:0,f:1.3},
+{n:'Snapper',cat:'Seafood',cal:100,p:21,c:0,f:1.3},
+{n:'Tuna Steak Fresh',cat:'Seafood',cal:144,p:23,c:0,f:5},
+{n:'Tuna Canned in Water',cat:'Seafood',cal:86,p:19,c:0,f:1},
+{n:'Tuna Canned in Oil',cat:'Seafood',cal:190,p:25,c:0,f:9},
+{n:'Sardines Canned',cat:'Seafood',cal:208,p:25,c:0,f:11},
+{n:'Mackerel',cat:'Seafood',cal:205,p:19,c:0,f:14},
+{n:'Cod',cat:'Seafood',cal:82,p:18,c:0,f:0.7},
+{n:'Flathead',cat:'Seafood',cal:90,p:20,c:0,f:0.8},
+{n:'Prawns Cooked',cat:'Seafood',cal:99,p:21,c:0.9,f:1},
+{n:'Prawns King Raw',cat:'Seafood',cal:85,p:18,c:0,f:1},
+{n:'Squid',cat:'Seafood',cal:92,p:16,c:3,f:1.4},
+{n:'Calamari Crumbed',cat:'Seafood',cal:175,p:15,c:14,f:7},
+{n:'Scallops',cat:'Seafood',cal:88,p:17,c:3,f:0.8},
+{n:'Oysters',cat:'Seafood',cal:68,p:7,c:3.7,f:2.5},
+{n:'Mussels Cooked',cat:'Seafood',cal:172,p:24,c:7,f:4.5},
+{n:'Crab Meat',cat:'Seafood',cal:97,p:19,c:0,f:2},
+{n:'Lobster',cat:'Seafood',cal:98,p:21,c:0,f:0.6},
+{n:'Fish Fingers 3 pcs',cat:'Seafood',cal:200,p:11,c:19,f:9},
+{n:'Egg Whole Large',cat:'Eggs',cal:143,p:13,c:1,f:10},
+{n:'Egg White',cat:'Eggs',cal:52,p:11,c:0.7,f:0.2},
+{n:'Egg Yolk',cat:'Eggs',cal:322,p:16,c:1,f:27},
+{n:'Scrambled Eggs 2 eggs',cat:'Eggs',cal:211,p:16,c:2,f:15},
+{n:'Boiled Egg 1 large',cat:'Eggs',cal:78,p:6,c:0.6,f:5},
+{n:'Poached Egg 1 large',cat:'Eggs',cal:71,p:6,c:0.4,f:4.7},
+{n:'Fried Egg 1 large',cat:'Eggs',cal:90,p:6,c:0.4,f:7},
+{n:'Omelette 2 egg plain',cat:'Eggs',cal:188,p:14,c:1,f:14},
+{n:'White Rice Cooked',cat:'Grains',cal:130,p:2.7,c:28,f:0.3},
+{n:'Brown Rice Cooked',cat:'Grains',cal:122,p:2.6,c:26,f:1},
+{n:'Jasmine Rice Cooked',cat:'Grains',cal:130,p:2.5,c:29,f:0.3},
+{n:'Basmati Rice Cooked',cat:'Grains',cal:121,p:3,c:25,f:0.4},
+{n:'Fried Rice 1 cup',cat:'Grains',cal:238,p:5,c:40,f:7},
+{n:'Sushi Rice 1 cup cooked',cat:'Grains',cal:242,p:4,c:53,f:0.3},
+{n:'Quinoa Cooked',cat:'Grains',cal:120,p:4.4,c:22,f:1.9},
+{n:'Oats Rolled Dry',cat:'Grains',cal:379,p:13,c:68,f:7},
+{n:'Oats Cooked with Water',cat:'Grains',cal:71,p:2.5,c:12,f:1.5},
+{n:'Muesli Toasted',cat:'Grains',cal:404,p:9,c:65,f:13},
+{n:'Granola',cat:'Grains',cal:471,p:10,c:64,f:20},
+{n:'Cornflakes',cat:'Grains',cal:357,p:7,c:84,f:0.3},
+{n:'Weet-Bix 2 biscuits',cat:'Grains',cal:129,p:4,c:25,f:0.8},
+{n:'Weetabix 2 biscuits',cat:'Grains',cal:130,p:4,c:26,f:0.8},
+{n:'All Bran',cat:'Grains',cal:261,p:12,c:48,f:3.5},
+{n:'Wheat Bran',cat:'Grains',cal:216,p:16,c:65,f:4.3},
+{n:'Couscous Cooked',cat:'Grains',cal:112,p:3.8,c:23,f:0.2},
+{n:'Freekeh Cooked',cat:'Grains',cal:153,p:6,c:28,f:0.5},
+{n:'Barley Cooked',cat:'Grains',cal:123,p:2.3,c:28,f:0.4},
+{n:'Buckwheat Cooked',cat:'Grains',cal:92,p:3.4,c:20,f:0.6},
+{n:'Polenta Cooked',cat:'Grains',cal:70,p:1.6,c:15,f:0.3},
+{n:'Pasta White Cooked',cat:'Grains',cal:158,p:5.8,c:31,f:0.9},
+{n:'Pasta Wholemeal Cooked',cat:'Grains',cal:149,p:5.3,c:29,f:0.5},
+{n:'Pasta Penne Cooked',cat:'Grains',cal:158,p:5.8,c:31,f:0.9},
+{n:'Pasta Spaghetti Cooked',cat:'Grains',cal:157,p:5.5,c:30,f:0.9},
+{n:'Pasta Gnocchi Cooked',cat:'Grains',cal:130,p:3,c:28,f:0.6},
+{n:'Noodles Egg Cooked',cat:'Grains',cal:138,p:4.5,c:25,f:2.2},
+{n:'Noodles Rice Cooked',cat:'Grains',cal:109,p:1.8,c:25,f:0.2},
+{n:'Noodles Soba Cooked',cat:'Grains',cal:99,p:5,c:21,f:0.1},
+{n:'Noodles Udon Cooked',cat:'Grains',cal:96,p:2.7,c:20,f:0.4},
+{n:'Noodles Ramen Cooked',cat:'Grains',cal:138,p:4,c:26,f:2},
+{n:'Sourdough Bread slice',cat:'Baked',cal:132,p:5.5,c:26,f:0.8},
+{n:'Rye Bread slice',cat:'Baked',cal:129,p:5.4,c:24,f:1.1},
+{n:'Multigrain Bread slice',cat:'Baked',cal:129,p:5,c:24,f:2},
+{n:'Gluten Free Bread slice',cat:'Baked',cal:108,p:2,c:22,f:2},
+{n:'Pita Bread whole',cat:'Baked',cal:165,p:5.5,c:33,f:1},
+{n:'Naan Bread',cat:'Baked',cal:317,p:9,c:56,f:7},
+{n:'Roti Chapati',cat:'Baked',cal:297,p:9,c:50,f:7},
+{n:'Tortilla Flour 20cm',cat:'Baked',cal:218,p:5.6,c:37,f:5},
+{n:'Tortilla Corn 15cm',cat:'Baked',cal:209,p:4.5,c:43,f:2.5},
+{n:'Rice Cake plain',cat:'Baked',cal:387,p:8,c:81,f:3},
+{n:'Corn Thins 2 pcs',cat:'Baked',cal:87,p:1.8,c:18,f:0.6},
+{n:'Crumpet',cat:'Baked',cal:177,p:6,c:37,f:0.6},
+{n:'Pikelet',cat:'Baked',cal:222,p:6,c:40,f:4},
+{n:'Pancake plain',cat:'Baked',cal:227,p:6,c:38,f:6},
+{n:'Waffle plain',cat:'Baked',cal:291,p:8,c:37,f:13},
+{n:'Muffin blueberry',cat:'Baked',cal:377,p:5,c:55,f:15},
+{n:'Croissant plain',cat:'Baked',cal:406,p:8.5,c:46,f:21},
+{n:'Danish pastry',cat:'Baked',cal:374,p:6,c:45,f:19},
+{n:'Banana Bread slice',cat:'Baked',cal:290,p:5,c:43,f:11},
+{n:'Zucchini Bread slice',cat:'Baked',cal:220,p:4,c:32,f:9},
+{n:'Carrot Cake slice',cat:'Baked',cal:415,p:4.5,c:52,f:21},
+{n:'Brownie',cat:'Baked',cal:466,p:5,c:63,f:22},
+{n:'Cookie chocolate chip',cat:'Baked',cal:502,p:5.5,c:64,f:25},
+{n:'ANZAC biscuit',cat:'Baked',cal:456,p:5,c:65,f:20},
+{n:'Lamington',cat:'Baked',cal:373,p:4.5,c:60,f:13},
+{n:'Sweet Potato',cat:'Vegetables',cal:86,p:1.6,c:20,f:0.1},
+{n:'Sweet Potato Baked',cat:'Vegetables',cal:90,p:2,c:21,f:0.1},
+{n:'Potato White',cat:'Vegetables',cal:77,p:2,c:17,f:0.1},
+{n:'Potato Baked with skin',cat:'Vegetables',cal:93,p:2.5,c:21,f:0.1},
+{n:'Mashed Potato',cat:'Vegetables',cal:113,p:2,c:17,f:4},
+{n:'Potato Wedges baked',cat:'Vegetables',cal:187,p:3,c:30,f:6},
+{n:'Chips Hot fried',cat:'Vegetables',cal:312,p:3.5,c:41,f:15},
+{n:'Corn on cob',cat:'Vegetables',cal:86,p:3.2,c:19,f:1.4},
+{n:'Corn Kernels canned',cat:'Vegetables',cal:83,p:2.7,c:19,f:1.1},
+{n:'Edamame',cat:'Vegetables',cal:121,p:11,c:9,f:5},
+{n:'Snow Peas',cat:'Vegetables',cal:42,p:2.8,c:7.5,f:0.2},
+{n:'Green Peas',cat:'Vegetables',cal:81,p:5.4,c:14,f:0.4},
+{n:'Eggplant',cat:'Vegetables',cal:25,p:1,c:6,f:0.2},
+{n:'Leek',cat:'Vegetables',cal:61,p:1.5,c:14,f:0.3},
+{n:'Bok Choy',cat:'Vegetables',cal:13,p:1.5,c:2.2,f:0.2},
+{n:'Silverbeet',cat:'Vegetables',cal:19,p:1.8,c:3.7,f:0.1},
+{n:'Lettuce Iceberg',cat:'Vegetables',cal:14,p:0.9,c:2,f:0.1},
+{n:'Lettuce Cos',cat:'Vegetables',cal:17,p:1.2,c:3.3,f:0.3},
+{n:'Rocket',cat:'Vegetables',cal:25,p:2.6,c:3.7,f:0.7},
+{n:'Artichoke',cat:'Vegetables',cal:47,p:3.3,c:11,f:0.2},
+{n:'Brussels Sprouts',cat:'Vegetables',cal:43,p:3.4,c:9,f:0.3},
+{n:'Fennel',cat:'Vegetables',cal:31,p:1.2,c:7.3,f:0.2},
+{n:'Radish',cat:'Vegetables',cal:16,p:0.7,c:3.4,f:0.1},
+{n:'Bean Sprouts',cat:'Vegetables',cal:30,p:3,c:5.9,f:0.2},
+{n:'Water Chestnuts',cat:'Vegetables',cal:97,p:2,c:23,f:0.1},
+{n:'Bamboo Shoots',cat:'Vegetables',cal:27,p:2.6,c:5.2,f:0.3},
+{n:'Grapefruit',cat:'Fruit',cal:42,p:0.8,c:11,f:0.1},
+{n:'Lemon',cat:'Fruit',cal:29,p:1.1,c:9,f:0.3},
+{n:'Lime',cat:'Fruit',cal:30,p:0.7,c:11,f:0.2},
+{n:'Passionfruit',cat:'Fruit',cal:97,p:2.2,c:23,f:0.7},
+{n:'Papaya',cat:'Fruit',cal:43,p:0.5,c:11,f:0.3},
+{n:'Rockmelon',cat:'Fruit',cal:34,p:0.8,c:8,f:0.2},
+{n:'Honeydew Melon',cat:'Fruit',cal:36,p:0.5,c:9,f:0.1},
+{n:'Lychee',cat:'Fruit',cal:66,p:0.8,c:17,f:0.4},
+{n:'Pomegranate',cat:'Fruit',cal:83,p:1.7,c:19,f:1.2},
+{n:'Dragon Fruit',cat:'Fruit',cal:60,p:1.2,c:13,f:0.4},
+{n:'Jackfruit',cat:'Fruit',cal:95,p:1.7,c:24,f:0.6},
+{n:'Fig fresh',cat:'Fruit',cal:74,p:0.8,c:19,f:0.3},
+{n:'Prunes dried',cat:'Fruit',cal:240,p:2.2,c:64,f:0.4},
+{n:'Apricot fresh',cat:'Fruit',cal:48,p:1.4,c:11,f:0.4},
+{n:'Apricot dried',cat:'Fruit',cal:241,p:3.4,c:63,f:0.5},
+{n:'Peach',cat:'Fruit',cal:39,p:0.9,c:10,f:0.3},
+{n:'Nectarine',cat:'Fruit',cal:44,p:1.1,c:11,f:0.3},
+{n:'Plum',cat:'Fruit',cal:46,p:0.7,c:11,f:0.3},
+{n:'Cherries',cat:'Fruit',cal:63,p:1.1,c:16,f:0.2},
+{n:'Cranberries fresh',cat:'Fruit',cal:46,p:0.4,c:12,f:0.1},
+{n:'Greek Yoghurt Full Fat',cat:'Dairy',cal:97,p:9,c:4,f:5},
+{n:'Greek Yoghurt Low Fat',cat:'Dairy',cal:59,p:10,c:3.6,f:0.4},
+{n:'Natural Yoghurt',cat:'Dairy',cal:63,p:3.5,c:7,f:2.5},
+{n:'Flavoured Yoghurt',cat:'Dairy',cal:95,p:3.5,c:17,f:1.5},
+{n:'Cottage Cheese',cat:'Dairy',cal:98,p:11,c:3.4,f:4.3},
+{n:'Ricotta',cat:'Dairy',cal:174,p:11,c:3,f:13},
+{n:'Brie',cat:'Dairy',cal:334,p:21,c:0.5,f:28},
+{n:'Camembert',cat:'Dairy',cal:300,p:20,c:0.5,f:24},
+{n:'Parmesan',cat:'Dairy',cal:431,p:38,c:3.2,f:29},
+{n:'Gouda',cat:'Dairy',cal:356,p:25,c:2.2,f:28},
+{n:'Blue Cheese',cat:'Dairy',cal:353,p:21,c:2.3,f:29},
+{n:'Haloumi',cat:'Dairy',cal:321,p:22,c:1.3,f:26},
+{n:'Chocolate Milk 250ml',cat:'Dairy',cal:158,p:7,c:26,f:3.5},
+{n:'Soy Milk 250ml',cat:'Dairy',cal:45,p:3.3,c:1.5,f:2.5},
+{n:'Rice Milk 250ml',cat:'Dairy',cal:95,p:0.7,c:19,f:2.5},
+{n:'Kefir 200ml',cat:'Dairy',cal:74,p:6,c:6,f:2.5},
+{n:'Butter Salted',cat:'Dairy',cal:717,p:0.9,c:0.1,f:81},
+{n:'Ghee',cat:'Dairy',cal:900,p:0,c:0,f:100},
+{n:'Sour Cream',cat:'Dairy',cal:193,p:2.9,c:3.6,f:19},
+{n:'Whipped Cream',cat:'Dairy',cal:257,p:2,c:3,f:27},
+{n:'Whey Protein Isolate scoop',cat:'Supplements',cal:110,p:25,c:1,f:0.5},
+{n:'Whey Protein Concentrate scoop',cat:'Supplements',cal:130,p:24,c:4,f:2},
+{n:'Casein Protein scoop',cat:'Supplements',cal:120,p:24,c:3,f:1},
+{n:'Plant Protein scoop',cat:'Supplements',cal:120,p:22,c:5,f:2},
+{n:'Collagen Protein scoop',cat:'Supplements',cal:70,p:17,c:0,f:0},
+{n:'Protein Shake with water',cat:'Supplements',cal:130,p:25,c:4,f:1.5},
+{n:'Protein Shake with milk',cat:'Supplements',cal:280,p:32,c:17,f:8},
+{n:'Creatine 5g',cat:'Supplements',cal:0,p:0,c:0,f:0},
+{n:'BCAA drink',cat:'Supplements',cal:20,p:5,c:0,f:0},
+{n:'Pre-workout scoop',cat:'Supplements',cal:25,p:1,c:5,f:0},
+{n:'Mass Gainer scoop',cat:'Supplements',cal:390,p:30,c:60,f:5},
+{n:'Sunflower Seeds',cat:'Fats',cal:584,p:21,c:20,f:51},
+{n:'Pumpkin Seeds',cat:'Fats',cal:559,p:30,c:11,f:49},
+{n:'Sesame Seeds',cat:'Fats',cal:573,p:18,c:23,f:50},
+{n:'Flaxseeds',cat:'Fats',cal:534,p:18,c:29,f:42},
+{n:'Hemp Seeds',cat:'Fats',cal:553,p:32,c:9,f:49},
+{n:'Tahini',cat:'Fats',cal:595,p:17,c:21,f:54},
+{n:'Hazelnut',cat:'Fats',cal:628,p:15,c:17,f:61},
+{n:'Brazil Nuts',cat:'Fats',cal:659,p:14,c:12,f:67},
+{n:'Pecans',cat:'Fats',cal:691,p:9,c:14,f:72},
+{n:'Coconut Flesh',cat:'Fats',cal:354,p:3,c:15,f:33},
+{n:'Coconut Milk canned',cat:'Fats',cal:197,p:2,c:6,f:21},
+{n:'Coconut Cream',cat:'Fats',cal:330,p:3,c:7,f:35},
+{n:'Tofu Firm',cat:'Legumes',cal:144,p:17,c:3,f:8},
+{n:'Tofu Silken',cat:'Legumes',cal:55,p:5,c:2,f:2.7},
+{n:'Tempeh',cat:'Legumes',cal:193,p:19,c:9,f:11},
+{n:'Edamame shelled',cat:'Legumes',cal:121,p:11,c:9,f:5},
+{n:'Soybeans cooked',cat:'Legumes',cal:173,p:17,c:10,f:9},
+{n:'Peanuts roasted',cat:'Legumes',cal:585,p:26,c:16,f:50},
+{n:'Cannellini Beans',cat:'Legumes',cal:139,p:9.7,c:25,f:0.5},
+{n:'Navy Beans',cat:'Legumes',cal:140,p:9.7,c:26,f:0.6},
+{n:'Pinto Beans',cat:'Legumes',cal:143,p:9,c:27,f:0.7},
+{n:'Mung Beans Cooked',cat:'Legumes',cal:105,p:7,c:19,f:0.4},
+{n:'Split Peas Cooked',cat:'Legumes',cal:118,p:8.3,c:21,f:0.4},
+{n:'Red Lentils Cooked',cat:'Legumes',cal:116,p:9,c:20,f:0.4},
+{n:'Tomato Paste',cat:'Sauces',cal:82,p:4.3,c:19,f:0.4},
+{n:'Worcestershire Sauce',cat:'Sauces',cal:78,p:1,c:20,f:0.1},
+{n:'Fish Sauce',cat:'Sauces',cal:35,p:5.1,c:3.6,f:0},
+{n:'Oyster Sauce',cat:'Sauces',cal:105,p:1.5,c:25,f:0.3},
+{n:'Hoisin Sauce',cat:'Sauces',cal:220,p:3.5,c:45,f:4},
+{n:'Sriracha',cat:'Sauces',cal:93,p:1.1,c:20,f:0.9},
+{n:'Tabasco',cat:'Sauces',cal:12,p:0.5,c:2,f:0.2},
+{n:'Mustard Dijon',cat:'Sauces',cal:185,p:7,c:18,f:10},
+{n:'Caesar Dressing',cat:'Sauces',cal:300,p:2.5,c:5,f:31},
+{n:'Ranch Dressing',cat:'Sauces',cal:452,p:1.5,c:4,f:48},
+{n:'Balsamic Vinegar',cat:'Sauces',cal:88,p:0.5,c:17,f:0},
+{n:'Apple Cider Vinegar',cat:'Sauces',cal:22,p:0,c:1,f:0},
+{n:'Coconut Aminos',cat:'Sauces',cal:58,p:1,c:14,f:0},
+{n:'Curry Paste Red',cat:'Sauces',cal:165,p:4,c:14,f:11},
+{n:'Curry Paste Green',cat:'Sauces',cal:155,p:4,c:10,f:12},
+{n:'Vegemite per serve',cat:'Meals',cal:135,p:14,c:16,f:0.4},
+{n:'Meat Pie',cat:'Meals',cal:270,p:9,c:27,f:14},
+{n:'Sausage Roll',cat:'Meals',cal:321,p:10,c:28,f:19},
+{n:'Dim Sim fried',cat:'Meals',cal:120,p:5,c:14,f:5},
+{n:'Spring Roll fried',cat:'Meals',cal:111,p:3,c:15,f:5},
+{n:'Steamed Rice Cup 250g',cat:'Meals',cal:325,p:6.8,c:72,f:0.8},
+{n:'Fried Chicken piece',cat:'Meals',cal:320,p:28,c:12,f:18},
+{n:'KFC Original piece',cat:'Meals',cal:320,p:28,c:12,f:18},
+{n:'McDonalds Cheeseburger',cat:'Meals',cal:303,p:15,c:33,f:12},
+{n:'McDonalds McChicken',cat:'Meals',cal:397,p:14,c:43,f:18},
+{n:'Chicken Caesar Salad',cat:'Meals',cal:250,p:20,c:12,f:14},
+{n:'Chicken Stir Fry with veg',cat:'Meals',cal:180,p:22,c:12,f:5},
+{n:'Beef Stir Fry with veg',cat:'Meals',cal:195,p:20,c:12,f:7},
+{n:'Butter Chicken with rice',cat:'Meals',cal:290,p:18,c:35,f:8},
+{n:'Lamb Korma with rice',cat:'Meals',cal:310,p:16,c:36,f:10},
+{n:'Pad Thai with chicken',cat:'Meals',cal:352,p:20,c:43,f:10},
+{n:'Laksa with chicken',cat:'Meals',cal:340,p:18,c:35,f:14},
+{n:'Spaghetti Bolognese',cat:'Meals',cal:330,p:22,c:38,f:9},
+{n:'Lasagne',cat:'Meals',cal:193,p:11,c:17,f:8},
+{n:'Hamburger with the lot',cat:'Meals',cal:620,p:35,c:42,f:33},
+{n:'BLT Sandwich',cat:'Meals',cal:330,p:16,c:32,f:15},
+{n:'Toasted Cheese Sandwich',cat:'Meals',cal:368,p:16,c:36,f:18},
+{n:'Egg Salad Sandwich',cat:'Meals',cal:290,p:12,c:30,f:13},
+{n:'Tuna Salad Sandwich',cat:'Meals',cal:260,p:17,c:30,f:8},
+{n:'Avocado Toast 1 slice',cat:'Meals',cal:195,p:4,c:20,f:11},
+{n:'Smashed Avo on sourdough',cat:'Meals',cal:310,p:7,c:36,f:16},
+{n:'Acai Bowl',cat:'Meals',cal:350,p:5,c:55,f:12},
+{n:'Poke Bowl with salmon',cat:'Meals',cal:450,p:28,c:52,f:14},
+{n:'Rice Paper Rolls 2 pcs',cat:'Meals',cal:130,p:7,c:22,f:2},
+{n:'Dumpling steamed 4 pcs',cat:'Meals',cal:180,p:8,c:27,f:4},
+{n:'Dumpling fried 4 pcs',cat:'Meals',cal:240,p:8,c:28,f:11},
+{n:'Nasi Goreng',cat:'Meals',cal:220,p:8,c:40,f:4},
+{n:'Corn Chips 30g',cat:'Snacks',cal:153,p:2,c:19,f:8},
+{n:'Potato Chips 30g',cat:'Snacks',cal:157,p:1.8,c:16,f:10},
+{n:'Pretzels 30g',cat:'Snacks',cal:114,p:3,c:23,f:1},
+{n:'Crackers Vita-Weat 4 pcs',cat:'Snacks',cal:153,p:3.5,c:25,f:4},
+{n:'Crackers Jatz 10 pcs',cat:'Snacks',cal:215,p:3.5,c:29,f:10},
+{n:'Arrowroot biscuit',cat:'Snacks',cal:461,p:7,c:77,f:13},
+{n:'Nut Mix 30g',cat:'Snacks',cal:180,p:6,c:6,f:16},
+{n:'Trail Mix 30g',cat:'Snacks',cal:170,p:4,c:17,f:10},
+{n:'Beef Jerky 30g',cat:'Snacks',cal:116,p:10,c:7,f:5},
+{n:'Protein Bar Musashi',cat:'Snacks',cal:200,p:22,c:19,f:5},
+{n:'Protein Bar BSC',cat:'Snacks',cal:188,p:20,c:18,f:4},
+{n:'Protein Bar Clif',cat:'Snacks',cal:240,p:10,c:44,f:5},
+{n:'Mars Bar',cat:'Snacks',cal:449,p:4,c:67,f:18},
+{n:'Snickers Bar',cat:'Snacks',cal:488,p:9,c:57,f:25},
+{n:'Kit Kat 2 fingers',cat:'Snacks',cal:505,p:6,c:64,f:25},
+{n:'Freddo Frog',cat:'Snacks',cal:529,p:6,c:63,f:27},
+{n:'Jelly Beans 10 pcs',cat:'Snacks',cal:345,p:0,c:87,f:0},
+{n:'Gummy Bears 10 pcs',cat:'Snacks',cal:327,p:6.9,c:77,f:0.1},
+{n:'Water still',cat:'Drinks',cal:0,p:0,c:0,f:0},
+{n:'Sparkling Water',cat:'Drinks',cal:0,p:0,c:0,f:0},
+{n:'Espresso single',cat:'Drinks',cal:5,p:0.3,c:0.8,f:0.2},
+{n:'Long Black',cat:'Drinks',cal:7,p:0.4,c:1,f:0.2},
+{n:'Cappuccino 300ml',cat:'Drinks',cal:148,p:8,c:12,f:7},
+{n:'Oat Latte 300ml',cat:'Drinks',cal:140,p:5,c:18,f:5},
+{n:'Iced Coffee 250ml',cat:'Drinks',cal:90,p:3.5,c:14,f:2.5},
+{n:'Green Tea 250ml',cat:'Drinks',cal:2,p:0,c:0.5,f:0},
+{n:'Herbal Tea 250ml',cat:'Drinks',cal:2,p:0,c:0.5,f:0},
+{n:'Matcha Latte 250ml',cat:'Drinks',cal:120,p:4,c:16,f:4},
+{n:'Kombucha 330ml',cat:'Drinks',cal:35,p:0,c:8,f:0},
+{n:'Apple Juice 250ml',cat:'Drinks',cal:115,p:0.3,c:28,f:0.3},
+{n:'Mango Juice 250ml',cat:'Drinks',cal:120,p:1,c:29,f:0.3},
+{n:'Smoothie Banana Berry',cat:'Drinks',cal:250,p:5,c:53,f:2.5},
+{n:'Protein Smoothie',cat:'Drinks',cal:310,p:28,c:35,f:5},
+{n:'Sports Drink Powerade 600ml',cat:'Drinks',cal:159,p:0,c:40,f:0},
+{n:'Energy Drink Monster 500ml',cat:'Drinks',cal:212,p:0,c:54,f:0},
+{n:'Energy Drink V 250ml',cat:'Drinks',cal:115,p:0,c:29,f:0},
+{n:'Coke Zero 375ml',cat:'Drinks',cal:2,p:0.2,c:0.1,f:0},
+{n:'Diet Coke 375ml',cat:'Drinks',cal:2,p:0.2,c:0.1,f:0},
+{n:'Lemonade 375ml',cat:'Drinks',cal:158,p:0,c:40,f:0},
+{n:'Chocolate Protein Shake 500ml',cat:'Drinks',cal:270,p:30,c:25,f:5},
+{n:'White Wine 150ml',cat:'Drinks',cal:121,p:0.1,c:3.8,f:0},
+{n:'Champagne 150ml',cat:'Drinks',cal:120,p:0.4,c:5,f:0},
+{n:'Vodka 30ml',cat:'Drinks',cal:65,p:0,c:0,f:0},
+{n:'Whiskey 30ml',cat:'Drinks',cal:70,p:0,c:0,f:0},
+{n:'Rum 30ml',cat:'Drinks',cal:64,p:0,c:0,f:0},
+{n:'Gin 30ml',cat:'Drinks',cal:64,p:0,c:0,f:0},
+{n:'Hard Seltzer 375ml',cat:'Drinks',cal:100,p:0,c:2,f:0},
+{n:'Midstrength Beer 375ml',cat:'Drinks',cal:98,p:0.7,c:7,f:0},
+{n:'Light Beer 375ml',cat:'Drinks',cal:75,p:0.5,c:5,f:0},
+{n:'Stout 375ml',cat:'Drinks',cal:158,p:1.3,c:16,f:0},
 ];
+
 function getSavedFoods(){return DB.get('myfoods')||[];}
 function getAllFoods(){return FOODS.concat(getSavedFoods());}
 function dayKey(){return DB.dayKey(offset)}
 function getNutrition(){return DB.get('nutrition_'+dayKey())||{entries:[]}}
 function saveNutrition(d){DB.set('nutrition_'+dayKey(),d)}
 function dateLabel(off){if(off===0)return 'Today';if(off===-1)return 'Yesterday';var d=new Date();d.setDate(d.getDate()+off);return d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});}
+
 function render(){
-  document.getElementById('dateLabel').textContent=dateLabel(offset);
-  var data=getNutrition();
-  var t=data.entries.reduce(function(a,e){return{cal:a.cal+(e.cal||0),p:a.p+(e.p||0),c:a.c+(e.c||0),f:a.f+(e.f||0)}},{cal:0,p:0,c:0,f:0});
-  document.getElementById('snapCal').textContent=Math.round(t.cal);
-  var rem=TARGETS.cal-Math.round(t.cal);
-  var remEl=document.getElementById('snapRem');
-  remEl.textContent=Math.abs(rem);
-  remEl.className='snap-rem'+(rem<0?' over':'');
-  document.getElementById('snapRemLabel').textContent=rem<0?'OVER TARGET':'REMAINING';
-  var bf=document.getElementById('calBarFill');
-  bf.style.width=Math.min(t.cal/TARGETS.cal*100,100)+'%';
-  bf.className='bar-fill'+(t.cal>TARGETS.cal?' over':'');
-  ['p','c','f'].forEach(function(k){var v=Math.round(t[k]),tgt=TARGETS[k];document.getElementById('mp'+k.toUpperCase()).textContent=v+'g';document.getElementById('mp'+k.toUpperCase()+'b').style.width=Math.min(v/tgt*100,100)+'%';document.getElementById('mp'+k.toUpperCase()+'s').textContent=v+'/'+tgt+'g';});
-  var ms=document.getElementById('mealSlots');ms.innerHTML='';
-  ['Breakfast','Mid-Morning','Lunch','Pre-Workout','Dinner','Evening'].forEach(function(meal){var mc=data.entries.filter(function(e){return e.meal===meal}).reduce(function(s,e){return s+(e.cal||0)},0);var tgt=MEAL_TARGETS[meal],pct=tgt>0?Math.min(mc/tgt*100,100):0;var s=document.createElement('div');s.className='mslot';s.innerHTML='<div class="msn">'+meal+'</div><div class="mst">'+MEAL_TIMES[meal]+'</div><div class="msc">'+Math.round(mc)+'</div><div class="mstgt">tgt: '+tgt+'</div><div class="msbar"><div class="msbf" style="width:'+pct+'%"></div></div>';ms.appendChild(s);});
-  var el=document.getElementById('entriesList');
-  if(data.entries.length===0){el.innerHTML='<div class="empty-state">Nothing logged yet.<br>Search for a food above to get started.</div>';return;}
-  el.innerHTML='';
-  data.entries.slice().reverse().forEach(function(e,ri){var idx=data.entries.length-1-ri;var item=document.createElement('div');item.className='entry';item.innerHTML='<div class="entry-left"><div class="entry-name">'+e.name+'</div><div class="entry-tag">'+e.meal+'</div></div><div class="entry-right"><div><div class="entry-cal">'+Math.round(e.cal)+'</div><div style="font-size:8px;color:var(--muted)">kcal</div></div><div class="entry-pfc"><span style="color:var(--green)">'+Math.round(e.p)+'P</span><br><span style="color:#7eb8ff">'+Math.round(e.c)+'C</span><br><span style="color:var(--orange)">'+Math.round(e.f)+'F</span></div><button class="entry-del" data-idx="'+idx+'">X</button></div>';el.appendChild(item);});
-  el.querySelectorAll('.entry-del').forEach(function(btn){btn.addEventListener('click',function(){var d=getNutrition();d.entries.splice(parseInt(btn.dataset.idx),1);saveNutrition(d);render();});});
+document.getElementById('dateLabel').textContent=dateLabel(offset);
+var data=getNutrition();
+var t=data.entries.reduce(function(a,e){return{cal:a.cal+(e.cal||0),p:a.p+(e.p||0),c:a.c+(e.c||0),f:a.f+(e.f||0)}},{cal:0,p:0,c:0,f:0});
+document.getElementById('snapCal').textContent=Math.round(t.cal);
+var rem=TARGETS.cal-Math.round(t.cal);
+var remEl=document.getElementById('snapRem');
+remEl.textContent=Math.abs(rem);
+remEl.className='snap-rem'+(rem<0?' over':'');
+document.getElementById('snapRemLabel').textContent=rem<0?'OVER TARGET':'REMAINING';
+var bf=document.getElementById('calBarFill');
+bf.style.width=Math.min(t.cal/TARGETS.cal*100,100)+'%';
+bf.className='bar-fill'+(t.cal>TARGETS.cal?' over':'');
+['p','c','f'].forEach(function(k){var v=Math.round(t[k]),tgt=TARGETS[k];document.getElementById('mp'+k.toUpperCase()).textContent=v+'g';document.getElementById('mp'+k.toUpperCase()+'b').style.width=Math.min(v/tgt*100,100)+'%';document.getElementById('mp'+k.toUpperCase()+'s').textContent=v+'/'+tgt+'g';});
+var ms=document.getElementById('mealSlots');ms.innerHTML='';
+['Breakfast','Mid-Morning','Lunch','Pre-Workout','Dinner','Evening'].forEach(function(meal){var mc=data.entries.filter(function(e){return e.meal===meal}).reduce(function(s,e){return s+(e.cal||0)},0);var tgt=MEAL_TARGETS[meal],pct=tgt>0?Math.min(mc/tgt*100,100):0;var s=document.createElement('div');s.className='mslot';s.innerHTML='<div class="msn">'+meal+'</div><div class="mst">'+MEAL_TIMES[meal]+'</div><div class="msc">'+Math.round(mc)+'</div><div class="mstgt">tgt: '+tgt+'</div><div class="msbar"><div class="msbf" style="width:'+pct+'%"></div></div>';ms.appendChild(s);});
+var el=document.getElementById('entriesList');
+if(data.entries.length===0){el.innerHTML='<div class="empty-state">Nothing logged yet.<br>Search for a food above to get started.</div>';return;}
+el.innerHTML='';
+data.entries.slice().reverse().forEach(function(e,ri){var idx=data.entries.length-1-ri;var item=document.createElement('div');item.className='entry';item.innerHTML='<div class="entry-left"><div class="entry-name">'+e.name+'</div><div class="entry-tag">'+e.meal+'</div></div><div class="entry-right"><div><div class="entry-cal">'+Math.round(e.cal)+'</div><div style="font-size:8px;color:var(--muted)">kcal</div></div><div class="entry-pfc"><span style="color:var(--green)">'+Math.round(e.p)+'P</span><br><span style="color:#7eb8ff">'+Math.round(e.c)+'C</span><br><span style="color:var(--orange)">'+Math.round(e.f)+'F</span></div><button class="entry-del" data-idx="'+idx+'">X</button></div>';el.appendChild(item);});
+el.querySelectorAll('.entry-del').forEach(function(btn){btn.addEventListener('click',function(){var d=getNutrition();d.entries.splice(parseInt(btn.dataset.idx),1);saveNutrition(d);render();});});
 }
+
 function searchFoods(query){
-  var list=document.getElementById('resultsList');
-  var status=document.getElementById('searchStatus');
-  if(!query||query.length<1){list.innerHTML='';status.textContent='Type to search — includes your saved foods';return;}
-  var q=query.toLowerCase();
-  var saved=getSavedFoods();
-  var savedNames=saved.map(function(f){return f.n.toLowerCase();});
-  var results=getAllFoods().filter(function(f){return f.n.toLowerCase().indexOf(q)>=0||f.cat.toLowerCase().indexOf(q)>=0;});
-  if(results.length===0){status.textContent='Not found — add it using Custom Food below';list.innerHTML='';return;}
-  status.textContent=results.length+' results from '+getAllFoods().length+' foods';
-  list.innerHTML='';
-  results.slice(0,12).forEach(function(f){
-    var isSaved=savedNames.indexOf(f.n.toLowerCase())>=0;
-    var item=document.createElement('div');
-    item.className='result-item'+(isSaved?' saved':'');
-    item.innerHTML='<div class="result-left"><div class="result-name">'+(isSaved?'&#9733; ':'')+f.n+'</div><div class="result-cat">'+f.cat+' - per 100g</div></div><div class="result-right"><div class="result-cal">'+f.cal+'</div><div class="result-pfc">kcal<br>'+f.p+'P '+f.c+'C '+f.f+'F</div></div>';
-    item.addEventListener('click',function(){selectFood(f);});
-    list.appendChild(item);
-  });
+var list=document.getElementById('resultsList');
+var status=document.getElementById('searchStatus');
+if(!query||query.length<1){list.innerHTML='';status.textContent='Type to search — includes your saved foods';return;}
+var q=query.toLowerCase();
+var saved=getSavedFoods();
+var savedNames=saved.map(function(f){return f.n.toLowerCase();});
+var results=getAllFoods().filter(function(f){return f.n.toLowerCase().indexOf(q)>=0||f.cat.toLowerCase().indexOf(q)>=0;});
+if(results.length===0){status.textContent='Not found — add it using Custom Food below';list.innerHTML='';return;}
+status.textContent=results.length+' results from '+getAllFoods().length+' foods';
+list.innerHTML='';
+results.slice(0,12).forEach(function(f){
+var isSaved=savedNames.indexOf(f.n.toLowerCase())>=0;
+var item=document.createElement('div');
+item.className='result-item'+(isSaved?' saved':'');
+item.innerHTML='<div class="result-left"><div class="result-name">'+(isSaved?'&#9733; ':'')+f.n+'</div><div class="result-cat">'+f.cat+' - per 100g</div></div><div class="result-right"><div class="result-cal">'+f.cal+'</div><div class="result-pfc">kcal<br>'+f.p+'P '+f.c+'C '+f.f+'F</div></div>';
+item.addEventListener('click',function(){selectFood(f);});
+list.appendChild(item);
+});
 }
+
 function selectFood(f){
-  selectedFood=f;
-  document.getElementById('confirmName').textContent=f.n;
-  document.getElementById('confirmCat').textContent=f.cat;
-  document.getElementById('servingAmt').value=100;
-  updateMacros();
-  document.getElementById('confirmCard').classList.add('show');
-  document.getElementById('resultsList').innerHTML='';
-  document.getElementById('searchStatus').textContent='Type to search — includes your saved foods';
-  document.getElementById('foodSearch').value='';
+selectedFood=f;
+document.getElementById('confirmName').textContent=f.n;
+document.getElementById('confirmCat').textContent=f.cat;
+document.getElementById('servingAmt').value=100;
+updateMacros();
+document.getElementById('confirmCard').classList.add('show');
+document.getElementById('resultsList').innerHTML='';
+document.getElementById('searchStatus').textContent='Type to search — includes your saved foods';
+document.getElementById('foodSearch').value='';
+// scroll the confirm card into view — helps on mobile after a scan
+setTimeout(function(){document.getElementById('confirmCard').scrollIntoView({behavior:'smooth',block:'center'});},100);
 }
+
 function updateMacros(){
-  if(!selectedFood)return;
-  var s=parseFloat(document.getElementById('servingAmt').value)||100,r=s/100;
-  document.getElementById('cmCal').textContent=Math.round(selectedFood.cal*r);
-  document.getElementById('cmP').textContent=Math.round(selectedFood.p*r*10)/10;
-  document.getElementById('cmC').textContent=Math.round(selectedFood.c*r*10)/10;
-  document.getElementById('cmF').textContent=Math.round(selectedFood.f*r*10)/10;
+if(!selectedFood)return;
+var s=parseFloat(document.getElementById('servingAmt').value)||100,r=s/100;
+document.getElementById('cmCal').textContent=Math.round(selectedFood.cal*r);
+document.getElementById('cmP').textContent=Math.round(selectedFood.p*r*10)/10;
+document.getElementById('cmC').textContent=Math.round(selectedFood.c*r*10)/10;
+document.getElementById('cmF').textContent=Math.round(selectedFood.f*r*10)/10;
 }
+
 function getCustomInputs(){return{name:document.getElementById('customName').value.trim(),cal:parseFloat(document.getElementById('customCal').value)||0,p:parseFloat(document.getElementById('customP').value)||0,c:parseFloat(document.getElementById('customC').value)||0,f:parseFloat(document.getElementById('customF').value)||0,meal:document.getElementById('customMeal').value};}
 function clearCustomInputs(){document.getElementById('customName').value='';document.getElementById('customCal').value='';document.getElementById('customP').value='';document.getElementById('customC').value='';document.getElementById('customF').value='';}
+
 document.getElementById('servingAmt').addEventListener('input',updateMacros);
 document.getElementById('foodSearch').addEventListener('input',function(){searchFoods(this.value.trim());});
+
 document.getElementById('addEntryBtn').addEventListener('click',function(){
-  if(!selectedFood)return;
-  var s=parseFloat(document.getElementById('servingAmt').value)||100,r=s/100,meal=document.getElementById('mealSelect').value;
-  var entry={name:selectedFood.n,cal:Math.round(selectedFood.cal*r),p:Math.round(selectedFood.p*r*10)/10,c:Math.round(selectedFood.c*r*10)/10,f:Math.round(selectedFood.f*r*10)/10,meal:meal,time:new Date().toISOString()};
-  var d=getNutrition();d.entries.push(entry);saveNutrition(d);
-  document.getElementById('confirmCard').classList.remove('show');
-  selectedFood=null;
-  var st=document.getElementById('logStatus');st.textContent='Added: '+entry.name+' - '+entry.cal+' cal';st.className='log-status success';
-  setTimeout(function(){st.textContent='';st.className='log-status';},3000);
-  render();
+if(!selectedFood)return;
+var s=parseFloat(document.getElementById('servingAmt').value)||100,r=s/100,meal=document.getElementById('mealSelect').value;
+var entry={name:selectedFood.n,cal:Math.round(selectedFood.cal*r),p:Math.round(selectedFood.p*r*10)/10,c:Math.round(selectedFood.c*r*10)/10,f:Math.round(selectedFood.f*r*10)/10,meal:meal,time:new Date().toISOString()};
+var d=getNutrition();d.entries.push(entry);saveNutrition(d);
+document.getElementById('confirmCard').classList.remove('show');
+selectedFood=null;
+var st=document.getElementById('logStatus');st.textContent='Added: '+entry.name+' - '+entry.cal+' cal';st.className='log-status success';
+setTimeout(function(){st.textContent='';st.className='log-status';},3000);
+render();
 });
+
 document.getElementById('customAddBtn').addEventListener('click',function(){
-  var inputs=getCustomInputs();if(!inputs.name)return;
-  var entry={name:inputs.name,cal:inputs.cal,p:inputs.p,c:inputs.c,f:inputs.f,meal:inputs.meal,time:new Date().toISOString()};
-  var d=getNutrition();d.entries.push(entry);saveNutrition(d);clearCustomInputs();
-  var st=document.getElementById('logStatus');st.textContent='Added: '+inputs.name+' - '+inputs.cal+' cal';st.className='log-status success';
-  setTimeout(function(){st.textContent='';st.className='log-status';},3000);render();
+var inputs=getCustomInputs();if(!inputs.name)return;
+var entry={name:inputs.name,cal:inputs.cal,p:inputs.p,c:inputs.c,f:inputs.f,meal:inputs.meal,time:new Date().toISOString()};
+var d=getNutrition();d.entries.push(entry);saveNutrition(d);clearCustomInputs();
+var st=document.getElementById('logStatus');st.textContent='Added: '+inputs.name+' - '+inputs.cal+' cal';st.className='log-status success';
+setTimeout(function(){st.textContent='';st.className='log-status';},3000);render();
 });
+
 document.getElementById('customSaveBtn').addEventListener('click',function(){
-  var inputs=getCustomInputs();if(!inputs.name)return;
-  var saved=getSavedFoods();
-  if(saved.some(function(f){return f.n.toLowerCase()===inputs.name.toLowerCase();})){
-    var st=document.getElementById('logStatus');st.textContent=inputs.name+' already in your saved foods';st.className='log-status error';
-    setTimeout(function(){st.textContent='';st.className='log-status';},3000);return;
-  }
-  saved.push({n:inputs.name,cat:'My Foods',cal:inputs.cal,p:inputs.p,c:inputs.c,f:inputs.f});
-  DB.set('myfoods',saved);
-  var entry={name:inputs.name,cal:inputs.cal,p:inputs.p,c:inputs.c,f:inputs.f,meal:inputs.meal,time:new Date().toISOString()};
-  var d=getNutrition();d.entries.push(entry);saveNutrition(d);clearCustomInputs();
-  var st=document.getElementById('logStatus');st.textContent='Saved to My Foods + logged: '+inputs.name;st.className='log-status success';
-  setTimeout(function(){st.textContent='';st.className='log-status';},4000);render();
+var inputs=getCustomInputs();if(!inputs.name)return;
+var saved=getSavedFoods();
+if(saved.some(function(f){return f.n.toLowerCase()===inputs.name.toLowerCase();})){
+var st=document.getElementById('logStatus');st.textContent=inputs.name+' already in your saved foods';st.className='log-status error';
+setTimeout(function(){st.textContent='';st.className='log-status';},3000);return;
+}
+// (C) if we just scanned a barcode that wasn't in OFF, attach the barcode so future scans find it
+var newFood={n:inputs.name,cat:'My Foods',cal:inputs.cal,p:inputs.p,c:inputs.c,f:inputs.f};
+if(pendingBarcode){newFood.barcode=pendingBarcode;pendingBarcode=null;}
+saved.push(newFood);
+DB.set('myfoods',saved);
+var entry={name:inputs.name,cal:inputs.cal,p:inputs.p,c:inputs.c,f:inputs.f,meal:inputs.meal,time:new Date().toISOString()};
+var d=getNutrition();d.entries.push(entry);saveNutrition(d);clearCustomInputs();
+var st=document.getElementById('logStatus');st.textContent='Saved to My Foods + logged: '+inputs.name;st.className='log-status success';
+setTimeout(function(){st.textContent='';st.className='log-status';},4000);render();
 });
+
 document.getElementById('prevDay').addEventListener('click',function(){offset--;render();});
 document.getElementById('nextDay').addEventListener('click',function(){if(offset<0){offset++;render();}});
+
+// ════════════════════════════════════════════════════════
+// (C) BARCODE SCANNING
+// ════════════════════════════════════════════════════════
+var scanner=null;
+var pendingBarcode=null; // remembered between a failed OFF lookup and a "Save to My Foods" click
+
+function openScanner(){
+document.getElementById('scannerModal').classList.add('show');
+setScannerStatus('Point your camera at a barcode','');
+if(!window.Html5Qrcode){setScannerStatus('Scanner library failed to load — check your connection','err');return;}
+scanner=new Html5Qrcode('qrReader');
+var config={fps:10,qrbox:{width:260,height:140},formatsToSupport:[
+Html5QrcodeSupportedFormats.EAN_13,
+Html5QrcodeSupportedFormats.EAN_8,
+Html5QrcodeSupportedFormats.UPC_A,
+Html5QrcodeSupportedFormats.UPC_E,
+Html5QrcodeSupportedFormats.CODE_128,
+Html5QrcodeSupportedFormats.CODE_39
+]};
+scanner.start({facingMode:'environment'},config,onScanSuccess,onScanFrame).catch(function(err){
+console.error('Scanner start failed',err);
+setScannerStatus('Could not start camera — check permissions','err');
+});
+}
+
+function closeScanner(){
+document.getElementById('scannerModal').classList.remove('show');
+if(scanner){
+try{
+scanner.stop().then(function(){scanner.clear();scanner=null;}).catch(function(){scanner=null;});
+}catch(e){scanner=null;}
+}
+}
+
+function onScanSuccess(decodedText){
+// Decoded — stop the camera straight away, look up the product
+if(scanner){try{scanner.pause(true);}catch(e){}}
+setScannerStatus('Looking up '+decodedText+'...','');
+lookupBarcode(decodedText);
+}
+
+function onScanFrame(){/* called every frame - intentional no-op */}
+
+function setScannerStatus(msg,cls){
+var el=document.getElementById('scannerStatus');
+el.textContent=msg;
+el.className='scanner-status'+(cls?' '+cls:'');
+}
+
+function lookupBarcode(barcode){
+// First check if we have it in saved foods already
+var saved=getSavedFoods();
+var hit=saved.filter(function(f){return f.barcode===barcode;})[0];
+if(hit){
+setScannerStatus('Found in My Foods: '+hit.n,'ok');
+setTimeout(function(){closeScanner();selectFood(hit);},600);
+return;
+}
+// Hit Open Food Facts
+fetch('https://world.openfoodfacts.org/api/v2/product/'+encodeURIComponent(barcode)+'.json')
+.then(function(r){return r.json();})
+.then(function(data){
+if(data.status!==1||!data.product){
+fallbackToCustom(barcode,null);
+return;
+}
+var p=data.product;
+var n=p.nutriments||{};
+var kcal=n['energy-kcal_100g']||(n['energy_100g']?n['energy_100g']/4.184:null);
+var prot=n['proteins_100g'];
+var carb=n['carbohydrates_100g'];
+var fat=n['fat_100g'];
+var name=(p.product_name||p.generic_name||'').trim();
+if(p.brands)name=((p.brands.split(',')[0]||'').trim()+' '+name).trim();
+if(!name)name='Unknown product';
+if(kcal==null||prot==null||carb==null||fat==null){
+fallbackToCustom(barcode,{name:name,kcal:kcal,prot:prot,carb:carb,fat:fat});
+return;
+}
+var food={n:name,cat:'Scanned',cal:Math.round(kcal),p:Math.round(prot*10)/10,c:Math.round(carb*10)/10,f:Math.round(fat*10)/10,barcode:barcode};
+setScannerStatus('Found: '+name,'ok');
+setTimeout(function(){closeScanner();selectFood(food);},700);
+})
+.catch(function(err){
+console.error('OFF lookup failed',err);
+setScannerStatus('Lookup failed — network issue','err');
+setTimeout(function(){fallbackToCustom(barcode,null);},1000);
+});
+}
+
+function fallbackToCustom(barcode,partial){
+// Drop user into the Custom Food form with whatever we have, so they can fill the rest.
+// Remember the barcode so customSaveBtn can attach it to the saved food.
+pendingBarcode=barcode;
+closeScanner();
+if(partial&&partial.name)document.getElementById('customName').value=partial.name;
+else document.getElementById('customName').value='';
+document.getElementById('customCal').value=(partial&&partial.kcal!=null)?Math.round(partial.kcal):'';
+document.getElementById('customP').value=(partial&&partial.prot!=null)?Math.round(partial.prot*10)/10:'';
+document.getElementById('customC').value=(partial&&partial.carb!=null)?Math.round(partial.carb*10)/10:'';
+document.getElementById('customF').value=(partial&&partial.fat!=null)?Math.round(partial.fat*10)/10:'';
+var st=document.getElementById('logStatus');
+st.textContent=partial?'Partial data for '+partial.name+' — fill the gaps and SAVE TO MY FOODS':'Barcode '+barcode+' not found — fill in details and SAVE TO MY FOODS';
+st.className='log-status';
+setTimeout(function(){document.getElementById('customName').scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('customName').focus();},200);
+}
+
+document.getElementById('scanBtn').addEventListener('click',openScanner);
+document.getElementById('scannerClose').addEventListener('click',closeScanner);
+
 render();
 </script>
 </body>
