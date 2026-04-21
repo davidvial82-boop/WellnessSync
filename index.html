@@ -319,26 +319,58 @@ function getBodyWeightKg(){
   return 80;
 }
 
-function metForWorkout(w){
-  // Template ID is the cleanest signal
+// Per-exercise MET lookup — matches workout.html / history.html
+var MET_LOOKUP={
+  'Bench Press':5.0,'Incline Bench Press':5.0,'Decline Bench Press':5.0,'Dumbbell Fly':5.0,'Cable Crossover':5.0,'Incline Dumbbell Press':5.0,'Push-Ups':5.0,
+  'Squat':6.0,'Romanian Deadlift':6.0,'Leg Press':5.0,'Leg Curl':4.5,'Leg Extension':4.5,'Walking Lunges':5.0,'Hip Thrust':5.0,'Calf Raises':4.0,'Jump Squats':8.0,'Jump Lunges':8.0,'Squat Jumps':8.0,
+  'Deadlift':6.0,'Pull-Ups':6.0,'Chin-Ups':6.0,'Barbell Row':5.0,'Seated Cable Row':4.5,'Lat Pulldown':4.5,'Single Arm Row':4.5,
+  'Overhead Press':5.0,'Lateral Raises':4.0,'Front Raises':4.0,'Face Pulls':4.0,'Arnold Press':5.0,
+  'Tricep Pushdown':4.0,'Skull Crushers':4.5,'Dips':5.5,'Overhead Tricep Extension':4.0,
+  'Barbell Curl':4.0,'Dumbbell Curl':4.0,'Hammer Curl':4.0,'Preacher Curl':4.0,
+  'Plank':3.5,'Ab Rollout':4.5,'Cable Crunch':4.0,'Hanging Leg Raise':5.0,'Toes to Bar':6.0,'Plank Hold':3.5,'Med Ball Slams':7.0,
+  'Treadmill Run':9.0,'Outdoor Run':9.8,'Outdoor Walk':3.8,'Rowing Machine':7.0,'Bike':7.5,'Assault Bike':8.5,'Jump Rope':11.0,'Box Jumps':8.0,'Burpees':8.5,'Double Unders':11.5,
+  'Kettlebell Swings':8.0,'Battle Ropes':8.0,'Mountain Climbers':8.0,'High Knees':9.0,'Sprint Intervals':10.0,'Dumbbell Thrusters':8.0,'Barbell Thruster':8.0,'Sled Push':9.0,'Wall Balls':8.0,'Sandbag Carries':7.5,'Tire Flips':9.0,'Sledgehammer Slams':8.5
+};
+
+function classifyWorkout(w){
   var id=(w.templateId||'').toLowerCase();
-  if(id==='hiit1'||id==='tabata'||id==='hiit3'||id==='metcon')return 8.0;
-  if(id==='cardio')return 7.0;
-  // Fallback: check exercise categories
-  if(w.exercises&&w.exercises.length){
-    var cats=w.exercises.map(function(e){return (e.category||'').toLowerCase();});
-    if(cats.some(function(c){return c==='hiit';}))return 8.0;
-    if(cats.every(function(c){return c==='cardio';}))return 7.0;
-  }
-  // Default: strength training
-  return 5.0;
+  if(['hiit1','tabata','hiit3','metcon'].indexOf(id)>=0)return 'hiit';
+  if(['cardio','outdoor_walk','outdoor_run'].indexOf(id)>=0)return 'cardio';
+  var exs=w.exercises||[];
+  if(exs.length&&exs.every(function(e){return e.cardio||(e.category||'').toLowerCase()==='cardio';}))return 'cardio';
+  if(exs.length&&exs.every(function(e){return (e.category||'').toLowerCase()==='hiit';}))return 'hiit';
+  return 'strength';
 }
 
 function estimateBurn(workout,weightKg){
   var mins=parseFloat(workout.duration)||0;
   if(mins<=0)return 0;
-  var met=metForWorkout(workout);
-  return Math.round(met*weightKg*(mins/60));
+  var exs=workout.exercises||[];
+  var classification=classifyWorkout(workout);
+
+  // HIIT: whole-session MET (set-based sessions don't translate time cleanly)
+  if(classification==='hiit')return Math.round(8.0*weightKg*(mins/60));
+
+  // Per-exercise: cardio entries burn at their own MET × their own duration;
+  // remaining time uses average of strength exercise METs.
+  var trackedCardioSec=0, cardioBurn=0;
+  exs.forEach(function(ex){
+    if(ex.cardio&&ex.durationSec>0){
+      var m=ex.durationSec/60;
+      var met=MET_LOOKUP[ex.name]||7.0;
+      cardioBurn+=met*weightKg*(m/60);
+      trackedCardioSec+=ex.durationSec;
+    }
+  });
+  var trackedCardioMins=trackedCardioSec/60;
+  var remainingMins=Math.max(0,mins-trackedCardioMins);
+
+  var strengthMets=exs.filter(function(ex){return !ex.cardio;}).map(function(ex){return MET_LOOKUP[ex.name]||5.0;});
+  var avgStrengthMet=strengthMets.length?strengthMets.reduce(function(a,b){return a+b;},0)/strengthMets.length:5.0;
+  if(classification==='cardio'&&trackedCardioSec>0)avgStrengthMet=0;
+  var strengthBurn=avgStrengthMet*weightKg*(remainingMins/60);
+
+  return Math.round(cardioBurn+strengthBurn);
 }
 
 function totalBurnForDay(workouts,weightKg){
