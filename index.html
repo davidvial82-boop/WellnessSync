@@ -302,9 +302,8 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 <a class="nav-link" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Workout</a>
 <a class="nav-link" href="weight.html"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Weight</a>
 </nav>
+<script src="db.js"></script>
 <script>
-var DB={_cache:{},_base:"/.netlify/functions/data",dayKey:function(off){off=off||0;var d=new Date();d.setDate(d.getDate()+off);return d.toISOString().split("T")[0];},_ls:function(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem("dw_"+k)||"null");localStorage.setItem("dw_"+k,JSON.stringify(v));}catch(e){return null;}},get:function(k,cb){if(!cb)return this._ls(k);var self=this;var local=this._ls(k);fetch(this._base+"?key="+encodeURIComponent(k)).then(function(r){return r.json();}).then(function(d){var val=(d.value!==undefined&&d.value!==null)?d.value:local;self._ls(k,val);if(cb)cb(val);}).catch(function(){if(cb)cb(local);});},set:function(k,v,cb){this._ls(k,v);fetch(this._base,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:k,value:v})}).then(function(){if(cb)cb(true);}).catch(function(){if(cb)cb(false);});}};
-
 var DAYS=['SUN','MON','TUE','WED','THU','FRI','SAT'];
 var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -531,6 +530,23 @@ document.getElementById('weightCancel').addEventListener('click',function(){docu
 document.getElementById('weightModal').addEventListener('click',function(e){if(e.target===document.getElementById('weightModal'))document.getElementById('weightModal').classList.remove('active');});
 
 init();
+
+// Refresh the Hub when the tab becomes visible again or regains focus.
+// Without this, leaving the app open overnight shows yesterday's data until
+// the user manually refreshes. If the stored dayKey differs from today's,
+// we re-run init() to pull today's (empty) data.
+var _lastRenderDay = DB.dayKey();
+function _refreshIfNewDay(){
+  var today = DB.dayKey();
+  if (today !== _lastRenderDay) {
+    _lastRenderDay = today;
+    init();
+  }
+}
+document.addEventListener('visibilitychange', function(){
+  if (!document.hidden) _refreshIfNewDay();
+});
+window.addEventListener('focus', _refreshIfNewDay);
 
 // IF block unchanged
 (function(){
