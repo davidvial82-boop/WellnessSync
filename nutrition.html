@@ -1,9 +1,3 @@
-<!-- PATCHED VERSION - barcode scanning added.
-     Only three regions changed vs the original:
-     (A) new CSS for .scan-btn and .scanner-modal
-     (B) new HTML: scan button + scanner modal
-     (C) new JS: scanner open/close, OFF lookup, saved-food barcode index
-     Everything else is unchanged. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dave - Nutrition</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-<!-- (A) html5-qrcode for barcode scanning -->
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 :root{--bg:#07090d;--s1:#0d1117;--s2:#131920;--s3:#1a2233;--border:#1e2a3a;--border2:#253248;--accent:#00e5ff;--adim:rgba(0,229,255,0.1);--green:#00ff88;--orange:#ff6b35;--yellow:#ffd600;--red:#ff3d71;--rdim:rgba(255,61,113,0.1);--purple:#b388ff;--text:#e2e8f5;--muted:#4a5c78;--muted2:#2e3d54}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -52,14 +44,9 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .log-card{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px}
 .card-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .card-title::after{content:'';flex:1;height:1px;background:var(--border)}
-.search-row{display:flex;gap:8px;margin-bottom:6px}
-.food-search{flex:1;background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:12px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s}
+.food-search{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:12px 13px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;margin-bottom:6px}
 .food-search:focus{border-color:var(--accent)}
 .food-search::placeholder{color:var(--muted)}
-/* (A) scan button */
-.scan-btn{flex-shrink:0;width:48px;background:var(--s2);border:1px solid var(--border2);border-radius:10px;color:var(--accent);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;padding:0}
-.scan-btn:hover{background:var(--adim);border-color:var(--accent)}
-.scan-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .search-status{font-size:11px;color:var(--accent);padding:2px;min-height:18px;margin-bottom:6px}
 .results-list{display:flex;flex-direction:column;gap:5px;margin-bottom:8px;max-height:280px;overflow-y:auto}
 .results-list::-webkit-scrollbar{width:2px} .results-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
@@ -124,21 +111,6 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .entry-del{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:13px;padding:4px;border-radius:6px;transition:all 0.2s}
 .entry-del:hover{color:var(--red);background:var(--rdim)}
 .empty-state{text-align:center;padding:28px;color:var(--muted);font-size:13px;line-height:2}
-/* (A) scanner modal */
-.scanner-modal{position:fixed;inset:0;z-index:200;background:rgba(7,9,13,0.97);display:none;flex-direction:column;padding:max(20px,env(safe-area-inset-top)) 16px max(20px,env(safe-area-inset-bottom))}
-.scanner-modal.show{display:flex}
-.scanner-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.scanner-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--accent)}
-.scanner-close{background:var(--s1);border:1px solid var(--border2);color:var(--text);border-radius:10px;padding:8px 14px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1.5px;cursor:pointer}
-.scanner-close:hover{border-color:var(--red);color:var(--red)}
-#qrReader{width:100%;max-width:480px;margin:0 auto;background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden}
-#qrReader video{border-radius:14px}
-#qrReader__dashboard_section_csr button{background:var(--s2)!important;border:1px solid var(--border2)!important;color:var(--accent)!important;border-radius:8px!important;padding:8px 12px!important;font-family:'Syne',sans-serif!important;font-size:12px!important;margin:4px!important;cursor:pointer!important}
-#qrReader__dashboard_section_swaplink{color:var(--accent)!important;font-family:'Syne',sans-serif!important;font-size:12px!important}
-.scanner-status{text-align:center;color:var(--muted);font-size:13px;margin-top:16px;min-height:20px;padding:0 20px}
-.scanner-status.err{color:var(--red)}
-.scanner-status.ok{color:var(--green)}
-.scanner-hint{text-align:center;color:var(--muted2);font-size:11px;margin-top:10px;letter-spacing:1px}
 </style>
 </head>
 <body>
@@ -165,13 +137,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 </div>
 <div class="log-card">
 <div class="card-title">Search Food Database</div>
-<!-- (B) search row now has a scan button alongside the input -->
-<div class="search-row">
 <input class="food-search" id="foodSearch" type="text" placeholder="Search 700+ foods e.g. salmon, oats, greek yoghurt...">
-<button class="scan-btn" id="scanBtn" title="Scan barcode">
-<svg viewBox="0 0 24 24"><path d="M4 7V5a1 1 0 0 1 1-1h2M20 7V5a1 1 0 0 0-1-1h-2M4 17v2a1 1 0 0 0 1 1h2M20 17v2a1 1 0 0 1-1 1h-2"/><path d="M7 8v8M10 8v8M13 8v8M16 8v8"/></svg>
-</button>
-</div>
 <div class="search-status" id="searchStatus">Type to search — includes your saved foods</div>
 <div class="results-list" id="resultsList"></div>
 <div class="confirm-card" id="confirmCard">
@@ -233,25 +199,14 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 <div class="entries-list" id="entriesList"></div>
 </div>
 </div>
-<!-- (B) scanner modal -->
-<div class="scanner-modal" id="scannerModal">
-<div class="scanner-head">
-<div class="scanner-title">SCAN BARCODE</div>
-<button class="scanner-close" id="scannerClose">CLOSE</button>
-</div>
-<div id="qrReader"></div>
-<div class="scanner-status" id="scannerStatus">Point your camera at a barcode</div>
-<div class="scanner-hint">Works best with good lighting · EAN / UPC supported</div>
-</div>
 <nav class="nav">
 <a class="nav-link" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Hub</a>
 <a class="nav-link active" href="nutrition.html"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Nutrition</a>
 <a class="nav-link" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Workout</a>
 <a class="nav-link" href="weight.html"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Weight</a>
 </nav>
+<script src="db.js"></script>
 <script>
-var DB={_cache:{},_base:"/.netlify/functions/data",dayKey:function(off){off=off||0;var d=new Date();d.setDate(d.getDate()+off);return d.toISOString().split("T")[0];},_ls:function(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem("dw_"+k)||"null");localStorage.setItem("dw_"+k,JSON.stringify(v));}catch(e){return null;}},get:function(k,cb){if(!cb)return this._ls(k);var self=this;var local=this._ls(k);fetch(this._base+"?key="+encodeURIComponent(k)).then(function(r){return r.json();}).then(function(d){var val=(d.value!==undefined&&d.value!==null)?d.value:local;self._ls(k,val);if(cb)cb(val);}).catch(function(){if(cb)cb(local);});},set:function(k,v,cb){this._ls(k,v);fetch(this._base,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:k,value:v})}).then(function(){if(cb)cb(true);}).catch(function(){if(cb)cb(false);});}};
-
 var TARGETS={cal:2400,p:185,c:220,f:65};
 var MEAL_TARGETS={'Breakfast':480,'Mid-Morning':280,'Lunch':560,'Pre-Workout':320,'Dinner':580,'Evening':180,'Other':0};
 var MEAL_TIMES={'Breakfast':'7:00 AM','Mid-Morning':'10:00 AM','Lunch':'1:00 PM','Pre-Workout':'4:30 PM','Dinner':'7:00 PM','Evening':'9:00 PM','Other':'--'};
@@ -723,16 +678,14 @@ var FOODS=[
 {n:'Hard Seltzer 375ml',cat:'Drinks',cal:100,p:0,c:2,f:0},
 {n:'Midstrength Beer 375ml',cat:'Drinks',cal:98,p:0.7,c:7,f:0},
 {n:'Light Beer 375ml',cat:'Drinks',cal:75,p:0.5,c:5,f:0},
-{n:'Stout 375ml',cat:'Drinks',cal:158,p:1.3,c:16,f:0},
+{n:'Stout 375ml',cat:'Drinks',cal:158,p:1.3,c:16,f:0}
 ];
-
 function getSavedFoods(){return DB.get('myfoods')||[];}
 function getAllFoods(){return FOODS.concat(getSavedFoods());}
 function dayKey(){return DB.dayKey(offset)}
 function getNutrition(){return DB.get('nutrition_'+dayKey())||{entries:[]}}
 function saveNutrition(d){DB.set('nutrition_'+dayKey(),d)}
 function dateLabel(off){if(off===0)return 'Today';if(off===-1)return 'Yesterday';var d=new Date();d.setDate(d.getDate()+off);return d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});}
-
 function render(){
 document.getElementById('dateLabel').textContent=dateLabel(offset);
 var data=getNutrition();
@@ -755,7 +708,6 @@ el.innerHTML='';
 data.entries.slice().reverse().forEach(function(e,ri){var idx=data.entries.length-1-ri;var item=document.createElement('div');item.className='entry';item.innerHTML='<div class="entry-left"><div class="entry-name">'+e.name+'</div><div class="entry-tag">'+e.meal+'</div></div><div class="entry-right"><div><div class="entry-cal">'+Math.round(e.cal)+'</div><div style="font-size:8px;color:var(--muted)">kcal</div></div><div class="entry-pfc"><span style="color:var(--green)">'+Math.round(e.p)+'P</span><br><span style="color:#7eb8ff">'+Math.round(e.c)+'C</span><br><span style="color:var(--orange)">'+Math.round(e.f)+'F</span></div><button class="entry-del" data-idx="'+idx+'">X</button></div>';el.appendChild(item);});
 el.querySelectorAll('.entry-del').forEach(function(btn){btn.addEventListener('click',function(){var d=getNutrition();d.entries.splice(parseInt(btn.dataset.idx),1);saveNutrition(d);render();});});
 }
-
 function searchFoods(query){
 var list=document.getElementById('resultsList');
 var status=document.getElementById('searchStatus');
@@ -776,7 +728,6 @@ item.addEventListener('click',function(){selectFood(f);});
 list.appendChild(item);
 });
 }
-
 function selectFood(f){
 selectedFood=f;
 document.getElementById('confirmName').textContent=f.n;
@@ -787,10 +738,7 @@ document.getElementById('confirmCard').classList.add('show');
 document.getElementById('resultsList').innerHTML='';
 document.getElementById('searchStatus').textContent='Type to search — includes your saved foods';
 document.getElementById('foodSearch').value='';
-// scroll the confirm card into view — helps on mobile after a scan
-setTimeout(function(){document.getElementById('confirmCard').scrollIntoView({behavior:'smooth',block:'center'});},100);
 }
-
 function updateMacros(){
 if(!selectedFood)return;
 var s=parseFloat(document.getElementById('servingAmt').value)||100,r=s/100;
@@ -799,13 +747,10 @@ document.getElementById('cmP').textContent=Math.round(selectedFood.p*r*10)/10;
 document.getElementById('cmC').textContent=Math.round(selectedFood.c*r*10)/10;
 document.getElementById('cmF').textContent=Math.round(selectedFood.f*r*10)/10;
 }
-
 function getCustomInputs(){return{name:document.getElementById('customName').value.trim(),cal:parseFloat(document.getElementById('customCal').value)||0,p:parseFloat(document.getElementById('customP').value)||0,c:parseFloat(document.getElementById('customC').value)||0,f:parseFloat(document.getElementById('customF').value)||0,meal:document.getElementById('customMeal').value};}
 function clearCustomInputs(){document.getElementById('customName').value='';document.getElementById('customCal').value='';document.getElementById('customP').value='';document.getElementById('customC').value='';document.getElementById('customF').value='';}
-
 document.getElementById('servingAmt').addEventListener('input',updateMacros);
 document.getElementById('foodSearch').addEventListener('input',function(){searchFoods(this.value.trim());});
-
 document.getElementById('addEntryBtn').addEventListener('click',function(){
 if(!selectedFood)return;
 var s=parseFloat(document.getElementById('servingAmt').value)||100,r=s/100,meal=document.getElementById('mealSelect').value;
@@ -817,7 +762,6 @@ var st=document.getElementById('logStatus');st.textContent='Added: '+entry.name+
 setTimeout(function(){st.textContent='';st.className='log-status';},3000);
 render();
 });
-
 document.getElementById('customAddBtn').addEventListener('click',function(){
 var inputs=getCustomInputs();if(!inputs.name)return;
 var entry={name:inputs.name,cal:inputs.cal,p:inputs.p,c:inputs.c,f:inputs.f,meal:inputs.meal,time:new Date().toISOString()};
@@ -825,7 +769,6 @@ var d=getNutrition();d.entries.push(entry);saveNutrition(d);clearCustomInputs();
 var st=document.getElementById('logStatus');st.textContent='Added: '+inputs.name+' - '+inputs.cal+' cal';st.className='log-status success';
 setTimeout(function(){st.textContent='';st.className='log-status';},3000);render();
 });
-
 document.getElementById('customSaveBtn').addEventListener('click',function(){
 var inputs=getCustomInputs();if(!inputs.name)return;
 var saved=getSavedFoods();
@@ -833,130 +776,15 @@ if(saved.some(function(f){return f.n.toLowerCase()===inputs.name.toLowerCase();}
 var st=document.getElementById('logStatus');st.textContent=inputs.name+' already in your saved foods';st.className='log-status error';
 setTimeout(function(){st.textContent='';st.className='log-status';},3000);return;
 }
-// (C) if we just scanned a barcode that wasn't in OFF, attach the barcode so future scans find it
-var newFood={n:inputs.name,cat:'My Foods',cal:inputs.cal,p:inputs.p,c:inputs.c,f:inputs.f};
-if(pendingBarcode){newFood.barcode=pendingBarcode;pendingBarcode=null;}
-saved.push(newFood);
+saved.push({n:inputs.name,cat:'My Foods',cal:inputs.cal,p:inputs.p,c:inputs.c,f:inputs.f});
 DB.set('myfoods',saved);
 var entry={name:inputs.name,cal:inputs.cal,p:inputs.p,c:inputs.c,f:inputs.f,meal:inputs.meal,time:new Date().toISOString()};
 var d=getNutrition();d.entries.push(entry);saveNutrition(d);clearCustomInputs();
 var st=document.getElementById('logStatus');st.textContent='Saved to My Foods + logged: '+inputs.name;st.className='log-status success';
 setTimeout(function(){st.textContent='';st.className='log-status';},4000);render();
 });
-
 document.getElementById('prevDay').addEventListener('click',function(){offset--;render();});
 document.getElementById('nextDay').addEventListener('click',function(){if(offset<0){offset++;render();}});
-
-// ════════════════════════════════════════════════════════
-// (C) BARCODE SCANNING
-// ════════════════════════════════════════════════════════
-var scanner=null;
-var pendingBarcode=null; // remembered between a failed OFF lookup and a "Save to My Foods" click
-
-function openScanner(){
-document.getElementById('scannerModal').classList.add('show');
-setScannerStatus('Point your camera at a barcode','');
-if(!window.Html5Qrcode){setScannerStatus('Scanner library failed to load — check your connection','err');return;}
-scanner=new Html5Qrcode('qrReader');
-var config={fps:10,qrbox:{width:260,height:140},formatsToSupport:[
-Html5QrcodeSupportedFormats.EAN_13,
-Html5QrcodeSupportedFormats.EAN_8,
-Html5QrcodeSupportedFormats.UPC_A,
-Html5QrcodeSupportedFormats.UPC_E,
-Html5QrcodeSupportedFormats.CODE_128,
-Html5QrcodeSupportedFormats.CODE_39
-]};
-scanner.start({facingMode:'environment'},config,onScanSuccess,onScanFrame).catch(function(err){
-console.error('Scanner start failed',err);
-setScannerStatus('Could not start camera — check permissions','err');
-});
-}
-
-function closeScanner(){
-document.getElementById('scannerModal').classList.remove('show');
-if(scanner){
-try{
-scanner.stop().then(function(){scanner.clear();scanner=null;}).catch(function(){scanner=null;});
-}catch(e){scanner=null;}
-}
-}
-
-function onScanSuccess(decodedText){
-// Decoded — stop the camera straight away, look up the product
-if(scanner){try{scanner.pause(true);}catch(e){}}
-setScannerStatus('Looking up '+decodedText+'...','');
-lookupBarcode(decodedText);
-}
-
-function onScanFrame(){/* called every frame - intentional no-op */}
-
-function setScannerStatus(msg,cls){
-var el=document.getElementById('scannerStatus');
-el.textContent=msg;
-el.className='scanner-status'+(cls?' '+cls:'');
-}
-
-function lookupBarcode(barcode){
-// First check if we have it in saved foods already
-var saved=getSavedFoods();
-var hit=saved.filter(function(f){return f.barcode===barcode;})[0];
-if(hit){
-setScannerStatus('Found in My Foods: '+hit.n,'ok');
-setTimeout(function(){closeScanner();selectFood(hit);},600);
-return;
-}
-// Hit Open Food Facts
-fetch('https://world.openfoodfacts.org/api/v2/product/'+encodeURIComponent(barcode)+'.json')
-.then(function(r){return r.json();})
-.then(function(data){
-if(data.status!==1||!data.product){
-fallbackToCustom(barcode,null);
-return;
-}
-var p=data.product;
-var n=p.nutriments||{};
-var kcal=n['energy-kcal_100g']||(n['energy_100g']?n['energy_100g']/4.184:null);
-var prot=n['proteins_100g'];
-var carb=n['carbohydrates_100g'];
-var fat=n['fat_100g'];
-var name=(p.product_name||p.generic_name||'').trim();
-if(p.brands)name=((p.brands.split(',')[0]||'').trim()+' '+name).trim();
-if(!name)name='Unknown product';
-if(kcal==null||prot==null||carb==null||fat==null){
-fallbackToCustom(barcode,{name:name,kcal:kcal,prot:prot,carb:carb,fat:fat});
-return;
-}
-var food={n:name,cat:'Scanned',cal:Math.round(kcal),p:Math.round(prot*10)/10,c:Math.round(carb*10)/10,f:Math.round(fat*10)/10,barcode:barcode};
-setScannerStatus('Found: '+name,'ok');
-setTimeout(function(){closeScanner();selectFood(food);},700);
-})
-.catch(function(err){
-console.error('OFF lookup failed',err);
-setScannerStatus('Lookup failed — network issue','err');
-setTimeout(function(){fallbackToCustom(barcode,null);},1000);
-});
-}
-
-function fallbackToCustom(barcode,partial){
-// Drop user into the Custom Food form with whatever we have, so they can fill the rest.
-// Remember the barcode so customSaveBtn can attach it to the saved food.
-pendingBarcode=barcode;
-closeScanner();
-if(partial&&partial.name)document.getElementById('customName').value=partial.name;
-else document.getElementById('customName').value='';
-document.getElementById('customCal').value=(partial&&partial.kcal!=null)?Math.round(partial.kcal):'';
-document.getElementById('customP').value=(partial&&partial.prot!=null)?Math.round(partial.prot*10)/10:'';
-document.getElementById('customC').value=(partial&&partial.carb!=null)?Math.round(partial.carb*10)/10:'';
-document.getElementById('customF').value=(partial&&partial.fat!=null)?Math.round(partial.fat*10)/10:'';
-var st=document.getElementById('logStatus');
-st.textContent=partial?'Partial data for '+partial.name+' — fill the gaps and SAVE TO MY FOODS':'Barcode '+barcode+' not found — fill in details and SAVE TO MY FOODS';
-st.className='log-status';
-setTimeout(function(){document.getElementById('customName').scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('customName').focus();},200);
-}
-
-document.getElementById('scanBtn').addEventListener('click',openScanner);
-document.getElementById('scannerClose').addEventListener('click',closeScanner);
-
 render();
 </script>
 </body>
