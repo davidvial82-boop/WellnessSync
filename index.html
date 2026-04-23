@@ -6,7 +6,7 @@
 <title>Dave - Wellness Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#07090d;--s1:#0d1117;--s2:#131920;--s3:#1a2233;--border:#1e2a3a;--border2:#253248;--accent:#00e5ff;--adim:rgba(0,229,255,0.1);--green:#00ff88;--gdim:rgba(0,255,136,0.1);--orange:#ff6b35;--odim:rgba(255,107,53,0.1);--yellow:#ffd600;--ydim:rgba(255,214,0,0.1);--red:#ff3d71;--rdim:rgba(255,61,113,0.1);--purple:#b388ff;--pdim:rgba(179,136,255,0.1);--blue:#4fc3f7;--text:#e2e8f5;--muted:#4a5c78;--muted2:#2e3d54}
+:root{--bg:#07090d;--s1:#0d1117;--s2:#131920;--s3:#1a2233;--border:#1e2a3a;--border2:#253248;--accent:#00e5ff;--adim:rgba(0,229,255,0.1);--green:#00ff88;--gdim:rgba(0,255,136,0.1);--orange:#ff6b35;--odim:rgba(255,107,53,0.1);--yellow:#ffd600;--ydim:rgba(255,214,0,0.1);--red:#ff3d71;--rdim:rgba(255,61,113,0.1);--purple:#b388ff;--pdim:rgba(179,136,255,0.1);--blue:#4fc3f7;--bdim:rgba(79,195,247,0.1);--text:#e2e8f5;--muted:#4a5c78;--muted2:#2e3d54}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;padding-bottom:90px}
 body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(0,229,255,0.04),transparent);pointer-events:none;z-index:0}
@@ -20,6 +20,8 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .header-left h1{font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:1;letter-spacing:2px}
 .header-right .date{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);text-align:right}
 .header-right .day{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--text);text-align:right;line-height:1}
+
+/* SCORE */
 .score-section{display:flex;align-items:center;gap:20px;background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:22px;margin-bottom:16px;position:relative;overflow:hidden}
 .score-section::before{content:'';position:absolute;right:-40px;top:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(0,229,255,0.05),transparent 70%);pointer-events:none}
 .ring-wrap{position:relative;width:110px;height:110px;flex-shrink:0}
@@ -33,6 +35,8 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .score-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;margin-bottom:6px}
 .score-sub{font-size:12px;color:var(--muted);line-height:1.6}
 .streak-badge{display:inline-flex;align-items:center;gap:6px;background:var(--ydim);border:1px solid rgba(255,214,0,0.2);border-radius:99px;padding:4px 10px;font-size:11px;color:var(--yellow);font-weight:700;margin-top:10px}
+
+/* IF TIMER */
 .if-card{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;transition:border-color 0.3s}
 .if-card.active{border-color:rgba(0,255,136,0.4)}
 .if-card.fasting{border-color:rgba(0,229,255,0.4)}
@@ -74,7 +78,8 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .if-save-btn{width:100%;background:var(--accent);color:var(--bg);border:none;border-radius:10px;padding:10px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer}
 .if-gear{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:6px;transition:color 0.2s}
 .if-gear:hover{color:var(--accent)}
-.if-disabled{text-align:center;padding:10px 0;color:var(--muted);font-size:12px}
+
+/* STAT GRID */
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .stat-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden;transition:border-color 0.2s;cursor:pointer}
 .stat-card:hover{border-color:var(--border2)}
@@ -82,10 +87,6 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .stat-card .sc-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
 .stat-card .sc-val{font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;margin-bottom:2px}
 .stat-card .sc-sub{font-size:11px;color:var(--muted)}
-/* NEW: net calories line — subtle, green when under target, red when over */
-.stat-card .sc-net{font-size:11px;font-family:'DM Mono',monospace;margin-top:3px;letter-spacing:0.5px}
-.stat-card .sc-net.under{color:var(--green)}
-.stat-card .sc-net.over{color:var(--red)}
 .stat-card .sc-bar{height:4px;background:var(--border);border-radius:99px;margin-top:10px;overflow:hidden}
 .stat-card .sc-bar-fill{height:100%;border-radius:99px;transition:width 0.8s ease}
 .stat-card.cal .sc-val{color:var(--accent)} .stat-card.cal .sc-bar-fill{background:linear-gradient(90deg,var(--accent),var(--green))}
@@ -94,10 +95,18 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .stat-card.wod .sc-val{color:var(--purple)} .stat-card.wod .sc-val.done{color:var(--green)}
 .stat-card.water .sc-val{color:var(--blue)} .stat-card.water .sc-bar-fill{background:var(--blue)}
 .stat-card.weight .sc-val{color:var(--orange)}
+
+/* History arrow on each tile */
+.hist-arrow{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:14px;font-weight:700;transition:all 0.2s;z-index:2}
+.hist-arrow:hover{color:var(--accent);border-color:var(--accent);background:var(--adim)}
+
+/* WATER QUICK ADD */
 .water-btns{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 .water-btn{background:rgba(79,195,247,0.1);border:1px solid rgba(79,195,247,0.25);border-radius:8px;padding:5px 10px;color:var(--blue);font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:'Syne',sans-serif}
 .water-btn:hover{background:rgba(79,195,247,0.2)}
 .water-reset{background:none;border:none;color:var(--muted);font-size:10px;cursor:pointer;padding:5px 8px;font-family:'Syne',sans-serif}
+
+/* WEEK STRIP */
 .week-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px}
 .week-card .card-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
 .week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
@@ -109,12 +118,16 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .day-col .dc-dot.empty{color:var(--muted2)}
 .day-col .dc-dot.today{box-shadow:0 0 0 2px var(--accent)}
 .day-col .dc-cal{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace}
+
+/* QUICK LINKS */
 .quick-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .quick-btn{display:flex;align-items:center;gap:12px;background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:14px;text-decoration:none;color:var(--text);transition:all 0.2s}
 .quick-btn:hover{border-color:var(--accent);background:var(--adim)}
 .quick-btn .qb-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .quick-btn .qb-label{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
 .quick-btn .qb-val{font-family:'Bebas Neue',sans-serif;font-size:18px;line-height:1}
+
+/* MODALS */
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:flex-end;justify-content:center}
 .modal.active{display:flex}
 .modal-sheet{background:var(--s2);border:1px solid var(--border2);border-radius:20px 20px 0 0;padding:28px 24px 40px;width:100%;max-width:500px}
@@ -128,413 +141,370 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 </head>
 <body>
 <div class="wrap">
-<div class="header">
-<div class="header-left">
-<div class="sup">Wellness OS</div>
-<h1>DAVE'S<br>HUB</h1>
+  <div class="header">
+    <div class="header-left">
+      <div class="sup">Wellness OS</div>
+      <h1>DAVE'S<br>HUB</h1>
+    </div>
+    <div class="header-right">
+      <div class="date" id="dateStr"></div>
+      <div class="day" id="dayStr"></div>
+    </div>
+  </div>
+
+  <!-- Score Ring -->
+  <div class="score-section">
+    <div class="ring-wrap">
+      <svg width="110" height="110" viewBox="0 0 110 110">
+        <circle class="ring-bg" cx="55" cy="55" r="46"/>
+        <circle class="ring-fill" id="ringFill" cx="55" cy="55" r="46" stroke="var(--accent)" stroke-dasharray="289" stroke-dashoffset="289"/>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-num" id="ringScore">0</div>
+        <div class="ring-label">SCORE</div>
+      </div>
+    </div>
+    <div class="score-info">
+      <div class="score-title" id="scoreTitle">LET'S GO</div>
+      <div class="score-sub" id="scoreSub">Start logging your day to build your wellness score.</div>
+      <div class="streak-badge">&#128293; <span id="streakNum">0</span> day streak</div>
+    </div>
+  </div>
+
+  <!-- Intermittent Fasting Card -->
+  <div class="if-card" id="ifCard">
+    <div class="if-top">
+      <div class="if-title">&#9201; Intermittent Fasting</div>
+      <div class="if-toggle-wrap">
+        <span class="if-toggle-label" id="ifToggleLabel">OFF</span>
+        <label class="if-toggle">
+          <input type="checkbox" id="ifToggle">
+          <span class="if-slider"></span>
+        </label>
+        <button class="if-gear" id="ifGear" title="Settings">&#9881;</button>
+      </div>
+    </div>
+    <div class="if-body" id="ifBody">
+      <div class="if-ring-wrap">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle class="if-ring-bg" cx="40" cy="40" r="34"/>
+          <circle class="if-ring-fill" id="ifRingFill" cx="40" cy="40" r="34" stroke="var(--accent)" stroke-dasharray="214" stroke-dashoffset="214"/>
+        </svg>
+        <div class="if-ring-center">
+          <div class="if-ring-pct" id="ifPct">0%</div>
+          <div class="if-ring-lbl">done</div>
+        </div>
+      </div>
+      <div class="if-info">
+        <div class="if-status off" id="ifStatus">INACTIVE</div>
+        <div class="if-countdown" id="ifCountdown">-- : -- : --</div>
+        <div class="if-sublabel" id="ifSublabel">Enable to start tracking</div>
+      </div>
+    </div>
+    <div class="if-settings" id="ifSettings">
+      <div class="if-settings-grid">
+        <div>
+          <label>Window Opens</label>
+          <select class="if-time-select" id="ifStartH"></select>
+          <select class="if-time-select" id="ifStartM"></select>
+        </div>
+        <div>
+          <label>Window Closes</label>
+          <select class="if-time-select" id="ifEndH"></select>
+          <select class="if-time-select" id="ifEndM"></select>
+        </div>
+      </div>
+      <button class="if-save-btn" id="ifSaveBtn">SAVE WINDOW</button>
+    </div>
+  </div>
+
+  <!-- Stats Row 1: Calories + Protein -->
+  <div class="stat-grid">
+    <div class="stat-card cal">
+      <a href="history.html?metric=calories" class="hist-arrow" title="View history">&#8250;</a>
+      <div class="sc-icon">&#9889;</div>
+      <div class="sc-label">Calories</div>
+      <div class="sc-val" id="statCal">0</div>
+      <div class="sc-sub">of 2,400 target</div>
+      <div class="sc-bar"><div class="sc-bar-fill" id="calBar" style="width:0%"></div></div>
+    </div>
+    <div class="stat-card pro">
+      <a href="history.html?metric=protein" class="hist-arrow" title="View history">&#8250;</a>
+      <div class="sc-icon">&#128170;</div>
+      <div class="sc-label">Protein</div>
+      <div class="sc-val" id="statPro">0g</div>
+      <div class="sc-sub">of 185g target</div>
+      <div class="sc-bar"><div class="sc-bar-fill" id="proBar" style="width:0%"></div></div>
+    </div>
+
+    <!-- Steps - tap to log -->
+    <div class="stat-card steps" id="stepsCard">
+      <a href="history.html?metric=steps" class="hist-arrow" title="View history">&#8250;</a>
+      <div class="sc-icon">&#128099;</div>
+      <div class="sc-label">Steps</div>
+      <div class="sc-val" id="statSteps">0</div>
+      <div class="sc-sub">of 11,000 target</div>
+      <div class="sc-bar"><div class="sc-bar-fill" id="stepsBar" style="width:0%"></div></div>
+    </div>
+
+    <!-- Weight - tap to log -->
+    <div class="stat-card weight" id="weightCard">
+      <a href="history.html?metric=weight" class="hist-arrow" title="View history">&#8250;</a>
+      <div class="sc-icon">&#9878;</div>
+      <div class="sc-label">Weight</div>
+      <div class="sc-val" id="statWeight">--</div>
+      <div class="sc-sub" id="statWeightSub">Tap to log</div>
+    </div>
+  </div>
+
+  <!-- Water tile full width -->
+  <div class="stat-card water" style="margin-bottom:16px;cursor:default">
+    <a href="history.html?metric=water" class="hist-arrow" title="View history">&#8250;</a>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+      <div>
+        <div class="sc-icon" style="display:inline">&#128167;</div>
+        <span class="sc-label" style="margin-left:6px">Water</span>
+      </div>
+      <div style="text-align:right;padding-right:32px">
+        <span class="sc-val" id="statWater" style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--blue)">0</span>
+        <span style="font-size:12px;color:var(--muted)"> / 3000 ml</span>
+      </div>
+    </div>
+    <div class="sc-bar" style="margin-bottom:10px"><div class="sc-bar-fill" id="waterBar" style="width:0%;background:var(--blue)"></div></div>
+    <div class="water-btns">
+      <button class="water-btn" onclick="addWater(250)">+250ml</button>
+      <button class="water-btn" onclick="addWater(500)">+500ml</button>
+      <button class="water-btn" onclick="addWater(750)">+750ml</button>
+      <button class="water-btn" onclick="addWater(1000)">+1L</button>
+      <button class="water-reset" onclick="resetWater()">reset</button>
+    </div>
+  </div>
+
+  <!-- Workout stat -->
+  <div class="stat-grid" style="grid-template-columns:1fr;margin-bottom:16px">
+    <div class="stat-card wod" style="cursor:default">
+      <a href="history.html?metric=workout" class="hist-arrow" title="View history">&#8250;</a>
+      <div class="sc-icon">&#127947;</div>
+      <div class="sc-label">Workout</div>
+      <div class="sc-val" id="statWod">--</div>
+      <div class="sc-sub" id="statWodSub">Not logged today</div>
+    </div>
+  </div>
+
+  <!-- Weekly Strip -->
+  <div class="week-card">
+    <div class="card-title">This Week</div>
+    <div class="week-strip" id="weekStrip"></div>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="quick-row">
+    <a class="quick-btn" href="nutrition.html">
+      <div class="qb-icon" style="background:var(--adim)">&#127805;</div>
+      <div><div class="qb-label">Log Food</div><div class="qb-val" style="color:var(--accent)">NUTRITION</div></div>
+    </a>
+    <a class="quick-btn" href="workout.html">
+      <div class="qb-icon" style="background:var(--pdim)">&#127947;</div>
+      <div><div class="qb-label">Log Session</div><div class="qb-val" style="color:var(--purple)">WORKOUT</div></div>
+    </a>
+    <a class="quick-btn" href="weight.html">
+      <div class="qb-icon" style="background:var(--odim)">&#9878;</div>
+      <div><div class="qb-label">Track Progress</div><div class="qb-val" style="color:var(--orange)">WEIGHT</div></div>
+    </a>
+  </div>
 </div>
-<div class="header-right">
-<div class="date" id="dateStr"></div>
-<div class="day" id="dayStr"></div>
-</div>
-</div>
-<div class="score-section">
-<div class="ring-wrap">
-<svg width="110" height="110" viewBox="0 0 110 110">
-<circle class="ring-bg" cx="55" cy="55" r="46"/>
-<circle class="ring-fill" id="ringFill" cx="55" cy="55" r="46" stroke="var(--accent)" stroke-dasharray="289" stroke-dashoffset="289"/>
-</svg>
-<div class="ring-center">
-<div class="ring-num" id="ringScore">0</div>
-<div class="ring-label">SCORE</div>
-</div>
-</div>
-<div class="score-info">
-<div class="score-title" id="scoreTitle">LET'S GO</div>
-<div class="score-sub" id="scoreSub">Start logging your day to build your wellness score.</div>
-<div class="streak-badge">&#128293; <span id="streakNum">0</span> day streak</div>
-</div>
-</div>
-<div class="if-card" id="ifCard">
-<div class="if-top">
-<div class="if-title">⏱ Intermittent Fasting</div>
-<div class="if-toggle-wrap">
-<span class="if-toggle-label" id="ifToggleLabel">OFF</span>
-<label class="if-toggle">
-<input type="checkbox" id="ifToggle">
-<span class="if-slider"></span>
-</label>
-<button class="if-gear" id="ifGear" title="Settings">⚙</button>
-</div>
-</div>
-<div class="if-body" id="ifBody">
-<div class="if-ring-wrap">
-<svg width="80" height="80" viewBox="0 0 80 80">
-<circle class="if-ring-bg" cx="40" cy="40" r="34"/>
-<circle class="if-ring-fill" id="ifRingFill" cx="40" cy="40" r="34" stroke="var(--accent)" stroke-dasharray="214" stroke-dashoffset="214"/>
-</svg>
-<div class="if-ring-center">
-<div class="if-ring-pct" id="ifPct">0%</div>
-<div class="if-ring-lbl">done</div>
-</div>
-</div>
-<div class="if-info">
-<div class="if-status off" id="ifStatus">INACTIVE</div>
-<div class="if-countdown" id="ifCountdown">-- : -- : --</div>
-<div class="if-sublabel" id="ifSublabel">Enable to start tracking</div>
-</div>
-</div>
-<div class="if-settings" id="ifSettings">
-<div class="if-settings-grid">
-<div>
-<label>Window Opens</label>
-<select class="if-time-select" id="ifStartH"></select>
-<select class="if-time-select" id="ifStartM"></select>
-</div>
-<div>
-<label>Window Closes</label>
-<select class="if-time-select" id="ifEndH"></select>
-<select class="if-time-select" id="ifEndM"></select>
-</div>
-</div>
-<button class="if-save-btn" id="ifSaveBtn">SAVE WINDOW</button>
-</div>
-</div>
-<div class="stat-grid">
-<div class="stat-card cal">
-<div class="sc-icon">&#9889;</div>
-<div class="sc-label">Calories</div>
-<div class="sc-val" id="statCal">0</div>
-<div class="sc-sub">of 2,400 target</div>
-<!-- NEW: net calories line, hidden by default, shown when a workout is logged -->
-<div class="sc-net" id="statCalNet" style="display:none"></div>
-<div class="sc-bar"><div class="sc-bar-fill" id="calBar" style="width:0%"></div></div>
-</div>
-<div class="stat-card pro">
-<div class="sc-icon">&#128170;</div>
-<div class="sc-label">Protein</div>
-<div class="sc-val" id="statPro">0g</div>
-<div class="sc-sub">of 185g target</div>
-<div class="sc-bar"><div class="sc-bar-fill" id="proBar" style="width:0%"></div></div>
-</div>
-<div class="stat-card steps" id="stepsCard">
-<div class="sc-icon">&#128099;</div>
-<div class="sc-label">Steps</div>
-<div class="sc-val" id="statSteps">0</div>
-<div class="sc-sub">of 11,000 target</div>
-<div class="sc-bar"><div class="sc-bar-fill" id="stepsBar" style="width:0%"></div></div>
-</div>
-<div class="stat-card weight" id="weightCard">
-<div class="sc-icon">&#9878;</div>
-<div class="sc-label">Weight</div>
-<div class="sc-val" id="statWeight">--</div>
-<div class="sc-sub" id="statWeightSub">Tap to log</div>
-</div>
-</div>
-<div class="stat-card water" style="margin-bottom:16px;cursor:default">
-<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
-<div>
-<div class="sc-icon" style="display:inline">&#128167;</div>
-<span class="sc-label" style="margin-left:6px">Water</span>
-</div>
-<div style="text-align:right">
-<span class="sc-val" id="statWater" style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--blue)">0</span>
-<span style="font-size:12px;color:var(--muted)"> / 3000 ml</span>
-</div>
-</div>
-<div class="sc-bar" style="margin-bottom:10px"><div class="sc-bar-fill" id="waterBar" style="width:0%;background:var(--blue)"></div></div>
-<div class="water-btns">
-<button class="water-btn" onclick="addWater(250)">+250ml</button>
-<button class="water-btn" onclick="addWater(500)">+500ml</button>
-<button class="water-btn" onclick="addWater(750)">+750ml</button>
-<button class="water-btn" onclick="addWater(1000)">+1L</button>
-<button class="water-reset" onclick="resetWater()">reset</button>
-</div>
-</div>
-<div class="stat-grid" style="grid-template-columns:1fr;margin-bottom:16px">
-<div class="stat-card wod" style="cursor:default">
-<div class="sc-icon">&#127947;</div>
-<div class="sc-label">Workout</div>
-<div class="sc-val" id="statWod">--</div>
-<div class="sc-sub" id="statWodSub">Not logged today</div>
-</div>
-</div>
-<div class="week-card">
-<div class="card-title">This Week</div>
-<div class="week-strip" id="weekStrip"></div>
-</div>
-<div class="quick-row">
-<a class="quick-btn" href="nutrition.html">
-<div class="qb-icon" style="background:var(--adim)">&#127805;</div>
-<div><div class="qb-label">Log Food</div><div class="qb-val" style="color:var(--accent)">NUTRITION</div></div>
-</a>
-<a class="quick-btn" href="workout.html">
-<div class="qb-icon" style="background:var(--pdim)">&#127947;</div>
-<div><div class="qb-label">Log Session</div><div class="qb-val" style="color:var(--purple)">WORKOUT</div></div>
-</a>
-<a class="quick-btn" href="weight.html">
-<div class="qb-icon" style="background:var(--odim)">&#9878;</div>
-<div><div class="qb-label">Track Progress</div><div class="qb-val" style="color:var(--orange)">WEIGHT</div></div>
-</a>
-</div>
-</div>
+
+<!-- Steps Modal -->
 <div class="modal" id="stepsModal">
-<div class="modal-sheet">
-<h3>LOG STEPS</h3>
-<div class="modal-hint">Tap your Apple Watch step count or enter manually</div>
-<input class="modal-input" id="stepsInput" type="number" placeholder="0" min="0" max="99999">
-<button class="modal-save" id="stepsSave">SAVE STEPS</button>
-<button class="modal-cancel" id="stepsCancel">Cancel</button>
+  <div class="modal-sheet">
+    <h3>LOG STEPS</h3>
+    <div class="modal-hint">Tap your Apple Watch step count or enter manually</div>
+    <input class="modal-input" id="stepsInput" type="number" placeholder="0" min="0" max="99999">
+    <button class="modal-save" id="stepsSave">SAVE STEPS</button>
+    <button class="modal-cancel" id="stepsCancel">Cancel</button>
+  </div>
 </div>
-</div>
+
+<!-- Weight Modal -->
 <div class="modal" id="weightModal">
-<div class="modal-sheet">
-<h3>LOG WEIGHT</h3>
-<div class="modal-hint">Enter your weight in kg — best logged first thing in the morning</div>
-<input class="modal-input" id="weightInput" type="number" placeholder="0.0" step="0.1" min="0" max="300">
-<button class="modal-save" id="weightSave">SAVE WEIGHT</button>
-<button class="modal-cancel" id="weightCancel">Cancel</button>
+  <div class="modal-sheet">
+    <h3>LOG WEIGHT</h3>
+    <div class="modal-hint">Enter your weight in kg &mdash; best logged first thing in the morning</div>
+    <input class="modal-input" id="weightInput" type="number" placeholder="0.0" step="0.1" min="0" max="300">
+    <button class="modal-save" id="weightSave">SAVE WEIGHT</button>
+    <button class="modal-cancel" id="weightCancel">Cancel</button>
+  </div>
 </div>
-</div>
+
 <nav class="nav">
-<a class="nav-link active" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Hub</a>
-<a class="nav-link" href="nutrition.html"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Nutrition</a>
-<a class="nav-link" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Workout</a>
-<a class="nav-link" href="weight.html"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Weight</a>
+  <a class="nav-link active" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Hub</a>
+  <a class="nav-link" href="nutrition.html"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Nutrition</a>
+  <a class="nav-link" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Workout</a>
+  <a class="nav-link" href="weight.html"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Weight</a>
 </nav>
+
 <script src="db.js"></script>
 <script>
-var DAYS=['SUN','MON','TUE','WED','THU','FRI','SAT'];
-var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-// ════════════════════════════════════════════════════════
-// NEW: Exercise calorie burn estimation (MET-based)
-// Formula: kcal = MET × weight_kg × (duration_mins / 60)
-// If no weight logged, default to 80kg so the number is still useful.
-// ════════════════════════════════════════════════════════
-function getBodyWeightKg(){
-  var weights=DB.get('weights')||[];
-  if(weights.length>0)return parseFloat(weights[weights.length-1].kg)||80;
-  return 80;
-}
-
-// Per-exercise MET lookup — matches workout.html / history.html
-var MET_LOOKUP={
-  'Bench Press':5.0,'Incline Bench Press':5.0,'Decline Bench Press':5.0,'Dumbbell Fly':5.0,'Cable Crossover':5.0,'Incline Dumbbell Press':5.0,'Push-Ups':5.0,
-  'Squat':6.0,'Romanian Deadlift':6.0,'Leg Press':5.0,'Leg Curl':4.5,'Leg Extension':4.5,'Walking Lunges':5.0,'Hip Thrust':5.0,'Calf Raises':4.0,'Jump Squats':8.0,'Jump Lunges':8.0,'Squat Jumps':8.0,
-  'Deadlift':6.0,'Pull-Ups':6.0,'Chin-Ups':6.0,'Barbell Row':5.0,'Seated Cable Row':4.5,'Lat Pulldown':4.5,'Single Arm Row':4.5,
-  'Overhead Press':5.0,'Lateral Raises':4.0,'Front Raises':4.0,'Face Pulls':4.0,'Arnold Press':5.0,
-  'Tricep Pushdown':4.0,'Skull Crushers':4.5,'Dips':5.5,'Overhead Tricep Extension':4.0,
-  'Barbell Curl':4.0,'Dumbbell Curl':4.0,'Hammer Curl':4.0,'Preacher Curl':4.0,
-  'Plank':3.5,'Ab Rollout':4.5,'Cable Crunch':4.0,'Hanging Leg Raise':5.0,'Toes to Bar':6.0,'Plank Hold':3.5,'Med Ball Slams':7.0,
-  'Treadmill Run':9.0,'Outdoor Run':9.8,'Outdoor Walk':3.8,'Rowing Machine':7.0,'Bike':7.5,'Assault Bike':8.5,'Jump Rope':11.0,'Box Jumps':8.0,'Burpees':8.5,'Double Unders':11.5,
-  'Kettlebell Swings':8.0,'Battle Ropes':8.0,'Mountain Climbers':8.0,'High Knees':9.0,'Sprint Intervals':10.0,'Dumbbell Thrusters':8.0,'Barbell Thruster':8.0,'Sled Push':9.0,'Wall Balls':8.0,'Sandbag Carries':7.5,'Tire Flips':9.0,'Sledgehammer Slams':8.5
-};
-
-function classifyWorkout(w){
-  var id=(w.templateId||'').toLowerCase();
-  if(['hiit1','tabata','hiit3','metcon'].indexOf(id)>=0)return 'hiit';
-  if(['cardio','outdoor_walk','outdoor_run'].indexOf(id)>=0)return 'cardio';
-  var exs=w.exercises||[];
-  if(exs.length&&exs.every(function(e){return e.cardio||(e.category||'').toLowerCase()==='cardio';}))return 'cardio';
-  if(exs.length&&exs.every(function(e){return (e.category||'').toLowerCase()==='hiit';}))return 'hiit';
-  return 'strength';
-}
-
-function estimateBurn(workout,weightKg){
-  var mins=parseFloat(workout.duration)||0;
-  if(mins<=0)return 0;
-  var exs=workout.exercises||[];
-  var classification=classifyWorkout(workout);
-
-  // HIIT: whole-session MET (set-based sessions don't translate time cleanly)
-  if(classification==='hiit')return Math.round(8.0*weightKg*(mins/60));
-
-  // Per-exercise: cardio entries burn at their own MET × their own duration;
-  // remaining time uses average of strength exercise METs.
-  var trackedCardioSec=0, cardioBurn=0;
-  exs.forEach(function(ex){
-    if(ex.cardio&&ex.durationSec>0){
-      var m=ex.durationSec/60;
-      var met=MET_LOOKUP[ex.name]||7.0;
-      cardioBurn+=met*weightKg*(m/60);
-      trackedCardioSec+=ex.durationSec;
-    }
-  });
-  var trackedCardioMins=trackedCardioSec/60;
-  var remainingMins=Math.max(0,mins-trackedCardioMins);
-
-  var strengthMets=exs.filter(function(ex){return !ex.cardio;}).map(function(ex){return MET_LOOKUP[ex.name]||5.0;});
-  var avgStrengthMet=strengthMets.length?strengthMets.reduce(function(a,b){return a+b;},0)/strengthMets.length:5.0;
-  if(classification==='cardio'&&trackedCardioSec>0)avgStrengthMet=0;
-  var strengthBurn=avgStrengthMet*weightKg*(remainingMins/60);
-
-  return Math.round(cardioBurn+strengthBurn);
-}
-
-function totalBurnForDay(workouts,weightKg){
-  return workouts.reduce(function(a,w){return a+estimateBurn(w,weightKg);},0);
-}
+var DAYS = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 function init(){
-  var now=new Date();
-  document.getElementById('dateStr').textContent=now.getDate()+' '+MONTHS[now.getMonth()]+' '+now.getFullYear();
-  document.getElementById('dayStr').textContent=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][now.getDay()];
-  var todayKey=DB.dayKey();
-  var nutrition=DB.get('nutrition_'+todayKey)||{entries:[]};
-  var steps=DB.get('steps_'+todayKey)||0;
-  var water=DB.get('water_'+todayKey)||0;
-  var workouts=DB.get('workouts_'+todayKey)||[];
-  var weights=DB.get('weights')||[];
-  var todayWeight=weights.length>0?weights[weights.length-1]:null;
-  var totals=nutrition.entries.reduce(function(a,e){return{cal:a.cal+(e.cal||0),p:a.p+(e.p||0)}},{cal:0,p:0});
+  var now = new Date();
+  document.getElementById('dateStr').textContent = now.getDate() + ' ' + MONTHS[now.getMonth()] + ' ' + now.getFullYear();
+  document.getElementById('dayStr').textContent = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][now.getDay()];
 
-  // NEW: compute burn
-  var bodyWeight=getBodyWeightKg();
-  var totalBurn=totalBurnForDay(workouts,bodyWeight);
+  var todayKey = DB.dayKey();
+  var nutrition = DB.get('nutrition_' + todayKey) || {entries:[]};
+  var steps = DB.get('steps_' + todayKey) || 0;
+  var water = DB.get('water_' + todayKey) || 0;
+  var workouts = DB.get('workouts_' + todayKey) || [];
+  var weights = DB.get('weights') || [];
+  var todayWeight = weights.length > 0 ? weights[weights.length - 1] : null;
+  var totals = nutrition.entries.reduce(function(a,e){return {cal:a.cal+(e.cal||0),p:a.p+(e.p||0)};},{cal:0,p:0});
 
   // Stats
-  document.getElementById('statCal').textContent=Math.round(totals.cal);
-  document.getElementById('calBar').style.width=Math.min(totals.cal/2400*100,100)+'%';
-  document.getElementById('statPro').textContent=Math.round(totals.p)+'g';
-  document.getElementById('proBar').style.width=Math.min(totals.p/185*100,100)+'%';
-  document.getElementById('statSteps').textContent=steps.toLocaleString();
-  document.getElementById('stepsBar').style.width=Math.min(steps/11000*100,100)+'%';
+  document.getElementById('statCal').textContent = Math.round(totals.cal);
+  document.getElementById('calBar').style.width = Math.min(totals.cal/2400*100,100) + '%';
+  document.getElementById('statPro').textContent = Math.round(totals.p) + 'g';
+  document.getElementById('proBar').style.width = Math.min(totals.p/185*100,100) + '%';
+  document.getElementById('statSteps').textContent = steps.toLocaleString();
+  document.getElementById('stepsBar').style.width = Math.min(steps/11000*100,100) + '%';
 
-  // NEW: net calories line — only show if a workout has been logged today
-  var netEl=document.getElementById('statCalNet');
-  if(totalBurn>0){
-    var net=Math.round(totals.cal)-totalBurn;
-    netEl.textContent='Net: '+net+' · Burn: '+totalBurn;
-    netEl.className='sc-net '+(net<=2400?'under':'over');
-    netEl.style.display='block';
-  } else {
-    netEl.style.display='none';
-  }
+  document.getElementById('statWater').textContent = water;
+  document.getElementById('waterBar').style.width = Math.min(water/3000*100,100) + '%';
 
-  document.getElementById('statWater').textContent=water;
-  document.getElementById('waterBar').style.width=Math.min(water/3000*100,100)+'%';
-
-  if(todayWeight){
-    document.getElementById('statWeight').textContent=todayWeight.kg+'kg';
-    var goal=DB.get('weightGoal');
-    if(goal&&goal.target){
-      var diff=(todayWeight.kg-goal.target).toFixed(1);
-      document.getElementById('statWeightSub').textContent=(diff>0?'+':'')+diff+'kg from goal';
+  // Weight
+  if (todayWeight) {
+    document.getElementById('statWeight').textContent = todayWeight.kg + 'kg';
+    var goal = DB.get('weightGoal');
+    if (goal && goal.target) {
+      var diff = (todayWeight.kg - goal.target).toFixed(1);
+      document.getElementById('statWeightSub').textContent = (diff > 0 ? '+' : '') + diff + 'kg from goal';
     } else {
-      document.getElementById('statWeightSub').textContent='Logged today';
+      document.getElementById('statWeightSub').textContent = 'Logged today';
     }
   } else {
-    document.getElementById('statWeight').textContent='--';
-    document.getElementById('statWeightSub').textContent='Tap to log';
+    document.getElementById('statWeight').textContent = '--';
+    document.getElementById('statWeightSub').textContent = 'Tap to log';
   }
 
-  // Workout tile — NEW: include duration + burn
-  if(workouts.length>0){
-    document.getElementById('statWod').textContent='DONE';
-    document.getElementById('statWod').className='sc-val done';
-    var latest=workouts[workouts.length-1];
-    var totalMins=workouts.reduce(function(a,w){return a+(parseFloat(w.duration)||0);},0);
-    var subBits=[];
-    if(workouts.length===1){
-      subBits.push(latest.name||'Session');
-      if(latest.duration)subBits.push(Math.round(latest.duration)+' min');
-    } else {
-      subBits.push(workouts.length+' sessions');
-      if(totalMins>0)subBits.push(Math.round(totalMins)+' min total');
-    }
-    if(totalBurn>0)subBits.push(totalBurn+' kcal burned');
-    document.getElementById('statWodSub').textContent=subBits.join(' · ');
+  // Workout
+  if (workouts.length > 0) {
+    document.getElementById('statWod').textContent = 'DONE';
+    document.getElementById('statWod').className = 'sc-val done';
+    document.getElementById('statWodSub').textContent = workouts[workouts.length-1].name || 'Session logged';
+  } else {
+    document.getElementById('statWod').textContent = '--';
+    document.getElementById('statWod').className = 'sc-val';
+    document.getElementById('statWodSub').textContent = 'Not logged today';
   }
 
-  // Score (unchanged — target is not adjusted)
-  var score=0;
-  if(totals.cal>=1800&&totals.cal<=2600)score+=20;else if(totals.cal>0)score+=10;
-  if(totals.p>=150)score+=20;else if(totals.p>=100)score+=10;
-  if(steps>=11000)score+=20;else if(steps>=7000)score+=10;
-  if(workouts.length>0)score+=20;
-  if(water>=3000)score+=20;else if(water>=1500)score+=10;
-  if(todayWeight)score+=0;
-  document.getElementById('ringScore').textContent=score;
-  document.getElementById('ringFill').style.strokeDashoffset=289-(289*score/100);
-  var titles={0:"LET'S GO",20:'WARMING UP',40:'HALF WAY',60:'CRUSHING IT',80:'ALMOST THERE',100:'LOCKED IN'};
-  var subs={0:'Start logging your day.',20:'Good start — keep building.',40:'Solid effort today, Dave.',60:'Strong day!',80:'Almost perfect day!',100:'100% — absolute machine.'};
-  var key=[100,80,60,40,20,0].find(function(k){return score>=k;});
-  document.getElementById('scoreTitle').textContent=titles[key];
-  document.getElementById('scoreSub').textContent=subs[key];
+  // Score
+  var score = 0;
+  if (totals.cal >= 1800 && totals.cal <= 2600) score += 20; else if (totals.cal > 0) score += 10;
+  if (totals.p >= 150) score += 20; else if (totals.p >= 100) score += 10;
+  if (steps >= 11000) score += 20; else if (steps >= 7000) score += 10;
+  if (workouts.length > 0) score += 20;
+  if (water >= 3000) score += 20; else if (water >= 1500) score += 10;
+
+  document.getElementById('ringScore').textContent = score;
+  document.getElementById('ringFill').style.strokeDashoffset = 289 - (289 * score / 100);
+  var titles = {0:"LET'S GO",20:'WARMING UP',40:'HALF WAY',60:'CRUSHING IT',80:'ALMOST THERE',100:'LOCKED IN'};
+  var subs = {0:'Start logging your day.',20:'Good start — keep building.',40:'Solid effort today, Dave.',60:'Strong day!',80:'Almost perfect day!',100:'100% — absolute machine.'};
+  var key = [100,80,60,40,20,0].find(function(k){ return score >= k; });
+  document.getElementById('scoreTitle').textContent = titles[key];
+  document.getElementById('scoreSub').textContent = subs[key];
 
   // Streak
-  var streak=0;
-  for(var i=1;i<=30;i++){var k=DB.dayKey(-i);var n=DB.get('nutrition_'+k);var w=DB.get('workouts_'+k);if((n&&n.entries.length>0)||(w&&w.length>0))streak++;else break;}
-  if(nutrition.entries.length>0||workouts.length>0)streak++;
-  document.getElementById('streakNum').textContent=streak;
+  var streak = 0;
+  for (var i = 1; i <= 30; i++) {
+    var k = DB.dayKey(-i);
+    var n = DB.get('nutrition_' + k);
+    var w = DB.get('workouts_' + k);
+    if ((n && n.entries.length > 0) || (w && w.length > 0)) streak++; else break;
+  }
+  if (nutrition.entries.length > 0 || workouts.length > 0) streak++;
+  document.getElementById('streakNum').textContent = streak;
 
   // Weekly strip
-  var strip=document.getElementById('weekStrip');strip.innerHTML='';
-  for(var i=6;i>=0;i--){
-    var d=new Date();d.setDate(d.getDate()-i);
-    var k=d.toISOString().split('T')[0];
-    var n2=DB.get('nutrition_'+k);var w2=DB.get('workouts_'+k);
-    var hasN=n2&&n2.entries.length>0;var hasW=w2&&w2.length>0;
-    var isToday=k===todayKey;
-    var col=document.createElement('div');col.className='day-col';
-    var dotClass=(hasN&&hasW)?'full':(hasN||hasW)?'partial':'empty';
-    var dotSymbol=(hasN&&hasW)?'&#10003;':(hasN||hasW)?'~':'&#183;';
-    var nCal=n2?n2.entries.reduce(function(a,e){return a+(e.cal||0)},0):0;
-    col.innerHTML='<div class="dc-label">'+DAYS[d.getDay()]+'</div><div class="dc-dot '+dotClass+(isToday?' today':'')+'">'+dotSymbol+'</div><div class="dc-cal">'+(nCal>0?Math.round(nCal):'--')+'</div>';
+  var strip = document.getElementById('weekStrip');
+  strip.innerHTML = '';
+  for (var i = 6; i >= 0; i--) {
+    var d = new Date();
+    d.setDate(d.getDate() - i);
+    var k = DB.dateToKey(d);
+    var n2 = DB.get('nutrition_' + k);
+    var w2 = DB.get('workouts_' + k);
+    var hasN = n2 && n2.entries.length > 0;
+    var hasW = w2 && w2.length > 0;
+    var isToday = k === todayKey;
+    var col = document.createElement('div');
+    col.className = 'day-col';
+    var dotClass = (hasN && hasW) ? 'full' : (hasN || hasW) ? 'partial' : 'empty';
+    var dotSymbol = (hasN && hasW) ? '&#10003;' : (hasN || hasW) ? '~' : '&#183;';
+    var nCal = n2 ? n2.entries.reduce(function(a,e){return a + (e.cal || 0);}, 0) : 0;
+    col.innerHTML = '<div class="dc-label">' + DAYS[d.getDay()] + '</div>' +
+      '<div class="dc-dot ' + dotClass + (isToday ? ' today' : '') + '">' + dotSymbol + '</div>' +
+      '<div class="dc-cal">' + (nCal > 0 ? Math.round(nCal) : '--') + '</div>';
     strip.appendChild(col);
   }
 }
 
+// Water
 function addWater(ml){
-  var k=DB.dayKey();
-  var current=DB.get('water_'+k)||0;
-  DB.set('water_'+k,current+ml);
+  var k = DB.dayKey();
+  var current = DB.get('water_' + k) || 0;
+  DB.set('water_' + k, current + ml);
   init();
 }
-function resetWater(){DB.set('water_'+DB.dayKey(),0);init();}
+function resetWater(){ DB.set('water_' + DB.dayKey(), 0); init(); }
 
-document.getElementById('stepsCard').addEventListener('click',function(){
-  document.getElementById('stepsInput').value=DB.get('steps_'+DB.dayKey())||'';
+// Steps modal — click anywhere on tile EXCEPT the history arrow
+document.getElementById('stepsCard').addEventListener('click', function(e){
+  if (e.target.closest('.hist-arrow')) return;
+  document.getElementById('stepsInput').value = DB.get('steps_' + DB.dayKey()) || '';
   document.getElementById('stepsModal').classList.add('active');
-  setTimeout(function(){document.getElementById('stepsInput').focus();},100);
+  setTimeout(function(){ document.getElementById('stepsInput').focus(); }, 100);
 });
-document.getElementById('stepsSave').addEventListener('click',function(){
-  var val=parseInt(document.getElementById('stepsInput').value)||0;
-  DB.set('steps_'+DB.dayKey(),val);
+document.getElementById('stepsSave').addEventListener('click', function(){
+  var val = parseInt(document.getElementById('stepsInput').value) || 0;
+  DB.set('steps_' + DB.dayKey(), val);
   document.getElementById('stepsModal').classList.remove('active');
   init();
 });
-document.getElementById('stepsCancel').addEventListener('click',function(){document.getElementById('stepsModal').classList.remove('active');});
-document.getElementById('stepsModal').addEventListener('click',function(e){if(e.target===document.getElementById('stepsModal'))document.getElementById('stepsModal').classList.remove('active');});
-
-document.getElementById('weightCard').addEventListener('click',function(){
-  var weights=DB.get('weights')||[];
-  var last=weights.length>0?weights[weights.length-1].kg:'';
-  document.getElementById('weightInput').value=last;
-  document.getElementById('weightModal').classList.add('active');
-  setTimeout(function(){document.getElementById('weightInput').focus();},100);
+document.getElementById('stepsCancel').addEventListener('click', function(){ document.getElementById('stepsModal').classList.remove('active'); });
+document.getElementById('stepsModal').addEventListener('click', function(e){
+  if (e.target === document.getElementById('stepsModal')) document.getElementById('stepsModal').classList.remove('active');
 });
-document.getElementById('weightSave').addEventListener('click',function(){
-  var val=parseFloat(document.getElementById('weightInput').value);
-  if(!val)return;
-  var weights=DB.get('weights')||[];
-  var todayKey=DB.dayKey();
-  var existing=weights.findIndex(function(w){return w.date===todayKey;});
-  if(existing>=0){weights[existing].kg=val;}else{weights.push({date:todayKey,kg:val});}
-  DB.set('weights',weights);
+
+// Weight modal — same pattern
+document.getElementById('weightCard').addEventListener('click', function(e){
+  if (e.target.closest('.hist-arrow')) return;
+  var weights = DB.get('weights') || [];
+  var last = weights.length > 0 ? weights[weights.length - 1].kg : '';
+  document.getElementById('weightInput').value = last;
+  document.getElementById('weightModal').classList.add('active');
+  setTimeout(function(){ document.getElementById('weightInput').focus(); }, 100);
+});
+document.getElementById('weightSave').addEventListener('click', function(){
+  var val = parseFloat(document.getElementById('weightInput').value);
+  if (!val) return;
+  var weights = DB.get('weights') || [];
+  var todayKey = DB.dayKey();
+  var existing = weights.findIndex(function(w){ return w.date === todayKey; });
+  if (existing >= 0) { weights[existing].kg = val; } else { weights.push({date:todayKey, kg:val}); }
+  DB.set('weights', weights);
   document.getElementById('weightModal').classList.remove('active');
   init();
 });
-document.getElementById('weightCancel').addEventListener('click',function(){document.getElementById('weightModal').classList.remove('active');});
-document.getElementById('weightModal').addEventListener('click',function(e){if(e.target===document.getElementById('weightModal'))document.getElementById('weightModal').classList.remove('active');});
+document.getElementById('weightCancel').addEventListener('click', function(){ document.getElementById('weightModal').classList.remove('active'); });
+document.getElementById('weightModal').addEventListener('click', function(e){
+  if (e.target === document.getElementById('weightModal')) document.getElementById('weightModal').classList.remove('active');
+});
 
 init();
 
-// Refresh the Hub when the tab becomes visible again or regains focus.
-// Without this, leaving the app open overnight shows yesterday's data until
-// the user manually refreshes. If the stored dayKey differs from today's,
-// we re-run init() to pull today's (empty) data.
+// Refresh when tab regains focus on a new day (daily rollover without reload)
 var _lastRenderDay = DB.dayKey();
 function _refreshIfNewDay(){
   var today = DB.dayKey();
@@ -543,89 +513,150 @@ function _refreshIfNewDay(){
     init();
   }
 }
-document.addEventListener('visibilitychange', function(){
-  if (!document.hidden) _refreshIfNewDay();
-});
+document.addEventListener('visibilitychange', function(){ if (!document.hidden) _refreshIfNewDay(); });
 window.addEventListener('focus', _refreshIfNewDay);
 
-// IF block unchanged
+// ── INTERMITTENT FASTING ──────────────────────────────────────
 (function(){
-  var toggle=document.getElementById('ifToggle');
-  var card=document.getElementById('ifCard');
-  var status=document.getElementById('ifStatus');
-  var countdown=document.getElementById('ifCountdown');
-  var sublabel=document.getElementById('ifSublabel');
-  var pct=document.getElementById('ifPct');
-  var ring=document.getElementById('ifRingFill');
-  var gear=document.getElementById('ifGear');
-  var settings=document.getElementById('ifSettings');
-  var saveBtn=document.getElementById('ifSaveBtn');
-  var label=document.getElementById('ifToggleLabel');
-  var CIRC=214;
-  var _ifSettings={enabled:false,start:'12:00',end:'20:00'};
-  function loadIFSettings(){var stored=DB._ls('if_settings');if(stored){_ifSettings=stored;}return _ifSettings;}
-  function saveIFSettings(s){_ifSettings=s;DB._ls('if_settings',s);DB.set('if_settings',s);}
-  function getIFSettings(){return _ifSettings;}
-  function parseTime(str){var p=str.split(':');return parseInt(p[0])*60+parseInt(p[1]);}
-  function updateIF(){
-    var s=getIFSettings();
-    toggle.checked=s.enabled;
-    setDropdowns(s.start||'12:00',s.end||'20:00');
-    label.textContent=s.enabled?'ON':'OFF';
-    if(!s.enabled){
-      card.className='if-card';status.className='if-status off';status.textContent='INACTIVE';
-      countdown.textContent='-- : -- : --';sublabel.textContent='Enable to start tracking';
-      pct.textContent='0%';ring.style.strokeDashoffset=CIRC;ring.style.stroke='var(--muted)';return;
-    }
-    var now=new Date();var nowMins=now.getHours()*60+now.getMinutes();
-    var startMins=parseTime(s.start);var endMins=parseTime(s.end);
-    var windowLen=endMins>startMins?endMins-startMins:(1440-startMins+endMins);
-    var fastLen=1440-windowLen;var inWindow;
-    if(endMins>startMins){inWindow=nowMins>=startMins&&nowMins<endMins;}
-    else{inWindow=nowMins>=startMins||nowMins<endMins;}
-    var minsUntilNext,progress;
-    if(inWindow){
-      minsUntilNext=endMins>nowMins?endMins-nowMins:(1440-nowMins+endMins);
-      progress=(windowLen-minsUntilNext)/windowLen;
-      card.className='if-card active';status.className='if-status eating';status.textContent='EATING WINDOW';
-      sublabel.textContent='Window closes at '+formatTime(s.end);ring.style.stroke='var(--green)';
-    } else {
-      minsUntilNext=startMins>nowMins?startMins-nowMins:(1440-nowMins+startMins);
-      progress=(fastLen-minsUntilNext)/fastLen;
-      card.className='if-card fasting';status.className='if-status fasting';status.textContent='FASTING';
-      sublabel.textContent='Window opens at '+formatTime(s.start);ring.style.stroke='var(--accent)';
-    }
-    var h=Math.floor(minsUntilNext/60);var m=minsUntilNext%60;var sec=60-now.getSeconds();
-    countdown.textContent=pad(h)+':'+pad(m)+':'+pad(sec===60?0:sec);
-    var p=Math.round(Math.max(0,Math.min(1,progress))*100);
-    pct.textContent=p+'%';ring.style.strokeDashoffset=CIRC-(CIRC*p/100);
+  var toggle = document.getElementById('ifToggle');
+  var card = document.getElementById('ifCard');
+  var status = document.getElementById('ifStatus');
+  var countdown = document.getElementById('ifCountdown');
+  var sublabel = document.getElementById('ifSublabel');
+  var pct = document.getElementById('ifPct');
+  var ring = document.getElementById('ifRingFill');
+  var gear = document.getElementById('ifGear');
+  var settings = document.getElementById('ifSettings');
+  var saveBtn = document.getElementById('ifSaveBtn');
+  var label = document.getElementById('ifToggleLabel');
+  var CIRC = 214;
+  var _ifSettings = {enabled:false, start:'12:00', end:'20:00'};
+
+  function loadIFSettings(){
+    var stored = DB._ls('if_settings');
+    if (stored) _ifSettings = stored;
+    return _ifSettings;
   }
-  function pad(n){return n<10?'0'+n:String(n);}
-  function formatTime(str){var p=str.split(':');var h=parseInt(p[0]);var m=p[1];var ampm=h>=12?'PM':'AM';h=h%12||12;return h+':'+m+' '+ampm;}
-  toggle.addEventListener('change',function(){var s=getIFSettings();s.enabled=toggle.checked;saveIFSettings(s);updateIF();});
-  gear.addEventListener('click',function(){settings.classList.toggle('show');});
-  saveBtn.addEventListener('click',function(){
-    var startVal=getDropdownTime('ifStartH','ifStartM');var endVal=getDropdownTime('ifEndH','ifEndM');
-    var s=getIFSettings();s.start=startVal;s.end=endVal;saveIFSettings(s);
-    settings.classList.remove('show');updateIF();
-    saveBtn.textContent='SAVED ✓';setTimeout(function(){saveBtn.textContent='SAVE WINDOW';},2000);
+  function saveIFSettings(s){
+    _ifSettings = s;
+    DB._ls('if_settings', s);
+    DB.set('if_settings', s);
+  }
+  function getIFSettings(){ return _ifSettings; }
+  function parseTime(str){ var p = str.split(':'); return parseInt(p[0])*60 + parseInt(p[1]); }
+
+  function updateIF(){
+    var s = getIFSettings();
+    toggle.checked = s.enabled;
+    setDropdowns(s.start || '12:00', s.end || '20:00');
+    label.textContent = s.enabled ? 'ON' : 'OFF';
+    if (!s.enabled) {
+      card.className = 'if-card';
+      status.className = 'if-status off';
+      status.textContent = 'INACTIVE';
+      countdown.textContent = '-- : -- : --';
+      sublabel.textContent = 'Enable to start tracking';
+      pct.textContent = '0%';
+      ring.style.strokeDashoffset = CIRC;
+      ring.style.stroke = 'var(--muted)';
+      return;
+    }
+    var now = new Date();
+    var nowMins = now.getHours() * 60 + now.getMinutes();
+    var startMins = parseTime(s.start);
+    var endMins = parseTime(s.end);
+    var windowLen = endMins > startMins ? endMins - startMins : (1440 - startMins + endMins);
+    var fastLen = 1440 - windowLen;
+    var inWindow;
+    if (endMins > startMins) {
+      inWindow = nowMins >= startMins && nowMins < endMins;
+    } else {
+      inWindow = nowMins >= startMins || nowMins < endMins;
+    }
+    var minsUntilNext, progress;
+    if (inWindow) {
+      minsUntilNext = endMins > nowMins ? endMins - nowMins : (1440 - nowMins + endMins);
+      progress = (windowLen - minsUntilNext) / windowLen;
+      card.className = 'if-card active';
+      status.className = 'if-status eating';
+      status.textContent = 'EATING WINDOW';
+      sublabel.textContent = 'Window closes at ' + formatTime(s.end);
+      ring.style.stroke = 'var(--green)';
+    } else {
+      minsUntilNext = startMins > nowMins ? startMins - nowMins : (1440 - nowMins + startMins);
+      progress = (fastLen - minsUntilNext) / fastLen;
+      card.className = 'if-card fasting';
+      status.className = 'if-status fasting';
+      status.textContent = 'FASTING';
+      sublabel.textContent = 'Window opens at ' + formatTime(s.start);
+      ring.style.stroke = 'var(--accent)';
+    }
+    var h = Math.floor(minsUntilNext / 60);
+    var m = minsUntilNext % 60;
+    var sec = 60 - now.getSeconds();
+    countdown.textContent = pad(h) + ':' + pad(m) + ':' + pad(sec === 60 ? 0 : sec);
+    var p = Math.round(Math.max(0, Math.min(1, progress)) * 100);
+    pct.textContent = p + '%';
+    ring.style.strokeDashoffset = CIRC - (CIRC * p / 100);
+  }
+  function pad(n){ return n < 10 ? '0' + n : String(n); }
+  function formatTime(str){
+    var p = str.split(':'); var h = parseInt(p[0]); var m = p[1];
+    var ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+    return h + ':' + m + ' ' + ampm;
+  }
+  toggle.addEventListener('change', function(){ var s = getIFSettings(); s.enabled = toggle.checked; saveIFSettings(s); updateIF(); });
+  gear.addEventListener('click', function(){ settings.classList.toggle('show'); });
+  saveBtn.addEventListener('click', function(){
+    var startVal = getDropdownTime('ifStartH','ifStartM');
+    var endVal = getDropdownTime('ifEndH','ifEndM');
+    var s = getIFSettings();
+    s.start = startVal; s.end = endVal;
+    saveIFSettings(s);
+    settings.classList.remove('show');
+    updateIF();
+    saveBtn.textContent = 'SAVED \u2713';
+    setTimeout(function(){ saveBtn.textContent = 'SAVE WINDOW'; }, 2000);
   });
   function buildDropdowns(){
-    var hours=['ifStartH','ifEndH'];var mins=['ifStartM','ifEndM'];
-    hours.forEach(function(id){var sel=document.getElementById(id);for(var h=0;h<24;h++){var opt=document.createElement('option');opt.value=h<10?'0'+h:String(h);var ampm=h>=12?'PM':'AM';var h12=h%12||12;opt.textContent=h12+':00 '+ampm;sel.appendChild(opt);}});
-    mins.forEach(function(id){var sel=document.getElementById(id);[0,15,30,45].forEach(function(m){var opt=document.createElement('option');opt.value=m<10?'0'+m:String(m);opt.textContent=':'+(m<10?'0'+m:String(m));sel.appendChild(opt);});});
+    var hours = ['ifStartH','ifEndH'];
+    var mins = ['ifStartM','ifEndM'];
+    hours.forEach(function(id){
+      var sel = document.getElementById(id);
+      for (var h = 0; h < 24; h++) {
+        var opt = document.createElement('option');
+        opt.value = h < 10 ? '0' + h : String(h);
+        var ampm = h >= 12 ? 'PM' : 'AM'; var h12 = h % 12 || 12;
+        opt.textContent = h12 + ':00 ' + ampm;
+        sel.appendChild(opt);
+      }
+    });
+    mins.forEach(function(id){
+      var sel = document.getElementById(id);
+      [0,15,30,45].forEach(function(m){
+        var opt = document.createElement('option');
+        opt.value = m < 10 ? '0' + m : String(m);
+        opt.textContent = ':' + (m < 10 ? '0' + m : String(m));
+        sel.appendChild(opt);
+      });
+    });
   }
-  function setDropdowns(start,end){
-    var sp=start.split(':');var ep=end.split(':');
-    var sm=Math.round(parseInt(sp[1])/15)*15;if(sm===60)sm=45;
-    var em=Math.round(parseInt(ep[1])/15)*15;if(em===60)em=45;
-    document.getElementById('ifStartH').value=sp[0];
-    document.getElementById('ifStartM').value=sm<10?'0'+sm:String(sm);
-    document.getElementById('ifEndH').value=ep[0];
-    document.getElementById('ifEndM').value=em<10?'0'+em:String(em);
+  function setDropdowns(start, end){
+    var sp = start.split(':'); var ep = end.split(':');
+    var sm = Math.round(parseInt(sp[1])/15) * 15; if (sm === 60) sm = 45;
+    var em = Math.round(parseInt(ep[1])/15) * 15; if (em === 60) em = 45;
+    document.getElementById('ifStartH').value = sp[0];
+    document.getElementById('ifStartM').value = sm < 10 ? '0' + sm : String(sm);
+    document.getElementById('ifEndH').value = ep[0];
+    document.getElementById('ifEndM').value = em < 10 ? '0' + em : String(em);
   }
-  function getDropdownTime(hId,mId){return document.getElementById(hId).value+':'+document.getElementById(mId).value;}
-  buildDropdowns();loadIFSettings();updateIF();setInterval(updateIF,1000);
+  function getDropdownTime(hId, mId){
+    return document.getElementById(hId).value + ':' + document.getElementById(mId).value;
+  }
+  buildDropdowns();
+  loadIFSettings();
+  updateIF();
+  setInterval(updateIF, 1000);
 })();
 </script>
 </body>
