@@ -6,12 +6,12 @@
 <title>Dave · Workout</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#07090d;--s1:#0d1117;--s2:#131920;--s3:#1a2233;--border:#1e2a3a;--border2:#253248;--accent:#00e5ff;--adim:rgba(0,229,255,0.1);--green:#00ff88;--gdim:rgba(0,255,136,0.1);--orange:#ff6b35;--odim:rgba(255,107,53,0.1);--yellow:#ffd600;--ydim:rgba(255,214,0,0.1);--red:#ff3d71;--rdim:rgba(255,61,113,0.1);--purple:#b388ff;--pdim:rgba(179,136,255,0.1);--text:#e2e8f5;--muted:#4a5c78;--muted2:#2e3d54}
+:root{--bg:#07090d;--s1:#0d1117;--s2:#131920;--s3:#1a2233;--border:#1e2a3a;--border2:#253248;--accent:#00e5ff;--adim:rgba(0,229,255,0.1);--green:#00ff88;--gdim:rgba(0,255,136,0.1);--orange:#ff6b35;--odim:rgba(255,107,53,0.1);--yellow:#ffd600;--ydim:rgba(255,214,0,0.1);--red:#ff3d71;--rdim:rgba(255,61,113,0.1);--purple:#b388ff;--pdim:rgba(179,136,255,0.1);--teal:#00d4aa;--text:#e2e8f5;--muted:#4a5c78;--muted2:#2e3d54}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;padding-bottom:90px}
 .nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(7,9,13,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 max(10px,env(safe-area-inset-bottom))}
-.nav-link{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--muted);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:6px 14px;border-radius:10px;transition:color 0.2s}
-.nav-link svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-link{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--muted);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:6px 10px;border-radius:10px;transition:color 0.2s}
+.nav-link svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .nav-link.active,.nav-link:hover{color:var(--purple)}
 .wrap{max-width:600px;margin:0 auto;padding:20px 16px}
 .page-header{padding:20px 0 20px;display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -134,12 +134,16 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .tpl-btn.hiit{border-color:rgba(255,61,113,0.2)}
 .tpl-btn.hiit:hover{border-color:var(--red);background:rgba(255,61,113,0.08)}
 .tpl-btn.hiit .tpl-name{color:var(--red)}
+.tpl-btn.hyrox{border-color:rgba(255,61,113,0.3);background:linear-gradient(135deg,rgba(255,61,113,0.04),rgba(255,107,53,0.04))}
+.tpl-btn.hyrox:hover{border-color:var(--red);background:linear-gradient(135deg,rgba(255,61,113,0.1),rgba(255,107,53,0.1))}
+.tpl-btn.hyrox .tpl-name{color:var(--red);background:linear-gradient(90deg,var(--red),var(--orange));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .tpl-btn.outdoor{border-color:rgba(255,214,0,0.25)}
 .tpl-btn.outdoor:hover{border-color:var(--yellow);background:rgba(255,214,0,0.08)}
 .tpl-btn.outdoor .tpl-name{color:var(--yellow)}
 .tpl-badge{display:inline-block;font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:4px;margin-top:4px;font-family:'DM Mono',monospace}
 .tpl-badge.hiit-badge{background:rgba(255,61,113,0.15);color:var(--red)}
 .tpl-badge.cardio-badge{background:rgba(255,214,0,0.15);color:var(--yellow)}
+.tpl-badge.hyrox-badge{background:rgba(255,107,53,0.15);color:var(--orange)}
 .finish-btn{width:100%;background:linear-gradient(135deg,var(--purple),var(--accent));color:var(--bg);border:none;border-radius:14px;padding:16px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;transition:opacity 0.2s;margin-bottom:14px}
 .finish-btn:hover{opacity:0.88}
 .empty-workout{text-align:center;padding:30px;color:var(--muted);font-size:13px;line-height:2}
@@ -229,12 +233,17 @@ HISTORY
 <a class="nav-link" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Hub</a>
 <a class="nav-link" href="nutrition.html"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Nutrition</a>
 <a class="nav-link active" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Workout</a>
+<a class="nav-link" href="recovery.html"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3c0 1.66-1.34 3-3 3s-3-1.34-3-3a3 3 0 0 1 3-3z"/><path d="M12 8v8M8 12h8M6 20c0-4 2-6 6-6s6 2 6 6"/></svg>Recovery</a>
 <a class="nav-link" href="weight.html"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Weight</a>
 </nav>
 
+<script src="db.js"></script>
 <script>
-var DB={_cache:{},_base:"/.netlify/functions/data",dayKey:function(off){off=off||0;var d=new Date();d.setDate(d.getDate()+off);return d.toISOString().split("T")[0];},_ls:function(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem("dw_"+k)||"null");localStorage.setItem("dw_"+k,JSON.stringify(v));}catch(e){return null;}},get:function(k,cb){if(!cb)return this._ls(k);var self=this;var local=this._ls(k);fetch(this._base+"?key="+encodeURIComponent(k)).then(function(r){return r.json();}).then(function(d){var val=(d.value!==undefined&&d.value!==null)?d.value:local;self._ls(k,val);if(cb)cb(val);}).catch(function(){if(cb)cb(local);});},set:function(k,v,cb){this._ls(k,v);fetch(this._base,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:k,value:v})}).then(function(){if(cb)cb(true);}).catch(function(){if(cb)cb(false);});}};
-
+// Templates — strength, HIIT, cardio, Hyrox, and outdoor.
+// Hyrox templates use type 'hyrox' and have a `met` field for kcal calc.
+// HYROX SIM: official 8 stations + 8x 1km runs (~60-90 min, MET ~9.0)
+// HYROX SHORT: 4 stations, no runs (~25min, MET ~8.5)
+// HYROX MIXED: 8 stations + 8x 400m runs (~40min, MET ~9.0)
 const TEMPLATES=[
 {id:'push',name:'PUSH',icon:'🔺',desc:'Chest · Shoulders · Triceps',type:'strength',exercises:['Bench Press','Incline Dumbbell Press','Overhead Press','Lateral Raises','Tricep Pushdown','Skull Crushers']},
 {id:'pull',name:'PULL',icon:'🔻',desc:'Back · Biceps · Rear Delts',type:'strength',exercises:['Deadlift','Pull-Ups','Barbell Row','Seated Cable Row','Face Pulls','Barbell Curl']},
@@ -246,12 +255,16 @@ const TEMPLATES=[
 {id:'tabata',name:'TABATA',icon:'⏱️',desc:'20s work · 10s rest · 8 rounds',type:'hiit',workOn:20,workRest:10,rounds:8,exercises:['Jump Squats','Push-Ups','Burpees','Mountain Climbers','Jump Lunges','Plank Hold','High Knees','Squat Jumps']},
 {id:'hiit3',name:'CIRCUIT',icon:'🔄',desc:'45s work · 15s rest · 3 rounds',type:'hiit',workOn:45,workRest:15,rounds:3,exercises:['Kettlebell Swings','Push-Ups','Box Jumps','Dumbbell Thrusters','Pull-Ups','Battle Ropes','Sled Push','Med Ball Slams']},
 {id:'metcon',name:'METCON',icon:'💥',desc:'30s work · 30s rest · 4 rounds',type:'hiit',workOn:30,workRest:30,rounds:4,exercises:['Deadlift','Box Jumps','Barbell Thruster','Rowing Machine','Toes to Bar','Double Unders','Wall Balls','Assault Bike']},
+{id:'hyrox_sim',name:'HYROX SIM',icon:'🏆',desc:'Full sim — 8 stations + 8×1km runs · ~75min',type:'hyrox',met:9.0,exercises:['1km Run','SkiErg 1000m','1km Run','Sled Push 50m','1km Run','Sled Pull 50m','1km Run','Burpee Broad Jumps 80m','1km Run','Rowing 1000m','1km Run','Farmers Carry 200m','1km Run','Sandbag Lunges 100m','1km Run','Wall Balls 100 reps']},
+{id:'hyrox_mixed',name:'HYROX MIXED',icon:'⚔️',desc:'8 stations + 8×400m runs · ~40min',type:'hyrox',met:9.0,exercises:['400m Run','SkiErg 500m','400m Run','Sled Push 25m','400m Run','Sled Pull 25m','400m Run','Burpee Broad Jumps 40m','400m Run','Rowing 500m','400m Run','Farmers Carry 100m','400m Run','Sandbag Lunges 50m','400m Run','Wall Balls 50 reps']},
+{id:'hyrox_short',name:'HYROX SHORT',icon:'⚡',desc:'4 stations · no runs · ~25min',type:'hyrox',met:8.5,exercises:['SkiErg 500m','Sled Push 25m','Burpee Broad Jumps 40m','Wall Balls 50 reps']},
 {id:'cardio',name:'CARDIO',icon:'🏃',desc:'Conditioning & cardio',type:'cardio',exercises:['Treadmill Run','Rowing Machine','Bike','Jump Rope']},
 {id:'outdoor_walk',name:'OUTDOOR WALK',icon:'🚶',desc:'Open timer — track time & distance',type:'cardio',exercises:['Outdoor Walk']},
 {id:'outdoor_run',name:'OUTDOOR RUN',icon:'🏃',desc:'Open timer — track time & distance',type:'cardio',exercises:['Outdoor Run']},
 {id:'custom',name:'CUSTOM',icon:'✏️',desc:'Build your own session',type:'strength',exercises:[]},
 ];
 
+// Exercise DB. Hyrox stations added with appropriate MET values.
 const EXERCISE_DB=[
 {name:'Bench Press',cat:'Chest',met:5.0},{name:'Incline Bench Press',cat:'Chest',met:5.0},{name:'Decline Bench Press',cat:'Chest',met:5.0},{name:'Dumbbell Fly',cat:'Chest',met:5.0},{name:'Cable Crossover',cat:'Chest',met:5.0},{name:'Incline Dumbbell Press',cat:'Chest',met:5.0},{name:'Push-Ups',cat:'Chest',met:5.0},
 {name:'Squat',cat:'Legs',met:6.0},{name:'Romanian Deadlift',cat:'Legs',met:6.0},{name:'Leg Press',cat:'Legs',met:5.0},{name:'Leg Curl',cat:'Legs',met:4.5},{name:'Leg Extension',cat:'Legs',met:4.5},{name:'Walking Lunges',cat:'Legs',met:5.0},{name:'Hip Thrust',cat:'Legs',met:5.0},{name:'Calf Raises',cat:'Legs',met:4.0},{name:'Jump Squats',cat:'Legs',met:8.0},{name:'Jump Lunges',cat:'Legs',met:8.0},{name:'Squat Jumps',cat:'Legs',met:8.0},
@@ -271,6 +284,25 @@ const EXERCISE_DB=[
 {name:'Burpees',cat:'Cardio',met:8.5,hasDistance:false},
 {name:'Double Unders',cat:'Cardio',met:11.5,hasDistance:false},
 {name:'Kettlebell Swings',cat:'HIIT',met:8.0},{name:'Battle Ropes',cat:'HIIT',met:8.0},{name:'Mountain Climbers',cat:'HIIT',met:8.0},{name:'High Knees',cat:'HIIT',met:9.0},{name:'Sprint Intervals',cat:'HIIT',met:10.0},{name:'Dumbbell Thrusters',cat:'HIIT',met:8.0},{name:'Barbell Thruster',cat:'HIIT',met:8.0},{name:'Sled Push',cat:'HIIT',met:9.0},{name:'Wall Balls',cat:'HIIT',met:8.0},{name:'Sandbag Carries',cat:'HIIT',met:7.5},{name:'Tire Flips',cat:'HIIT',met:9.0},{name:'Sledgehammer Slams',cat:'HIIT',met:8.5},
+// HYROX stations
+{name:'1km Run',cat:'Hyrox',met:9.8,hasDistance:true},
+{name:'400m Run',cat:'Hyrox',met:9.8,hasDistance:true},
+{name:'SkiErg 1000m',cat:'Hyrox',met:9.0,hasDistance:true},
+{name:'SkiErg 500m',cat:'Hyrox',met:9.0,hasDistance:true},
+{name:'Sled Push 50m',cat:'Hyrox',met:10.0},
+{name:'Sled Push 25m',cat:'Hyrox',met:10.0},
+{name:'Sled Pull 50m',cat:'Hyrox',met:9.5},
+{name:'Sled Pull 25m',cat:'Hyrox',met:9.5},
+{name:'Burpee Broad Jumps 80m',cat:'Hyrox',met:9.5},
+{name:'Burpee Broad Jumps 40m',cat:'Hyrox',met:9.5},
+{name:'Rowing 1000m',cat:'Hyrox',met:8.5,hasDistance:true},
+{name:'Rowing 500m',cat:'Hyrox',met:8.5,hasDistance:true},
+{name:'Farmers Carry 200m',cat:'Hyrox',met:8.0},
+{name:'Farmers Carry 100m',cat:'Hyrox',met:8.0},
+{name:'Sandbag Lunges 100m',cat:'Hyrox',met:8.5},
+{name:'Sandbag Lunges 50m',cat:'Hyrox',met:8.5},
+{name:'Wall Balls 100 reps',cat:'Hyrox',met:8.0},
+{name:'Wall Balls 50 reps',cat:'Hyrox',met:8.0},
 ];
 
 function exerciseMeta(name){
@@ -293,10 +325,11 @@ function persistActiveSession(){
   if(activeSession){DB._ls(ACTIVE_KEY,activeSession);}
   else{try{localStorage.removeItem('dw_'+ACTIVE_KEY);}catch(e){}}
 }
+// Uses LOCAL date keys (matches DB.dayKey) — fixes the UTC stale-session bug.
 function isStaleSession(session){
   if(!session||!session.startTime)return false;
-  const started=new Date(session.startTime).toISOString().split('T')[0];
-  const today=new Date().toISOString().split('T')[0];
+  const started=DB.dateToKey(new Date(session.startTime));
+  const today=DB.dayKey();
   return started!==today;
 }
 
@@ -306,11 +339,12 @@ function renderTemplates(){
   TEMPLATES.forEach(t=>{
     const isHiit=t.type==='hiit';
     const isCardio=t.type==='cardio';
+    const isHyrox=t.type==='hyrox';
     const isOutdoor=t.id==='outdoor_walk'||t.id==='outdoor_run';
-    const badgeClass=isHiit?'hiit-badge':isCardio?'cardio-badge':'strength-badge';
-    const badgeLabel=isHiit?'TIMED':isCardio?'CARDIO':'STRENGTH';
+    const badgeClass=isHyrox?'hyrox-badge':isHiit?'hiit-badge':isCardio?'cardio-badge':'strength-badge';
+    const badgeLabel=isHyrox?'HYROX':isHiit?'TIMED':isCardio?'CARDIO':'STRENGTH';
     const btn=document.createElement('div');
-    btn.className='tpl-btn'+(isHiit?' hiit':'')+(isOutdoor?' outdoor':'');
+    btn.className='tpl-btn'+(isHiit?' hiit':'')+(isHyrox?' hyrox':'')+(isOutdoor?' outdoor':'');
     btn.innerHTML=`<div class="tpl-icon">${t.icon}</div><div class="tpl-name">${t.name}</div><div class="tpl-desc">${t.desc}</div><div class="tpl-badge ${badgeClass}">${badgeLabel}</div>`;
     btn.addEventListener('click',()=>startSession(t));
     grid.appendChild(btn);
@@ -319,7 +353,7 @@ function renderTemplates(){
 
 function newExerciseForSession(name){
   const meta=exerciseMeta(name);
-  if(meta.cat==='Cardio'){
+  if(meta.cat==='Cardio'||meta.cat==='Hyrox'){
     return {name:meta.name,category:meta.cat,cardio:true,durationSec:0,distanceKm:'',done:false,startedAt:null};
   }
   return {name:meta.name,category:meta.cat,sets:[{reps:'',weight:'',done:false}]};
@@ -338,6 +372,7 @@ function startSession(template){
     id:Date.now(),
     name:template.name,
     templateId:template.id,
+    type:template.type,
     startTime:new Date().toISOString(),
     exercises:template.exercises.map(name=>newExerciseForSession(name))
   };
@@ -599,7 +634,8 @@ function finishSession(){
   activeSession.endTime=new Date().toISOString();
   const duration=Math.round((new Date(activeSession.endTime)-new Date(activeSession.startTime))/60000);
   activeSession.duration=duration;
-  const startedKey=new Date(activeSession.startTime).toISOString().split('T')[0];
+  // Save against the LOCAL day key of the session start (fixed UTC bug)
+  const startedKey=DB.dateToKey(new Date(activeSession.startTime));
   const workouts=DB.get('workouts_'+startedKey)||[];
   workouts.push(activeSession);
   DB.set('workouts_'+startedKey,workouts);
@@ -653,7 +689,7 @@ function stopHIITTimer(completed){
   document.getElementById('hiitOverlay').classList.remove('active');
   if(completed){
     const t=hiitState.template;
-    const session={id:Date.now(),name:t.name,templateId:t.id,startTime:new Date(Date.now()-(t.exercises.length*t.totalRounds*(t.workOn+t.workRest)*1000)).toISOString(),endTime:new Date().toISOString(),duration:Math.round(t.exercises.length*t.totalRounds*(t.workOn+t.workRest)/60),exercises:t.exercises.map(name=>({name,category:'HIIT',sets:[{reps:t.totalRounds,weight:0,done:true}]}))};
+    const session={id:Date.now(),name:t.name,templateId:t.id,type:'hiit',startTime:new Date(Date.now()-(t.exercises.length*t.totalRounds*(t.workOn+t.workRest)*1000)).toISOString(),endTime:new Date().toISOString(),duration:Math.round(t.exercises.length*t.totalRounds*(t.workOn+t.workRest)/60),exercises:t.exercises.map(name=>({name,category:'HIIT',sets:[{reps:t.totalRounds,weight:0,done:true}]}))};
     const workouts=getWorkouts();workouts.push(session);saveWorkouts(workouts);
     renderChart();
     alert(`HIIT Complete! 🔥 ${session.duration} min session logged.`);
