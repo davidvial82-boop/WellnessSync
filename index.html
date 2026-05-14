@@ -6,12 +6,12 @@
 <title>Dave - Wellness Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#07090d;--s1:#0d1117;--s2:#131920;--s3:#1a2233;--border:#1e2a3a;--border2:#253248;--accent:#00e5ff;--adim:rgba(0,229,255,0.1);--green:#00ff88;--gdim:rgba(0,255,136,0.1);--orange:#ff6b35;--odim:rgba(255,107,53,0.1);--yellow:#ffd600;--ydim:rgba(255,214,0,0.1);--red:#ff3d71;--rdim:rgba(255,61,113,0.1);--purple:#b388ff;--pdim:rgba(179,136,255,0.1);--blue:#4fc3f7;--bdim:rgba(79,195,247,0.1);--text:#e2e8f5;--muted:#4a5c78;--muted2:#2e3d54}
+:root{--bg:#07090d;--s1:#0d1117;--s2:#131920;--s3:#1a2233;--border:#1e2a3a;--border2:#253248;--accent:#00e5ff;--adim:rgba(0,229,255,0.1);--green:#00ff88;--gdim:rgba(0,255,136,0.1);--orange:#ff6b35;--odim:rgba(255,107,53,0.1);--yellow:#ffd600;--ydim:rgba(255,214,0,0.1);--red:#ff3d71;--rdim:rgba(255,61,113,0.1);--purple:#b388ff;--pdim:rgba(179,136,255,0.1);--blue:#4fc3f7;--bdim:rgba(79,195,247,0.1);--teal:#00d4aa;--tdim:rgba(0,212,170,0.1);--text:#e2e8f5;--muted:#4a5c78;--muted2:#2e3d54}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;padding-bottom:90px}
 body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(0,229,255,0.04),transparent);pointer-events:none;z-index:0}
 .nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(7,9,13,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 max(10px,env(safe-area-inset-bottom))}
-.nav-link{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--muted);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:6px 16px;border-radius:10px;transition:color 0.2s}
+.nav-link{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--muted);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:6px 10px;border-radius:10px;transition:color 0.2s}
 .nav-link svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .nav-link.active,.nav-link:hover{color:var(--accent)}
 .wrap{position:relative;z-index:1;max-width:600px;margin:0 auto;padding:20px 16px}
@@ -87,6 +87,8 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .stat-card .sc-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
 .stat-card .sc-val{font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;margin-bottom:2px}
 .stat-card .sc-sub{font-size:11px;color:var(--muted)}
+.stat-card .sc-net{font-size:11px;color:var(--green);font-family:'DM Mono',monospace;margin-top:2px;letter-spacing:0.5px}
+.stat-card .sc-net.over{color:var(--red)}
 .stat-card .sc-bar{height:4px;background:var(--border);border-radius:99px;margin-top:10px;overflow:hidden}
 .stat-card .sc-bar-fill{height:100%;border-radius:99px;transition:width 0.8s ease}
 .stat-card.cal .sc-val{color:var(--accent)} .stat-card.cal .sc-bar-fill{background:linear-gradient(90deg,var(--accent),var(--green))}
@@ -226,6 +228,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
       <div class="sc-label">Calories</div>
       <div class="sc-val" id="statCal">0</div>
       <div class="sc-sub">of 2,400 target</div>
+      <div class="sc-net" id="statNet" style="display:none">Net: 0</div>
       <div class="sc-bar"><div class="sc-bar-fill" id="calBar" style="width:0%"></div></div>
     </div>
     <div class="stat-card pro">
@@ -307,6 +310,10 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
       <div class="qb-icon" style="background:var(--pdim)">&#127947;</div>
       <div><div class="qb-label">Log Session</div><div class="qb-val" style="color:var(--purple)">WORKOUT</div></div>
     </a>
+    <a class="quick-btn" href="recovery.html">
+      <div class="qb-icon" style="background:var(--tdim)">&#129385;</div>
+      <div><div class="qb-label">Yoga · Stretch · Sauna</div><div class="qb-val" style="color:var(--teal)">RECOVERY</div></div>
+    </a>
     <a class="quick-btn" href="weight.html">
       <div class="qb-icon" style="background:var(--odim)">&#9878;</div>
       <div><div class="qb-label">Track Progress</div><div class="qb-val" style="color:var(--orange)">WEIGHT</div></div>
@@ -340,6 +347,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   <a class="nav-link active" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Hub</a>
   <a class="nav-link" href="nutrition.html"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Nutrition</a>
   <a class="nav-link" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Workout</a>
+  <a class="nav-link" href="recovery.html"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3c0 1.66-1.34 3-3 3s-3-1.34-3-3a3 3 0 0 1 3-3z"/><path d="M12 8v8M8 12h8M6 20c0-4 2-6 6-6s6 2 6 6"/></svg>Recovery</a>
   <a class="nav-link" href="weight.html"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Weight</a>
 </nav>
 
@@ -347,6 +355,79 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 <script>
 var DAYS = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// ──────────────────────────────────────────────────────────────
+// CALORIE BURN CALCULATION
+// Net calories = consumed − burned.
+// Burn is summed across:
+//   1) Workouts logged today (per-exercise MET for cardio; session-MET for HIIT/Hyrox; avg-MET for strength)
+//   2) Recovery sessions today (yoga / stretching / sauna)
+// Formula: kcal = MET × weight_kg × (duration_min / 60)
+// Uses most recent weight, defaults to 80kg if none logged.
+// ──────────────────────────────────────────────────────────────
+
+// MET values for per-exercise burn lookup (covers cardio + Hyrox stations)
+var EXERCISE_METS = {
+  'Treadmill Run':9.0,'Outdoor Run':9.8,'Outdoor Walk':3.8,'Rowing Machine':7.0,'Bike':7.5,'Assault Bike':8.5,
+  'Jump Rope':11.0,'Box Jumps':8.0,'Burpees':8.5,'Double Unders':11.5,
+  // Hyrox stations
+  '1km Run':9.8,'400m Run':9.8,'SkiErg 1000m':9.0,'SkiErg 500m':9.0,
+  'Sled Push 50m':10.0,'Sled Push 25m':10.0,'Sled Pull 50m':9.5,'Sled Pull 25m':9.5,
+  'Burpee Broad Jumps 80m':9.5,'Burpee Broad Jumps 40m':9.5,
+  'Rowing 1000m':8.5,'Rowing 500m':8.5,
+  'Farmers Carry 200m':8.0,'Farmers Carry 100m':8.0,
+  'Sandbag Lunges 100m':8.5,'Sandbag Lunges 50m':8.5,
+  'Wall Balls 100 reps':8.0,'Wall Balls 50 reps':8.0
+};
+
+// Session-level MET for HIIT / Hyrox / general strength
+var SESSION_MET = {hiit:8.0, hyrox:9.0, strength:5.0, cardio:7.0};
+
+function calcBurnFromWorkouts(workouts, weightKg){
+  if (!workouts || !workouts.length) return 0;
+  var totalBurn = 0;
+  workouts.forEach(function(w){
+    var durMin = w.duration || 0;
+    if (!durMin && w.startTime && w.endTime) {
+      durMin = Math.max(0, Math.round((new Date(w.endTime) - new Date(w.startTime)) / 60000));
+    }
+    if (durMin <= 0) return;
+
+    var type = w.type || 'strength';
+
+    // 1) Cardio/Hyrox exercises with their own tracked durations and per-exercise MET
+    var cardioBurn = 0;
+    var cardioMin = 0;
+    (w.exercises || []).forEach(function(ex){
+      if (ex.cardio && ex.durationSec) {
+        var exMin = ex.durationSec / 60;
+        var met = EXERCISE_METS[ex.name] || 7.0;
+        cardioBurn += met * weightKg * (exMin / 60);
+        cardioMin += exMin;
+      }
+    });
+
+    // 2) Remaining time at session-level MET (for strength/HIIT/Hyrox combos)
+    var remainingMin = Math.max(0, durMin - cardioMin);
+    if (remainingMin > 0) {
+      var met = SESSION_MET[type] || 5.0;
+      totalBurn += met * weightKg * (remainingMin / 60);
+    }
+    totalBurn += cardioBurn;
+  });
+  return Math.round(totalBurn);
+}
+
+function calcBurnFromRecovery(recovery, weightKg){
+  if (!recovery || !recovery.length) return 0;
+  // Recovery records have explicit `burn` and `duration` already stored. Trust them.
+  return recovery.reduce(function(sum, s){
+    if (s.burn) return sum + s.burn;
+    // Fallback: recalc if missing
+    var met = (s.met || (s.type === 'yoga' ? 2.5 : s.type === 'stretch' ? 2.3 : 1.5));
+    return sum + Math.round(met * weightKg * ((s.duration || 0) / 60));
+  }, 0);
+}
 
 function init(){
   var now = new Date();
@@ -358,9 +439,16 @@ function init(){
   var steps = DB.get('steps_' + todayKey) || 0;
   var water = DB.get('water_' + todayKey) || 0;
   var workouts = DB.get('workouts_' + todayKey) || [];
+  var recovery = DB.get('recovery_' + todayKey) || [];
   var weights = DB.get('weights') || [];
   var todayWeight = weights.length > 0 ? weights[weights.length - 1] : null;
+  var weightKg = todayWeight ? parseFloat(todayWeight.kg) : 80;
   var totals = nutrition.entries.reduce(function(a,e){return {cal:a.cal+(e.cal||0),p:a.p+(e.p||0)};},{cal:0,p:0});
+
+  // Burn = workouts + recovery
+  var workoutBurn = calcBurnFromWorkouts(workouts, weightKg);
+  var recoveryBurn = calcBurnFromRecovery(recovery, weightKg);
+  var totalBurn = workoutBurn + recoveryBurn;
 
   // Stats
   document.getElementById('statCal').textContent = Math.round(totals.cal);
@@ -369,6 +457,21 @@ function init(){
   document.getElementById('proBar').style.width = Math.min(totals.p/185*100,100) + '%';
   document.getElementById('statSteps').textContent = steps.toLocaleString();
   document.getElementById('stepsBar').style.width = Math.min(steps/11000*100,100) + '%';
+
+  // NET line on calories tile — only show if there's any burn or any food consumed
+  var netEl = document.getElementById('statNet');
+  if (totalBurn > 0 || totals.cal > 0) {
+    var net = Math.round(totals.cal) - totalBurn;
+    if (totalBurn > 0) {
+      netEl.textContent = 'Net: ' + net + ' (–' + totalBurn + ' burn)';
+    } else {
+      netEl.textContent = 'Net: ' + net;
+    }
+    netEl.className = 'sc-net' + (net > 2400 ? ' over' : '');
+    netEl.style.display = '';
+  } else {
+    netEl.style.display = 'none';
+  }
 
   document.getElementById('statWater').textContent = water;
   document.getElementById('waterBar').style.width = Math.min(water/3000*100,100) + '%';
@@ -388,11 +491,22 @@ function init(){
     document.getElementById('statWeightSub').textContent = 'Tap to log';
   }
 
-  // Workout
-  if (workouts.length > 0) {
+  // Workout — show duration + burn if logged. Also include recovery sessions in the count.
+  var allSessions = workouts.length + recovery.length;
+  if (allSessions > 0) {
     document.getElementById('statWod').textContent = 'DONE';
     document.getElementById('statWod').className = 'sc-val done';
-    document.getElementById('statWodSub').textContent = workouts[workouts.length-1].name || 'Session logged';
+    var lastSession = workouts.length > 0 ? workouts[workouts.length-1] : recovery[recovery.length-1];
+    var sessionName = lastSession.name || 'Session';
+    var totalMin = 0;
+    workouts.forEach(function(w){ totalMin += (w.duration || 0); });
+    recovery.forEach(function(r){ totalMin += (r.duration || 0); });
+    var subParts = [];
+    if (allSessions > 1) subParts.push(allSessions + ' sessions');
+    else subParts.push(sessionName);
+    if (totalMin > 0) subParts.push(totalMin + ' min');
+    if (totalBurn > 0) subParts.push(totalBurn + ' kcal');
+    document.getElementById('statWodSub').textContent = subParts.join(' · ');
   } else {
     document.getElementById('statWod').textContent = '--';
     document.getElementById('statWod').className = 'sc-val';
@@ -404,7 +518,7 @@ function init(){
   if (totals.cal >= 1800 && totals.cal <= 2600) score += 20; else if (totals.cal > 0) score += 10;
   if (totals.p >= 150) score += 20; else if (totals.p >= 100) score += 10;
   if (steps >= 11000) score += 20; else if (steps >= 7000) score += 10;
-  if (workouts.length > 0) score += 20;
+  if (allSessions > 0) score += 20;
   if (water >= 3000) score += 20; else if (water >= 1500) score += 10;
 
   document.getElementById('ringScore').textContent = score;
@@ -421,9 +535,10 @@ function init(){
     var k = DB.dayKey(-i);
     var n = DB.get('nutrition_' + k);
     var w = DB.get('workouts_' + k);
-    if ((n && n.entries.length > 0) || (w && w.length > 0)) streak++; else break;
+    var r = DB.get('recovery_' + k);
+    if ((n && n.entries.length > 0) || (w && w.length > 0) || (r && r.length > 0)) streak++; else break;
   }
-  if (nutrition.entries.length > 0 || workouts.length > 0) streak++;
+  if (nutrition.entries.length > 0 || workouts.length > 0 || recovery.length > 0) streak++;
   document.getElementById('streakNum').textContent = streak;
 
   // Weekly strip
@@ -435,8 +550,9 @@ function init(){
     var k = DB.dateToKey(d);
     var n2 = DB.get('nutrition_' + k);
     var w2 = DB.get('workouts_' + k);
+    var r2 = DB.get('recovery_' + k);
     var hasN = n2 && n2.entries.length > 0;
-    var hasW = w2 && w2.length > 0;
+    var hasW = (w2 && w2.length > 0) || (r2 && r2.length > 0);
     var isToday = k === todayKey;
     var col = document.createElement('div');
     col.className = 'day-col';
