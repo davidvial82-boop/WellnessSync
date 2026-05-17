@@ -36,6 +36,25 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .score-sub{font-size:12px;color:var(--muted);line-height:1.6}
 .streak-badge{display:inline-flex;align-items:center;gap:6px;background:var(--ydim);border:1px solid rgba(255,214,0,0.2);border-radius:99px;padding:4px 10px;font-size:11px;color:var(--yellow);font-weight:700;margin-top:10px}
 
+/* JOURNAL QUICK CARD */
+.journal-quick{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:16px}
+.jq-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.jq-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--blue)}
+.jq-link{font-size:10px;color:var(--muted);text-decoration:none;letter-spacing:1px;text-transform:uppercase;transition:color 0.2s}
+.jq-link:hover{color:var(--blue)}
+.jq-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.jq-tag{display:inline-flex;align-items:center;gap:5px;background:var(--s2);border:1px solid var(--border);border-radius:99px;padding:6px 10px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;font-family:'Syne',sans-serif}
+.jq-tag:hover{border-color:var(--blue);color:var(--text)}
+.jq-tag.selected{background:var(--bdim);border-color:var(--blue);color:var(--blue)}
+.jq-tag.selected.neg{background:var(--rdim);border-color:var(--red);color:var(--red)}
+.jq-tag.selected.pos{background:var(--gdim);border-color:var(--green);color:var(--green)}
+.jq-tag .te{font-size:13px;line-height:1}
+.jq-bottom{display:flex;align-items:center;gap:10px}
+.jq-save{background:var(--blue);color:var(--bg);border:none;border-radius:9px;padding:8px 16px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1.5px;cursor:pointer;transition:opacity 0.2s}
+.jq-save:hover{opacity:0.85}
+.jq-status{font-size:10px;color:var(--muted);flex:1}
+.jq-status.success{color:var(--green)}
+
 /* IF TIMER */
 .if-card{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;transition:border-color 0.3s}
 .if-card.active{border-color:rgba(0,255,136,0.4)}
@@ -154,7 +173,7 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
     </div>
   </div>
 
-  <!-- Score Ring -->
+  <!-- Readiness Score Ring -->
   <div class="score-section">
     <div class="ring-wrap">
       <svg width="110" height="110" viewBox="0 0 110 110">
@@ -163,13 +182,26 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
       </svg>
       <div class="ring-center">
         <div class="ring-num" id="ringScore">0</div>
-        <div class="ring-label">SCORE</div>
+        <div class="ring-label">READY</div>
       </div>
     </div>
     <div class="score-info">
       <div class="score-title" id="scoreTitle">LET'S GO</div>
-      <div class="score-sub" id="scoreSub">Start logging your day to build your wellness score.</div>
+      <div class="score-sub" id="scoreSub">Log a journal entry to start building your readiness signal.</div>
       <div class="streak-badge">&#128293; <span id="streakNum">0</span> day streak</div>
+    </div>
+  </div>
+
+  <!-- Quick Journal Tag Card -->
+  <div class="journal-quick" id="journalQuick">
+    <div class="jq-top">
+      <div class="jq-label">How are you feeling today?</div>
+      <a href="journal.html" class="jq-link">View &#8250;</a>
+    </div>
+    <div class="jq-tags" id="jqTags"></div>
+    <div class="jq-bottom">
+      <button class="jq-save" id="jqSave">SAVE</button>
+      <div class="jq-status" id="jqStatus"></div>
     </div>
   </div>
 
@@ -314,6 +346,10 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
       <div class="qb-icon" style="background:var(--tdim)">🧘</div>
       <div><div class="qb-label">Yoga · Stretch · Sauna</div><div class="qb-val" style="color:var(--teal)">RECOVERY</div></div>
     </a>
+    <a class="quick-btn" href="journal.html">
+      <div class="qb-icon" style="background:var(--bdim)">📓</div>
+      <div><div class="qb-label">Tag Your Day</div><div class="qb-val" style="color:var(--blue)">JOURNAL</div></div>
+    </a>
     <a class="quick-btn" href="weight.html">
       <div class="qb-icon" style="background:var(--odim)">&#9878;</div>
       <div><div class="qb-label">Track Progress</div><div class="qb-val" style="color:var(--orange)">WEIGHT</div></div>
@@ -355,6 +391,105 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 <script>
 var DAYS = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// ──────────────────────────────────────────────────────────────
+// READINESS SCORE
+// 0-100 score broken into 3 inputs:
+//  - Recovery (40 pts): driven by today's journal tags. Bad sleep/sore/sick/etc subtract.
+//    Great sleep/energized/hydrated/sauna/etc add back. Clamped 0-40.
+//  - Strain load (30 pts): 7-day burn vs 28-day rolling avg. Sweet spot (0.8-1.3x) = 30.
+//    Overtraining (>1.3) drops fast. Undertraining (<0.5) drops moderate. New users = 30.
+//  - Consistency (30 pts): days in last 7 with any activity logged (workout/recovery/journal).
+//    6-7 = 30, 4-5 = 20, 2-3 = 10, 0-1 = 0.
+// Recommendation: 80+ PUSH HARD, 50-79 STEADY DAY, <50 TAKE IT EASY.
+// ──────────────────────────────────────────────────────────────
+
+// Per-tag impact on Recovery sub-score. Tag IDs match journal.html canonical list.
+var TAG_IMPACT = {
+  // Sleep
+  bad_sleep:    -15, great_sleep:    +5,
+  // Body
+  sore:         -10, sick:           -20, tired:         -10, energized:     +5,
+  // Lifestyle
+  stress:        -8, travel:           0, big_meal:        0, late_meal:     -5,
+  alcohol:       -8, caffeine_late:   -5, hydrated:       +5,
+  // Wellness
+  sauna:         +3, meditation:      +3, outdoors:       +3, sunlight:      +3
+};
+
+// Quick-tag set shown on the Hub (curated subset — the most common log items).
+// Full set lives on journal.html. Each must match a TAG id from journal.html.
+var QUICK_TAGS = [
+  {id:'bad_sleep',    label:'Bad sleep',     emoji:'😴', val:-1},
+  {id:'great_sleep',  label:'Great sleep',   emoji:'💤', val:+1},
+  {id:'sore',         label:'Sore',          emoji:'🥴', val:-1},
+  {id:'tired',        label:'Tired',         emoji:'😪', val:-1},
+  {id:'energized',    label:'Energized',     emoji:'⚡', val:+1},
+  {id:'stress',       label:'Stressful day', emoji:'😣', val:-1},
+  {id:'alcohol',      label:'Alcohol',       emoji:'🍷', val:-1},
+  {id:'hydrated',     label:'Hydrated',      emoji:'💧', val:+1}
+];
+
+// Calculate Recovery sub-score from today's journal entry (40 max).
+function calcRecoveryFromJournal(entry){
+  if (!entry || !entry.tags || !entry.tags.length) return 40; // no entry = neutral, assume rested
+  var base = 40;
+  entry.tags.forEach(function(tid){
+    if (TAG_IMPACT[tid] !== undefined) base += TAG_IMPACT[tid];
+  });
+  return Math.max(0, Math.min(40, base));
+}
+
+// Calculate Strain sub-score from rolling 7-day vs 28-day burn (30 max).
+function calcStrainScore(){
+  var burn7 = 0, burn28 = 0;
+  for (var i = 0; i < 28; i++) {
+    var k = DB.dayKey(-i);
+    var workouts = DB.get('workouts_' + k) || [];
+    var recovery = DB.get('recovery_' + k) || [];
+    var weight = DB.currentWeightKg();
+    var dayBurn = calcBurnFromWorkouts(workouts, weight) + calcBurnFromRecovery(recovery, weight);
+    burn28 += dayBurn;
+    if (i < 7) burn7 += dayBurn;
+  }
+  // No data → assume average (full points)
+  if (burn28 === 0) return 30;
+  var avg28PerDay = burn28 / 28;
+  var avg7PerDay = burn7 / 7;
+  if (avg28PerDay < 50) return 30; // not enough history to judge
+  var ratio = avg7PerDay / avg28PerDay;
+  // Sweet spot: 0.8 - 1.3 → full 30
+  if (ratio >= 0.8 && ratio <= 1.3) return 30;
+  // Overtraining: >1.3 drops fast
+  if (ratio > 1.3) {
+    if (ratio > 2.0) return 5;
+    return Math.round(30 - ((ratio - 1.3) / 0.7) * 25); // 1.3→30, 2.0→5
+  }
+  // Undertraining: <0.8 drops moderate
+  // 0.8→30, 0.5→15, 0→5
+  if (ratio < 0.5) return Math.max(5, Math.round(15 * ratio / 0.5));
+  return Math.round(15 + ((ratio - 0.5) / 0.3) * 15); // 0.5→15, 0.8→30
+}
+
+// Calculate Consistency sub-score (30 max).
+function calcConsistencyScore(){
+  var activeDays = 0;
+  for (var i = 0; i < 7; i++) {
+    var k = DB.dayKey(-i);
+    var w = DB.get('workouts_' + k);
+    var r = DB.get('recovery_' + k);
+    var j = DB.get('journal_' + k);
+    var hasJ = j && ((j.tags && j.tags.length) || j.note);
+    if ((w && w.length) || (r && r.length) || hasJ) activeDays++;
+  }
+  if (activeDays >= 6) return 30;
+  if (activeDays >= 4) return 20;
+  if (activeDays >= 2) return 10;
+  return 0;
+}
+
+// Selected quick-tags state (mirrors today's journal entry)
+var quickTags = [];
 
 // ──────────────────────────────────────────────────────────────
 // CALORIE BURN CALCULATION
@@ -513,32 +648,54 @@ function init(){
     document.getElementById('statWodSub').textContent = 'Not logged today';
   }
 
-  // Score
-  var score = 0;
-  if (totals.cal >= 1800 && totals.cal <= 2600) score += 20; else if (totals.cal > 0) score += 10;
-  if (totals.p >= 150) score += 20; else if (totals.p >= 100) score += 10;
-  if (steps >= 11000) score += 20; else if (steps >= 7000) score += 10;
-  if (allSessions > 0) score += 20;
-  if (water >= 3000) score += 20; else if (water >= 1500) score += 10;
+  // ── READINESS SCORE ──
+  var todayJournal = DB.get('journal_' + todayKey);
+  var recoveryScore = calcRecoveryFromJournal(todayJournal);
+  var strainScore = calcStrainScore();
+  var consistencyScore = calcConsistencyScore();
+  var score = recoveryScore + strainScore + consistencyScore;
 
   document.getElementById('ringScore').textContent = score;
   document.getElementById('ringFill').style.strokeDashoffset = 289 - (289 * score / 100);
-  var titles = {0:"LET'S GO",20:'WARMING UP',40:'HALF WAY',60:'CRUSHING IT',80:'ALMOST THERE',100:'LOCKED IN'};
-  var subs = {0:'Start logging your day.',20:'Good start — keep building.',40:'Solid effort today, Dave.',60:'Strong day!',80:'Almost perfect day!',100:'100% — absolute machine.'};
-  var key = [100,80,60,40,20,0].find(function(k){ return score >= k; });
-  document.getElementById('scoreTitle').textContent = titles[key];
-  document.getElementById('scoreSub').textContent = subs[key];
+  // Color the ring to match the band
+  var ringEl = document.getElementById('ringFill');
+  if (score >= 80) ringEl.style.stroke = 'var(--green)';
+  else if (score >= 50) ringEl.style.stroke = 'var(--accent)';
+  else ringEl.style.stroke = 'var(--red)';
 
-  // Streak
+  var titleEl = document.getElementById('scoreTitle');
+  var subEl = document.getElementById('scoreSub');
+  if (score >= 80) {
+    titleEl.textContent = 'PUSH HARD';
+    subEl.textContent = 'Body is primed. Train heavy, go for the PB.';
+  } else if (score >= 65) {
+    titleEl.textContent = 'STEADY DAY';
+    subEl.textContent = 'Good window for a solid session at your usual intensity.';
+  } else if (score >= 40) {
+    titleEl.textContent = 'EASE IN';
+    subEl.textContent = 'Keep it moderate today. Mobility, light cardio, or shorter sets.';
+  } else if (score > 0) {
+    titleEl.textContent = 'TAKE IT EASY';
+    subEl.textContent = 'Recovery first. Walk, stretch, or rest fully.';
+  } else {
+    titleEl.textContent = "LET'S GO";
+    subEl.textContent = 'Log a journal entry or workout to start building your signal.';
+  }
+
+  // Streak (counts any logged day — workout, recovery, or journal entry)
   var streak = 0;
   for (var i = 1; i <= 30; i++) {
     var k = DB.dayKey(-i);
-    var n = DB.get('nutrition_' + k);
     var w = DB.get('workouts_' + k);
     var r = DB.get('recovery_' + k);
-    if ((n && n.entries.length > 0) || (w && w.length > 0) || (r && r.length > 0)) streak++; else break;
+    var j = DB.get('journal_' + k);
+    var n = DB.get('nutrition_' + k);
+    var hasJ = j && ((j.tags && j.tags.length) || j.note);
+    var hasN = n && n.entries && n.entries.length > 0;
+    if ((w && w.length) || (r && r.length) || hasJ || hasN) streak++; else break;
   }
-  if (nutrition.entries.length > 0 || workouts.length > 0 || recovery.length > 0) streak++;
+  var hasTodayJournal = todayJournal && ((todayJournal.tags && todayJournal.tags.length) || todayJournal.note);
+  if (nutrition.entries.length > 0 || workouts.length > 0 || recovery.length > 0 || hasTodayJournal) streak++;
   document.getElementById('streakNum').textContent = streak;
 
   // Weekly strip
@@ -620,6 +777,49 @@ document.getElementById('weightModal').addEventListener('click', function(e){
 
 init();
 
+// ── JOURNAL QUICK TAGS ────────────────────────────────────────
+function renderQuickTags(){
+  var todayKey = DB.dayKey();
+  var entry = DB.get('journal_' + todayKey);
+  quickTags = entry && entry.tags ? entry.tags.filter(function(id){
+    return QUICK_TAGS.some(function(q){ return q.id === id; });
+  }) : [];
+
+  var el = document.getElementById('jqTags');
+  el.innerHTML = '';
+  QUICK_TAGS.forEach(function(t){
+    var isSel = quickTags.indexOf(t.id) >= 0;
+    var cls = isSel ? (' selected ' + (t.val > 0 ? 'pos' : t.val < 0 ? 'neg' : '')) : '';
+    var btn = document.createElement('div');
+    btn.className = 'jq-tag' + cls;
+    btn.innerHTML = '<span class="te">' + t.emoji + '</span>' + t.label;
+    btn.addEventListener('click', function(){
+      var i = quickTags.indexOf(t.id);
+      if (i >= 0) quickTags.splice(i, 1); else quickTags.push(t.id);
+      renderQuickTags();
+    });
+    el.appendChild(btn);
+  });
+}
+
+document.getElementById('jqSave').addEventListener('click', function(){
+  var todayKey = DB.dayKey();
+  var existing = DB.get('journal_' + todayKey) || {tags:[], note:''};
+  // Preserve any non-quick tags the user added on the full journal page
+  var preserved = (existing.tags || []).filter(function(id){
+    return !QUICK_TAGS.some(function(q){ return q.id === id; });
+  });
+  existing.tags = preserved.concat(quickTags);
+  DB.saveJournalEntry(existing, todayKey);
+  var st = document.getElementById('jqStatus');
+  st.textContent = '✓ Saved';
+  st.className = 'jq-status success';
+  setTimeout(function(){ st.textContent = ''; st.className = 'jq-status'; }, 2000);
+  init(); // re-render Readiness to reflect new tags
+});
+
+renderQuickTags();
+
 // Refresh when tab regains focus on a new day (daily rollover without reload)
 var _lastRenderDay = DB.dayKey();
 function _refreshIfNewDay(){
@@ -627,6 +827,7 @@ function _refreshIfNewDay(){
   if (today !== _lastRenderDay) {
     _lastRenderDay = today;
     init();
+    renderQuickTags();
   }
 }
 document.addEventListener('visibilitychange', function(){ if (!document.hidden) _refreshIfNewDay(); });
