@@ -70,6 +70,21 @@ var DB = {
     return list;
   },
 
+  // ── JOURNAL HELPERS ───────────────────────────────────────
+  // One journal entry per day, stored under
+  //   journal_YYYY-MM-DD  →  {tags:[...], note:"...", time:ISO}
+  // Tags are tag IDs from the canonical TAGS list (see journal.html).
+  getJournal: function(key){
+    key = key || this.dayKey();
+    return this.get('journal_' + key) || null;
+  },
+  saveJournalEntry: function(entry, key){
+    key = key || this.dayKey();
+    entry.time = entry.time || new Date().toISOString();
+    this.set('journal_' + key, entry);
+    return entry;
+  },
+
   // ── CURRENT WEIGHT (for kcal calcs) ───────────────────────
   // Used by Hub net-calories and workout burn calcs. Falls back to 80kg
   // if nothing has been logged yet.
