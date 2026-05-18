@@ -99,14 +99,17 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .custom-ex-input::placeholder{color:var(--muted)}
 .custom-ex-btn{background:var(--purple);color:var(--bg);border:none;border-radius:10px;padding:9px 14px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;cursor:pointer;white-space:nowrap;transition:opacity 0.2s}
 .custom-ex-btn:hover{opacity:0.85}
+
+/* ── REST TIMER BAR ── timestamp-based, survives background */
 .rest-timer-bar{position:fixed;top:0;left:0;right:0;z-index:300;background:var(--s1);border-bottom:2px solid var(--purple);padding:10px 16px;display:none;align-items:center;justify-content:space-between;gap:12px}
 .rest-timer-bar.active{display:flex}
 .rt-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--purple)}
 .rt-time{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--text);line-height:1}
 .rt-progress{flex:1;height:4px;background:var(--border);border-radius:99px;overflow:hidden}
-.rt-bar{height:100%;background:var(--purple);border-radius:99px;transition:width 0.1s linear}
+.rt-bar{height:100%;background:var(--purple);border-radius:99px;transition:width 0.25s linear}
 .rt-skip{background:none;border:1px solid var(--border2);border-radius:8px;padding:6px 12px;color:var(--muted);font-size:12px;cursor:pointer;transition:all 0.2s;font-family:'Syne',sans-serif}
 .rt-skip:hover{color:var(--red);border-color:var(--red)}
+
 .chart-card{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px}
 .chart-container{position:relative;height:140px;margin-top:8px}
 .chart-svg{width:100%;height:100%}
@@ -239,11 +242,6 @@ HISTORY
 
 <script src="db.js"></script>
 <script>
-// Templates — strength, HIIT, cardio, Hyrox, and outdoor.
-// Hyrox templates use type 'hyrox' and have a `met` field for kcal calc.
-// HYROX SIM: official 8 stations + 8x 1km runs (~60-90 min, MET ~9.0)
-// HYROX SHORT: 4 stations, no runs (~25min, MET ~8.5)
-// HYROX MIXED: 8 stations + 8x 400m runs (~40min, MET ~9.0)
 const TEMPLATES=[
 {id:'push',name:'PUSH',icon:'🔺',desc:'Chest · Shoulders · Triceps',type:'strength',exercises:['Bench Press','Incline Dumbbell Press','Overhead Press','Lateral Raises','Tricep Pushdown','Skull Crushers']},
 {id:'pull',name:'PULL',icon:'🔻',desc:'Back · Biceps · Rear Delts',type:'strength',exercises:['Deadlift','Pull-Ups','Barbell Row','Seated Cable Row','Face Pulls','Barbell Curl']},
@@ -264,7 +262,6 @@ const TEMPLATES=[
 {id:'custom',name:'CUSTOM',icon:'✏️',desc:'Build your own session',type:'strength',exercises:[]},
 ];
 
-// Exercise DB. Hyrox stations added with appropriate MET values.
 const EXERCISE_DB=[
 {name:'Bench Press',cat:'Chest',met:5.0},{name:'Incline Bench Press',cat:'Chest',met:5.0},{name:'Decline Bench Press',cat:'Chest',met:5.0},{name:'Dumbbell Fly',cat:'Chest',met:5.0},{name:'Cable Crossover',cat:'Chest',met:5.0},{name:'Incline Dumbbell Press',cat:'Chest',met:5.0},{name:'Push-Ups',cat:'Chest',met:5.0},
 {name:'Squat',cat:'Legs',met:6.0},{name:'Romanian Deadlift',cat:'Legs',met:6.0},{name:'Leg Press',cat:'Legs',met:5.0},{name:'Leg Curl',cat:'Legs',met:4.5},{name:'Leg Extension',cat:'Legs',met:4.5},{name:'Walking Lunges',cat:'Legs',met:5.0},{name:'Hip Thrust',cat:'Legs',met:5.0},{name:'Calf Raises',cat:'Legs',met:4.0},{name:'Jump Squats',cat:'Legs',met:8.0},{name:'Jump Lunges',cat:'Legs',met:8.0},{name:'Squat Jumps',cat:'Legs',met:8.0},
@@ -284,36 +281,76 @@ const EXERCISE_DB=[
 {name:'Burpees',cat:'Cardio',met:8.5,hasDistance:false},
 {name:'Double Unders',cat:'Cardio',met:11.5,hasDistance:false},
 {name:'Kettlebell Swings',cat:'HIIT',met:8.0},{name:'Battle Ropes',cat:'HIIT',met:8.0},{name:'Mountain Climbers',cat:'HIIT',met:8.0},{name:'High Knees',cat:'HIIT',met:9.0},{name:'Sprint Intervals',cat:'HIIT',met:10.0},{name:'Dumbbell Thrusters',cat:'HIIT',met:8.0},{name:'Barbell Thruster',cat:'HIIT',met:8.0},{name:'Sled Push',cat:'HIIT',met:9.0},{name:'Wall Balls',cat:'HIIT',met:8.0},{name:'Sandbag Carries',cat:'HIIT',met:7.5},{name:'Tire Flips',cat:'HIIT',met:9.0},{name:'Sledgehammer Slams',cat:'HIIT',met:8.5},
-// HYROX stations
-{name:'1km Run',cat:'Hyrox',met:9.8,hasDistance:true},
-{name:'400m Run',cat:'Hyrox',met:9.8,hasDistance:true},
-{name:'SkiErg 1000m',cat:'Hyrox',met:9.0,hasDistance:true},
-{name:'SkiErg 500m',cat:'Hyrox',met:9.0,hasDistance:true},
-{name:'Sled Push 50m',cat:'Hyrox',met:10.0},
-{name:'Sled Push 25m',cat:'Hyrox',met:10.0},
-{name:'Sled Pull 50m',cat:'Hyrox',met:9.5},
-{name:'Sled Pull 25m',cat:'Hyrox',met:9.5},
-{name:'Burpee Broad Jumps 80m',cat:'Hyrox',met:9.5},
-{name:'Burpee Broad Jumps 40m',cat:'Hyrox',met:9.5},
-{name:'Rowing 1000m',cat:'Hyrox',met:8.5,hasDistance:true},
-{name:'Rowing 500m',cat:'Hyrox',met:8.5,hasDistance:true},
-{name:'Farmers Carry 200m',cat:'Hyrox',met:8.0},
-{name:'Farmers Carry 100m',cat:'Hyrox',met:8.0},
-{name:'Sandbag Lunges 100m',cat:'Hyrox',met:8.5},
-{name:'Sandbag Lunges 50m',cat:'Hyrox',met:8.5},
-{name:'Wall Balls 100 reps',cat:'Hyrox',met:8.0},
-{name:'Wall Balls 50 reps',cat:'Hyrox',met:8.0},
+{name:'1km Run',cat:'Hyrox',met:9.8,hasDistance:true},{name:'400m Run',cat:'Hyrox',met:9.8,hasDistance:true},{name:'SkiErg 1000m',cat:'Hyrox',met:9.0,hasDistance:true},{name:'SkiErg 500m',cat:'Hyrox',met:9.0,hasDistance:true},{name:'Sled Push 50m',cat:'Hyrox',met:10.0},{name:'Sled Push 25m',cat:'Hyrox',met:10.0},{name:'Sled Pull 50m',cat:'Hyrox',met:9.5},{name:'Sled Pull 25m',cat:'Hyrox',met:9.5},{name:'Burpee Broad Jumps 80m',cat:'Hyrox',met:9.5},{name:'Burpee Broad Jumps 40m',cat:'Hyrox',met:9.5},{name:'Rowing 1000m',cat:'Hyrox',met:8.5,hasDistance:true},{name:'Rowing 500m',cat:'Hyrox',met:8.5,hasDistance:true},{name:'Farmers Carry 200m',cat:'Hyrox',met:8.0},{name:'Farmers Carry 100m',cat:'Hyrox',met:8.0},{name:'Sandbag Lunges 100m',cat:'Hyrox',met:8.5},{name:'Sandbag Lunges 50m',cat:'Hyrox',met:8.5},{name:'Wall Balls 100 reps',cat:'Hyrox',met:8.0},{name:'Wall Balls 50 reps',cat:'Hyrox',met:8.0},
 ];
 
 function exerciseMeta(name){
   const hit=EXERCISE_DB.find(e=>e.name===name);
-  if(hit)return hit;
-  return {name,cat:'Custom',met:5.0};
+  return hit||{name,cat:'Custom',met:5.0};
 }
 
-let offset=0,activeSession=null,restInterval=null,restTotal=0,restRemaining=0;
-let cardioTimerState=null; // {exIdx, intervalId}
+let offset=0,activeSession=null;
+let cardioTimerState=null;
 
+// ═══════════════════════════════════════════════════════════
+// REST TIMER — timestamp-based so it's always correct
+// even when the screen is locked or the app is in the background.
+// ═══════════════════════════════════════════════════════════
+const REST_KEY = 'dw_rest_timer';
+let restInterval = null;
+
+function saveRestTimer(endTime, total) {
+  try { localStorage.setItem(REST_KEY, JSON.stringify({endTime, total})); } catch(e) {}
+}
+function loadRestTimer() {
+  try { var r = localStorage.getItem(REST_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; }
+}
+function clearRestTimer() {
+  try { localStorage.removeItem(REST_KEY); } catch(e) {}
+}
+
+function startRestTimer(seconds) {
+  stopRestTimer();
+  var endTime = Date.now() + seconds * 1000;
+  saveRestTimer(endTime, seconds);
+  showRestBar(endTime, seconds);
+}
+
+function resumeRestTimer() {
+  var saved = loadRestTimer();
+  if (!saved) return;
+  var remaining = Math.round((saved.endTime - Date.now()) / 1000);
+  if (remaining <= 0) { clearRestTimer(); return; }
+  showRestBar(saved.endTime, saved.total);
+}
+
+function showRestBar(endTime, total) {
+  document.getElementById('restTimer').classList.add('active');
+  document.getElementById('mainWrap').style.paddingTop = '68px';
+
+  function update() {
+    var remaining = Math.max(0, Math.round((endTime - Date.now()) / 1000));
+    var m = Math.floor(remaining / 60), s = remaining % 60;
+    document.getElementById('rtTime').textContent = m + ':' + s.toString().padStart(2,'0');
+    document.getElementById('rtBar').style.width = (remaining / total * 100) + '%';
+    if (remaining <= 0) { stopRestTimer(); }
+  }
+  update();
+  restInterval = setInterval(update, 250); // poll 4x/sec — catches up instantly on resume
+}
+
+function stopRestTimer() {
+  if (restInterval) { clearInterval(restInterval); restInterval = null; }
+  clearRestTimer();
+  document.getElementById('restTimer').classList.remove('active');
+  document.getElementById('mainWrap').style.paddingTop = '';
+}
+
+document.getElementById('rtSkip').addEventListener('click', stopRestTimer);
+
+// ═══════════════════════════════════════════════════════════
+// WORKOUT SESSION PERSISTENCE
+// ═══════════════════════════════════════════════════════════
 function dayKey(){return DB.dayKey(offset)}
 function getWorkouts(){return DB.get('workouts_'+dayKey())||[]}
 function saveWorkouts(w){DB.set('workouts_'+dayKey(),w)}
@@ -325,7 +362,6 @@ function persistActiveSession(){
   if(activeSession){DB._ls(ACTIVE_KEY,activeSession);}
   else{try{localStorage.removeItem('dw_'+ACTIVE_KEY);}catch(e){}}
 }
-// Uses LOCAL date keys (matches DB.dayKey) — fixes the UTC stale-session bug.
 function isStaleSession(session){
   if(!session||!session.startTime)return false;
   const started=DB.dateToKey(new Date(session.startTime));
@@ -434,7 +470,10 @@ function renderExercises(){
     if(ex.cardio){
       const meta=exerciseMeta(ex.name);
       const isRunning=!!ex.startedAt;
-      const liveSec=isRunning?(ex.durationSec+Math.floor((Date.now()-new Date(ex.startedAt).getTime())/1000)):ex.durationSec;
+      // Compute live seconds from timestamp — correct even after screen lock
+      const liveSec=isRunning
+        ?(ex.durationSec+Math.floor((Date.now()-new Date(ex.startedAt).getTime())/1000))
+        :ex.durationSec;
       block.innerHTML=`
         <div class="ex-header">
           <div><div class="ex-name">${ex.name}</div><div class="ex-category">${ex.category}</div></div>
@@ -505,9 +544,9 @@ function renderExercises(){
       s.done=!s.done;
       btn.className='set-done'+(s.done?' checked':'');
       btn.textContent=s.done?'✓':'○';
-      if(s.done && s.weight && s.reps){
+      if(s.done&&s.weight&&s.reps){
         DB.set('pb_'+activeSession.exercises[ex].name.replace(/\s/g,'_'),{weight:s.weight,reps:s.reps});
-        startRestTimer(90);
+        startRestTimer(90); // ← uses timestamp-based timer
       }
       persistActiveSession();
       updateSessionUI();
@@ -573,7 +612,7 @@ function renderExercises(){
     });
   });
 
-  // Resume any cardio timer after rerender
+  // Resume any running cardio timer after re-render
   if(cardioTimerState){
     startCardioTimerTick(cardioTimerState.exIdx);
   } else {
@@ -590,6 +629,7 @@ function startCardioTimerTick(exIdx){
     if(!activeSession)return stopCardioTimer();
     const ex=activeSession.exercises[exIdx];
     if(!ex||!ex.cardio||!ex.startedAt)return stopCardioTimer();
+    // Always computed from timestamp — correct after screen lock
     const liveSec=ex.durationSec+Math.floor((Date.now()-new Date(ex.startedAt).getTime())/1000);
     const timeEl=document.getElementById('cardioTime-'+exIdx);
     if(timeEl){timeEl.textContent=formatSecs(liveSec);timeEl.classList.add('running');}
@@ -623,6 +663,7 @@ function cancelSession(){
   });
   if(hasProgress){if(!confirm('Cancel this workout? All logged work will be lost.'))return;}
   if(cardioTimerState)stopCardioTimer();
+  stopRestTimer();
   activeSession=null;
   persistActiveSession();
   updateSessionUI();
@@ -631,10 +672,10 @@ function cancelSession(){
 function finishSession(){
   if(!activeSession)return;
   if(cardioTimerState)stopCardioTimer();
+  stopRestTimer();
   activeSession.endTime=new Date().toISOString();
   const duration=Math.round((new Date(activeSession.endTime)-new Date(activeSession.startTime))/60000);
   activeSession.duration=duration;
-  // Save against the LOCAL day key of the session start (fixed UTC bug)
   const startedKey=DB.dateToKey(new Date(activeSession.startTime));
   const workouts=DB.get('workouts_'+startedKey)||[];
   workouts.push(activeSession);
@@ -643,10 +684,10 @@ function finishSession(){
   persistActiveSession();
   updateSessionUI();
   renderChart();
-  stopRestTimer();
   alert(`Workout saved! ${duration} min session logged. 💪`);
 }
 
+// HIIT (uses its own internal tick — screen usually stays on for HIIT)
 let hiitInterval=null;
 let hiitState={};
 function startHIITTimer(template){
@@ -698,18 +739,6 @@ function stopHIITTimer(completed){
 }
 document.getElementById('hiitStop').addEventListener('click',()=>stopHIITTimer(false));
 document.getElementById('hiitSkip').addEventListener('click',()=>{hiitState.timeLeft=0;});
-
-function startRestTimer(seconds){
-  stopRestTimer();
-  restTotal=seconds;restRemaining=seconds;
-  document.getElementById('restTimer').classList.add('active');
-  document.getElementById('mainWrap').style.paddingTop='68px';
-  updateRestDisplay();
-  restInterval=setInterval(()=>{restRemaining--;if(restRemaining<=0){stopRestTimer();return;}updateRestDisplay();},1000);
-}
-function updateRestDisplay(){const m=Math.floor(restRemaining/60),s=restRemaining%60;document.getElementById('rtTime').textContent=`${m}:${s.toString().padStart(2,'0')}`;document.getElementById('rtBar').style.width=(restRemaining/restTotal*100)+'%';}
-function stopRestTimer(){if(restInterval){clearInterval(restInterval);restInterval=null;}document.getElementById('restTimer').classList.remove('active');document.getElementById('mainWrap').style.paddingTop='';}
-document.getElementById('rtSkip').addEventListener('click',stopRestTimer);
 
 function renderExerciseSearch(query=''){
   const container=document.getElementById('exSuggestions');
@@ -781,6 +810,30 @@ function renderChart(){
   svg.innerHTML=html;
 }
 
+// ═══════════════════════════════════════════════════════════
+// VISIBILITY HANDLER — immediately re-sync timers on return
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden) {
+    // Force rest timer display to catch up immediately
+    // (the interval will have been throttled while backgrounded)
+    var saved = loadRestTimer();
+    if (saved && restInterval) {
+      var remaining = Math.round((saved.endTime - Date.now()) / 1000);
+      if (remaining <= 0) {
+        stopRestTimer();
+      } else {
+        var m = Math.floor(remaining / 60), s = remaining % 60;
+        document.getElementById('rtTime').textContent = m + ':' + s.toString().padStart(2,'0');
+        document.getElementById('rtBar').style.width = (remaining / saved.total * 100) + '%';
+      }
+    }
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
 renderTemplates();
 renderExerciseSearch();
 renderChart();
@@ -789,6 +842,9 @@ document.getElementById('dateLabel').textContent=dateLabel(offset);
 const restored=loadActiveSession();
 if(restored){activeSession=restored;}
 updateSessionUI();
+
+// Resume rest timer if it was running when we left
+resumeRestTimer();
 </script>
 </body>
 </html>
