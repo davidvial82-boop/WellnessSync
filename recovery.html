@@ -17,7 +17,6 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .page-header{padding:20px 0 20px}
 .page-header .sub{font-size:10px;letter-spacing:4px;color:var(--teal);text-transform:uppercase;margin-bottom:4px}
 .page-header h1{font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:1;letter-spacing:2px}
-
 .intro{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:18px;padding:0 2px}
 
 /* Mode cards */
@@ -43,6 +42,20 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .mode-desc{font-size:11px;color:var(--muted);line-height:1.5}
 .mode-arrow{color:var(--muted);font-size:24px}
 
+/* Resume banner */
+.resume-banner{background:var(--s1);border:1px solid var(--border2);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.resume-banner.hidden{display:none}
+.resume-info{flex:1}
+.resume-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:3px}
+.resume-name{font-size:14px;font-weight:700;color:var(--text)}
+.resume-time{font-size:11px;color:var(--muted);margin-top:2px}
+.resume-btns{display:flex;gap:8px;flex-shrink:0}
+.resume-btn{background:var(--s2);border:1px solid var(--border2);border-radius:9px;padding:8px 13px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer;transition:all 0.2s}
+.resume-btn.go{color:var(--orange);border-color:rgba(255,107,53,0.3)}
+.resume-btn.go:hover{background:var(--odim)}
+.resume-btn.cancel{color:var(--muted)}
+.resume-btn.cancel:hover{color:var(--red);border-color:var(--red)}
+
 /* Today's recovery */
 .today-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px}
 .card-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:12px;display:flex;align-items:center;gap:8px}
@@ -57,7 +70,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .tr-dur{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--teal);line-height:1}
 .empty-today{text-align:center;padding:18px;color:var(--muted);font-size:12px;line-height:1.7}
 
-/* ─── DURATION PICKER OVERLAY ─── */
+/* Duration picker overlay */
 .picker-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:400;align-items:center;justify-content:center;padding:20px}
 .picker-overlay.show{display:flex}
 .picker-sheet{background:var(--s2);border:1px solid var(--border2);border-radius:22px;padding:24px;width:100%;max-width:380px}
@@ -75,7 +88,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .picker-cancel{width:100%;background:none;border:1px solid var(--border2);border-radius:10px;padding:10px;color:var(--muted);font-family:'Syne',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;transition:all 0.2s}
 .picker-cancel:hover{color:var(--red);border-color:var(--red)}
 
-/* ─── GUIDED SESSION FULLSCREEN ─── */
+/* Guided session fullscreen */
 .session-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:500;flex-direction:column;align-items:center;padding:max(20px,env(safe-area-inset-top)) 20px 20px}
 .session-overlay.show{display:flex}
 .session-overlay::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,var(--sessionGlow),transparent 70%);pointer-events:none;z-index:0}
@@ -107,10 +120,12 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .ctrl-btn.pause{color:var(--sessionAccent);border-color:rgba(255,255,255,0.1)}
 .ctrl-btn.skip{color:var(--accent);border-color:rgba(0,229,255,0.2)}
 .ctrl-btn.stop{color:var(--red);border-color:rgba(255,61,113,0.2)}
-
-/* Sauna-specific overlay differences */
 .sauna-overlay .session-pose{font-size:42px}
 .sauna-overlay .timer-num{font-size:84px}
+
+/* Paused overlay notice */
+.paused-notice{display:none;position:absolute;bottom:80px;left:50%;transform:translateX(-50%);background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:8px 16px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);white-space:nowrap}
+.paused-notice.show{display:block}
 
 /* Completion banner */
 .complete-banner{display:none;position:fixed;inset:0;background:rgba(7,9,13,0.96);z-index:600;align-items:center;justify-content:center;padding:30px}
@@ -134,6 +149,19 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
   </div>
 
   <div class="intro">Slow down, reset, recover. Pre-built guided sessions for mobility, mindfulness, and heat.</div>
+
+  <!-- Resume banner — shown when a session is in progress and page reloaded -->
+  <div class="resume-banner hidden" id="resumeBanner">
+    <div class="resume-info">
+      <div class="resume-label">⏱ Session in progress</div>
+      <div class="resume-name" id="resumeName">—</div>
+      <div class="resume-time" id="resumeTime">—</div>
+    </div>
+    <div class="resume-btns">
+      <button class="resume-btn go" id="resumeGoBtn">RESUME</button>
+      <button class="resume-btn cancel" id="resumeCancelBtn">✕</button>
+    </div>
+  </div>
 
   <div class="modes">
     <div class="mode-card yoga" id="yogaCard">
@@ -209,6 +237,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
       <button class="ctrl-btn skip" id="skipBtn">SKIP &#9656;</button>
       <button class="ctrl-btn stop" id="stopBtn">STOP</button>
     </div>
+    <div class="paused-notice" id="pausedNotice">⏸ PAUSED</div>
   </div>
 </div>
 
@@ -236,13 +265,9 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 
 <script src="db.js"></script>
 <script>
-// ════════════════════════════════════════════════════════════
-// SEQUENCE DEFINITIONS
-// Each routine is a list of poses/stretches. The guided session
-// distributes the chosen duration across them proportionally,
-// with a hard 30-second floor and 90-second ceiling per pose.
-// ════════════════════════════════════════════════════════════
-
+// ═══════════════════════════════════════════════════════════
+// SEQUENCES
+// ═══════════════════════════════════════════════════════════
 var YOGA_SEQ_15 = [
   {name:'MOUNTAIN POSE',       instr:'Stand tall, feet hip-width, arms by your sides. Breathe deep into your belly.'},
   {name:'CAT-COW FLOW',        instr:'On all fours. Inhale arch (cow), exhale round (cat). Flow gently with your breath.'},
@@ -260,7 +285,6 @@ var YOGA_SEQ_15 = [
   {name:'HAPPY BABY',          instr:'On back, knees toward armpits, grab the outsides of your feet. Rock gently.'},
   {name:'CORPSE POSE',         instr:'Lie flat on your back, arms relaxed, palms up. Eyes closed, breathe slow and deep.'}
 ];
-
 var YOGA_SEQ_10 = [
   {name:'MOUNTAIN POSE',       instr:'Stand tall, feet hip-width, arms by your sides. Breathe deep into your belly.'},
   {name:'CAT-COW FLOW',        instr:'On all fours. Inhale arch (cow), exhale round (cat). Flow gently with your breath.'},
@@ -273,7 +297,6 @@ var YOGA_SEQ_10 = [
   {name:"CHILD'S POSE",        instr:'Knees wide, big toes touching. Sit back on heels, fold forward, arms extended.'},
   {name:'CORPSE POSE',         instr:'Lie flat on your back, arms relaxed, palms up. Eyes closed, breathe slow and deep.'}
 ];
-
 var YOGA_SEQ_5 = [
   {name:'MOUNTAIN POSE',       instr:'Stand tall, feet hip-width, arms by your sides. Breathe deep into your belly.'},
   {name:'CAT-COW FLOW',        instr:'On all fours. Inhale arch (cow), exhale round (cat). Flow with your breath.'},
@@ -281,7 +304,6 @@ var YOGA_SEQ_5 = [
   {name:"CHILD'S POSE",        instr:'Knees wide, big toes touching. Sit back on heels, fold forward.'},
   {name:'SEATED FORWARD FOLD', instr:'Legs straight in front. Inhale lengthen, exhale fold forward over your legs.'}
 ];
-
 var STRETCH_SEQ_15 = [
   {name:'NECK ROLLS',          instr:'Slow circles, one direction then the other. Drop ear to shoulder, release tension.'},
   {name:'SHOULDER STRETCH',    instr:'Pull one arm across your chest, hold with opposite hand. Switch sides at halfway.'},
@@ -299,7 +321,6 @@ var STRETCH_SEQ_15 = [
   {name:'CALF STRETCH',        instr:'Step one foot back, press heel into floor, lean forward. Feel the calf. Switch.'},
   {name:'WRIST & FOREARM',     instr:'Extend arm forward, palm up. Pull fingers gently down with other hand. Switch.'}
 ];
-
 var STRETCH_SEQ_10 = [
   {name:'NECK ROLLS',          instr:'Slow circles, one direction then the other. Drop ear to shoulder.'},
   {name:'SHOULDER STRETCH',    instr:'Pull one arm across your chest, hold with opposite hand. Switch at halfway.'},
@@ -312,7 +333,6 @@ var STRETCH_SEQ_10 = [
   {name:'CALF STRETCH',        instr:'Step one foot back, press heel down, lean forward. Switch sides.'},
   {name:'BUTTERFLY STRETCH',   instr:'Seated, soles of feet together, knees fall open. Fold gently forward.'}
 ];
-
 var STRETCH_SEQ_5 = [
   {name:'NECK ROLLS',          instr:'Slow circles, one direction then the other. Drop ear to shoulder.'},
   {name:'SHOULDER STRETCH',    instr:'Pull one arm across your chest. Switch sides at halfway.'},
@@ -321,30 +341,50 @@ var STRETCH_SEQ_5 = [
   {name:'CALF STRETCH',        instr:'Step one foot back, press heel down, lean forward. Switch sides.'}
 ];
 
-// MET values for kcal burn — restorative yoga ~2.5, gentle stretching ~2.3, sauna sit ~1.5
 var MET = {yoga:2.5, stretch:2.3, sauna:1.5};
 
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// PERSISTENCE KEY
+// All session state is stored here so closing the app /
+// locking the screen doesn't lose anything.
+// ═══════════════════════════════════════════════════════════
+var SESSION_KEY = 'dw_recovery_session';
+
+function saveSession(s) {
+  try { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch(e) {}
+}
+function loadSavedSession() {
+  try {
+    var raw = localStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+function clearSavedSession() {
+  try { localStorage.removeItem(SESSION_KEY); } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════════
 // STATE
-// ════════════════════════════════════════════════════════════
-var pickerMode = null;     // 'yoga' | 'stretch' | 'sauna'
-var session = null;        // active session state
+// ═══════════════════════════════════════════════════════════
+var pickerMode = null;
+var session = null;      // full session object (persisted)
 var tickInterval = null;
 var isPaused = false;
+var pausedAt = null;     // timestamp when paused
 
-// ════════════════════════════════════════════════════════════
-// RENDER: today's recovery list
-// ════════════════════════════════════════════════════════════
-function renderToday(){
-  var list = DB.getRecovery();
+// ═══════════════════════════════════════════════════════════
+// TODAY'S RECOVERY LIST
+// ═══════════════════════════════════════════════════════════
+function renderToday() {
+  var list = DB.getRecovery ? DB.getRecovery() : [];
   var el = document.getElementById('todayList');
   if (!list || list.length === 0) {
     el.innerHTML = '<div class="empty-today">No recovery logged today.<br>Pick a session above to begin.</div>';
     return;
   }
   el.innerHTML = '';
-  list.slice().reverse().forEach(function(s){
-    var icon = s.type === 'yoga' ? '\u{1F9D8}' : s.type === 'stretch' ? '\u{1F938}' : '\u{1F525}';
+  list.slice().reverse().forEach(function(s) {
+    var icon = s.type === 'yoga' ? '🧘' : s.type === 'stretch' ? '🤸' : '🔥';
     var t = new Date(s.endTime || s.startTime);
     var timeLabel = t.toLocaleTimeString('en-AU', {hour:'numeric',minute:'2-digit',hour12:true});
     var row = document.createElement('div');
@@ -358,10 +398,45 @@ function renderToday(){
   });
 }
 
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// RESUME BANNER
+// ═══════════════════════════════════════════════════════════
+function checkForResume() {
+  var saved = loadSavedSession();
+  if (!saved) return;
+
+  // Check it's not stale (> 4 hours old for yoga/stretch, > 2 hours for sauna)
+  var maxAge = saved.mode === 'sauna' ? 2 * 3600 * 1000 : 4 * 3600 * 1000;
+  if (Date.now() - new Date(saved.startTime).getTime() > maxAge) {
+    clearSavedSession();
+    return;
+  }
+
+  // Show resume banner
+  var modeLabel = saved.mode === 'yoga' ? 'YOGA' : saved.mode === 'stretch' ? 'STRETCHING' : 'SAUNA';
+  var elapsed = Math.floor((Date.now() - new Date(saved.stepStartTime).getTime()) / 1000);
+  var stepRemaining = Math.max(0, saved.stepDuration - elapsed - saved.elapsedBeforePause);
+  document.getElementById('resumeName').textContent = modeLabel + ' · ' + saved.totalMin + ' MIN';
+  document.getElementById('resumeTime').textContent =
+    'Step ' + (saved.currentIdx + 1) + ' of ' + saved.schedule.length +
+    ' · ~' + Math.ceil(stepRemaining / 60) + ' min left in this step';
+
+  document.getElementById('resumeBanner').classList.remove('hidden');
+
+  document.getElementById('resumeGoBtn').onclick = function() {
+    document.getElementById('resumeBanner').classList.add('hidden');
+    restoreSession(saved);
+  };
+  document.getElementById('resumeCancelBtn').onclick = function() {
+    document.getElementById('resumeBanner').classList.add('hidden');
+    clearSavedSession();
+  };
+}
+
+// ═══════════════════════════════════════════════════════════
 // DURATION PICKER
-// ════════════════════════════════════════════════════════════
-function openPicker(mode){
+// ═══════════════════════════════════════════════════════════
+function openPicker(mode) {
   pickerMode = mode;
   var sheet = document.getElementById('pickerSheet');
   var title = document.getElementById('pickerTitle');
@@ -369,31 +444,24 @@ function openPicker(mode){
   var grid = document.getElementById('durationGrid');
 
   if (mode === 'yoga') {
-    title.textContent = 'YOGA SESSION';
-    sub.textContent = 'Guided flow — pick duration';
-    sheet.style.setProperty('--accentcol', 'var(--purple)');
-    sheet.style.setProperty('--accentdim', 'var(--pdim)');
+    title.textContent = 'YOGA SESSION'; sub.textContent = 'Guided flow — pick duration';
+    sheet.style.setProperty('--accentcol','var(--purple)'); sheet.style.setProperty('--accentdim','var(--pdim)');
   } else if (mode === 'stretch') {
-    title.textContent = 'STRETCHING';
-    sub.textContent = 'Full body — pick duration';
-    sheet.style.setProperty('--accentcol', 'var(--teal)');
-    sheet.style.setProperty('--accentdim', 'var(--tdim)');
-  } else if (mode === 'sauna') {
-    title.textContent = 'SAUNA TIMER';
-    sub.textContent = 'Pick your time';
-    sheet.style.setProperty('--accentcol', 'var(--orange)');
-    sheet.style.setProperty('--accentdim', 'var(--odim)');
+    title.textContent = 'STRETCHING'; sub.textContent = 'Full body — pick duration';
+    sheet.style.setProperty('--accentcol','var(--teal)'); sheet.style.setProperty('--accentdim','var(--tdim)');
+  } else {
+    title.textContent = 'SAUNA TIMER'; sub.textContent = 'Pick your time';
+    sheet.style.setProperty('--accentcol','var(--orange)'); sheet.style.setProperty('--accentdim','var(--odim)');
   }
 
-  // Preset buttons differ by mode
-  var presets = (mode === 'sauna') ? [5, 10, 15, 20] : [5, 10, 15];
+  var presets = (mode === 'sauna') ? [5,10,15,20] : [5,10,15];
   grid.style.gridTemplateColumns = 'repeat(' + presets.length + ',1fr)';
   grid.innerHTML = '';
-  presets.forEach(function(min){
+  presets.forEach(function(min) {
     var b = document.createElement('div');
     b.className = 'dur-btn';
     b.innerHTML = '<div class="dur-val">' + min + '</div><div class="dur-lbl">min</div>';
-    b.addEventListener('click', function(){ startSession(mode, min); });
+    b.addEventListener('click', function() { startSession(mode, min); });
     grid.appendChild(b);
   });
 
@@ -401,108 +469,149 @@ function openPicker(mode){
   document.getElementById('pickerOverlay').classList.add('show');
 }
 
-function closePicker(){
+function closePicker() {
   document.getElementById('pickerOverlay').classList.remove('show');
   pickerMode = null;
 }
 
-document.getElementById('yogaCard').addEventListener('click', function(){ openPicker('yoga'); });
-document.getElementById('stretchCard').addEventListener('click', function(){ openPicker('stretch'); });
-document.getElementById('saunaCard').addEventListener('click', function(){ openPicker('sauna'); });
+document.getElementById('yogaCard').addEventListener('click', function() { openPicker('yoga'); });
+document.getElementById('stretchCard').addEventListener('click', function() { openPicker('stretch'); });
+document.getElementById('saunaCard').addEventListener('click', function() { openPicker('sauna'); });
 document.getElementById('pickerCancel').addEventListener('click', closePicker);
-document.getElementById('pickerOverlay').addEventListener('click', function(e){
-  if (e.target === this) closePicker();
-});
-document.getElementById('customStartBtn').addEventListener('click', function(){
+document.getElementById('pickerOverlay').addEventListener('click', function(e) { if (e.target === this) closePicker(); });
+document.getElementById('customStartBtn').addEventListener('click', function() {
   var v = parseInt(document.getElementById('customMin').value);
   if (!v || v < 1 || v > 120) return;
   startSession(pickerMode, v);
 });
-document.getElementById('customMin').addEventListener('keydown', function(e){
+document.getElementById('customMin').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') document.getElementById('customStartBtn').click();
 });
 
-// ════════════════════════════════════════════════════════════
-// SESSION ENGINE
-// ════════════════════════════════════════════════════════════
-function pickSequence(mode, totalMin){
-  if (mode === 'sauna') return null; // sauna is a single timer
-  // Pick the closest matching pre-built sequence
-  var seq;
-  if (mode === 'yoga') {
-    seq = totalMin >= 13 ? YOGA_SEQ_15 : totalMin >= 8 ? YOGA_SEQ_10 : YOGA_SEQ_5;
-  } else {
-    seq = totalMin >= 13 ? STRETCH_SEQ_15 : totalMin >= 8 ? STRETCH_SEQ_10 : STRETCH_SEQ_5;
-  }
-  return seq;
+// ═══════════════════════════════════════════════════════════
+// SEQUENCE + SCHEDULE BUILDERS
+// ═══════════════════════════════════════════════════════════
+function pickSequence(mode, totalMin) {
+  if (mode === 'sauna') return null;
+  if (mode === 'yoga') return totalMin >= 13 ? YOGA_SEQ_15 : totalMin >= 8 ? YOGA_SEQ_10 : YOGA_SEQ_5;
+  return totalMin >= 13 ? STRETCH_SEQ_15 : totalMin >= 8 ? STRETCH_SEQ_10 : STRETCH_SEQ_5;
 }
 
-function buildSchedule(mode, totalMin){
+function buildSchedule(mode, totalMin) {
   var totalSec = totalMin * 60;
   if (mode === 'sauna') {
     return [{name:'SAUNA', instr:'Settle in. Breathe slow. Let the heat do its work.', seconds: totalSec}];
   }
   var seq = pickSequence(mode, totalMin);
-  // Equal time per pose, with a sensible floor/ceiling.
   var per = Math.round(totalSec / seq.length);
   per = Math.max(30, Math.min(90, per));
-  return seq.map(function(p){ return {name:p.name, instr:p.instr, seconds:per}; });
+  return seq.map(function(p) { return {name:p.name, instr:p.instr, seconds:per}; });
 }
 
-function startSession(mode, totalMin){
+// ═══════════════════════════════════════════════════════════
+// SESSION START / RESTORE
+// ═══════════════════════════════════════════════════════════
+function startSession(mode, totalMin) {
   closePicker();
   var schedule = buildSchedule(mode, totalMin);
+  var now = Date.now();
   session = {
     mode: mode,
     totalMin: totalMin,
     schedule: schedule,
     currentIdx: 0,
-    remainingSec: schedule[0].seconds,
-    startTime: new Date().toISOString()
+    stepDuration: schedule[0].seconds,
+    stepStartTime: now,      // ← timestamp, not a counter
+    elapsedBeforePause: 0,   // accumulates paused time
+    startTime: new Date(now).toISOString()
   };
   isPaused = false;
-
-  var overlay = document.getElementById('sessionOverlay');
-  overlay.className = 'session-overlay show session-' + mode + (mode === 'sauna' ? ' sauna-overlay' : '');
-
-  var modeLabel = mode === 'yoga' ? 'YOGA' : mode === 'stretch' ? 'STRETCHING' : 'SAUNA';
-  document.getElementById('sessionMeta').textContent = modeLabel + ' \u00b7 ' + totalMin + ' MIN';
-
-  renderTick();
+  pausedAt = null;
+  saveSession(session);
+  showSessionOverlay();
   startTicking();
-
-  // Try to keep screen awake (best-effort, supported on iOS 16.4+ Safari)
   requestWakeLock();
 }
 
-function startTicking(){
-  if (tickInterval) clearInterval(tickInterval);
-  tickInterval = setInterval(function(){
-    if (isPaused || !session) return;
-    session.remainingSec--;
-    if (session.remainingSec <= 0) {
-      // Beep + vibrate on transition
-      beep();
-      if (navigator.vibrate) navigator.vibrate(150);
-      // Advance
-      session.currentIdx++;
-      if (session.currentIdx >= session.schedule.length) {
-        completeSession();
-        return;
-      }
-      session.remainingSec = session.schedule[session.currentIdx].seconds;
-    }
-    renderTick();
-  }, 1000);
+function restoreSession(saved) {
+  session = saved;
+  isPaused = false;
+  pausedAt = null;
+  // If the session was paused when closed, we need to re-anchor stepStartTime
+  // to now minus the elapsed seconds that were already counted, so remaining
+  // is computed correctly.
+  if (saved.wasPaused) {
+    // Resume from where it was paused: set startTime to now - elapsedBeforePause
+    session.stepStartTime = Date.now() - (session.elapsedBeforePause * 1000);
+    session.elapsedBeforePause = 0;
+    session.wasPaused = false;
+  }
+  showSessionOverlay();
+  startTicking();
+  requestWakeLock();
 }
 
-function renderTick(){
+function showSessionOverlay() {
+  var overlay = document.getElementById('sessionOverlay');
+  overlay.className = 'session-overlay show session-' + session.mode +
+    (session.mode === 'sauna' ? ' sauna-overlay' : '');
+  var modeLabel = session.mode === 'yoga' ? 'YOGA' : session.mode === 'stretch' ? 'STRETCHING' : 'SAUNA';
+  document.getElementById('sessionMeta').textContent = modeLabel + ' · ' + session.totalMin + ' MIN';
+  document.getElementById('pauseBtn').textContent = 'PAUSE';
+  document.getElementById('pausedNotice').classList.remove('show');
+  renderTick();
+}
+
+// ═══════════════════════════════════════════════════════════
+// TICK ENGINE — always derived from timestamps, never a counter
+// ═══════════════════════════════════════════════════════════
+function startTicking() {
+  if (tickInterval) clearInterval(tickInterval);
+  tickInterval = setInterval(function() {
+    if (!session) return;
+    if (isPaused) return; // just skip ticks while paused
+    tick();
+  }, 250); // poll at 4Hz so we catch transitions promptly
+}
+
+function getRemainingInStep() {
+  // Compute elapsed time in this step from real wall-clock timestamps
+  var wallElapsed = Math.floor((Date.now() - session.stepStartTime) / 1000);
+  var totalElapsed = session.elapsedBeforePause + wallElapsed;
+  return Math.max(0, session.stepDuration - totalElapsed);
+}
+
+function tick() {
+  var remaining = getRemainingInStep();
+
+  if (remaining <= 0) {
+    beep();
+    if (navigator.vibrate) navigator.vibrate(150);
+    session.currentIdx++;
+    if (session.currentIdx >= session.schedule.length) {
+      completeSession();
+      return;
+    }
+    // Start next step — anchor a fresh timestamp
+    session.stepDuration = session.schedule[session.currentIdx].seconds;
+    session.stepStartTime = Date.now();
+    session.elapsedBeforePause = 0;
+    saveSession(session);
+  }
+
+  renderTick();
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER — reads computed remaining, never stored count
+// ═══════════════════════════════════════════════════════════
+function renderTick() {
   if (!session) return;
   var s = session;
+  var remaining = getRemainingInStep();
   var cur = s.schedule[s.currentIdx];
   var next = s.schedule[s.currentIdx + 1];
 
-  // Header
   if (s.mode === 'sauna') {
     document.getElementById('sessionPhase').textContent = 'HEAT EXPOSURE';
   } else {
@@ -512,74 +621,110 @@ function renderTick(){
   document.getElementById('sessionPose').textContent = cur.name;
   document.getElementById('sessionInstr').textContent = cur.instr;
 
-  // Timer
-  var m = Math.floor(s.remainingSec / 60);
-  var sec = s.remainingSec % 60;
-  var label = (m > 0 ? m + ':' + (sec < 10 ? '0' + sec : sec) : String(sec));
-  document.getElementById('timerNum').textContent = label;
+  // Timer display
+  var m = Math.floor(remaining / 60);
+  var sec = remaining % 60;
+  document.getElementById('timerNum').textContent = m > 0
+    ? m + ':' + (sec < 10 ? '0' + sec : sec)
+    : String(sec);
 
-  // Ring fill — circumference of r=108 is ~679
+  // Ring
   var CIRC = 679;
-  var pct = cur.seconds > 0 ? (s.remainingSec / cur.seconds) : 0;
+  var pct = s.stepDuration > 0 ? (remaining / s.stepDuration) : 0;
   document.getElementById('timerFill').style.strokeDashoffset = CIRC - (CIRC * pct);
 
-  // Next-up + overall progress
+  // Next step label
   var nextEl = document.getElementById('sessionNext');
   if (next) {
     nextEl.innerHTML = 'Next: <strong>' + next.name + '</strong>';
     nextEl.style.display = '';
   } else if (s.mode !== 'sauna') {
-    nextEl.innerHTML = '<strong>Final pose</strong>';
+    nextEl.innerHTML = '<strong>Final step</strong>';
     nextEl.style.display = '';
   } else {
     nextEl.style.display = 'none';
   }
 
-  // Overall progress = sum(elapsed seconds) / sum(total seconds)
+  // Overall progress bar
   var totalSec = s.schedule.reduce(function(a,p){return a+p.seconds;}, 0);
   var elapsedSec = 0;
   for (var i = 0; i < s.currentIdx; i++) elapsedSec += s.schedule[i].seconds;
-  elapsedSec += s.schedule[s.currentIdx].seconds - s.remainingSec;
-  var overallPct = Math.min(100, (elapsedSec / totalSec) * 100);
-  document.getElementById('sessionProgress').style.width = overallPct + '%';
+  elapsedSec += (s.stepDuration - remaining);
+  var pctDone = Math.min(100, (elapsedSec / totalSec) * 100);
+  document.getElementById('sessionProgress').style.width = pctDone + '%';
 }
 
-function togglePause(){
-  isPaused = !isPaused;
-  document.getElementById('pauseBtn').textContent = isPaused ? 'RESUME' : 'PAUSE';
-}
-
-function skipPose(){
+// ═══════════════════════════════════════════════════════════
+// CONTROLS
+// ═══════════════════════════════════════════════════════════
+function togglePause() {
   if (!session) return;
-  session.remainingSec = 1; // next tick advances
+  if (isPaused) {
+    // Resume — re-anchor the step start time so elapsed is correct
+    isPaused = false;
+    pausedAt = null;
+    session.stepStartTime = Date.now(); // elapsed before pause is already in elapsedBeforePause
+    session.wasPaused = false;
+    saveSession(session);
+    document.getElementById('pauseBtn').textContent = 'PAUSE';
+    document.getElementById('pausedNotice').classList.remove('show');
+    requestWakeLock();
+  } else {
+    // Pause — snapshot elapsed so far
+    var wallElapsed = Math.floor((Date.now() - session.stepStartTime) / 1000);
+    session.elapsedBeforePause += wallElapsed;
+    session.wasPaused = true;
+    isPaused = true;
+    pausedAt = Date.now();
+    saveSession(session);
+    document.getElementById('pauseBtn').textContent = 'RESUME';
+    document.getElementById('pausedNotice').classList.add('show');
+    releaseWakeLock();
+  }
 }
 
-function stopSession(){
+function skipStep() {
+  if (!session || isPaused) return;
+  session.currentIdx++;
+  if (session.currentIdx >= session.schedule.length) {
+    completeSession();
+    return;
+  }
+  session.stepDuration = session.schedule[session.currentIdx].seconds;
+  session.stepStartTime = Date.now();
+  session.elapsedBeforePause = 0;
+  saveSession(session);
+  renderTick();
+}
+
+function stopSession() {
   if (!session) return;
   if (!confirm('End this session early?')) return;
-  // Log whatever fraction was completed
   var totalSec = session.schedule.reduce(function(a,p){return a+p.seconds;}, 0);
   var elapsedSec = 0;
   for (var i = 0; i < session.currentIdx; i++) elapsedSec += session.schedule[i].seconds;
-  elapsedSec += session.schedule[session.currentIdx].seconds - session.remainingSec;
+  var stepElapsed = session.elapsedBeforePause + Math.floor((Date.now() - session.stepStartTime) / 1000);
+  elapsedSec += Math.min(stepElapsed, session.stepDuration);
   var actualMin = Math.max(1, Math.round(elapsedSec / 60));
   finalizeSession(actualMin, false);
 }
 
-function completeSession(){
+function completeSession() {
   finalizeSession(session.totalMin, true);
 }
 
-function finalizeSession(actualMin, fullyComplete){
+function finalizeSession(actualMin, fullyComplete) {
   if (tickInterval) { clearInterval(tickInterval); tickInterval = null; }
   releaseWakeLock();
+  clearSavedSession();
+
   var mode = session.mode;
   var totalMin = session.totalMin;
   var name = mode === 'yoga' ? 'Yoga · ' + totalMin + ' min'
            : mode === 'stretch' ? 'Stretching · ' + totalMin + ' min'
            : 'Sauna · ' + totalMin + ' min';
   var met = MET[mode];
-  var weight = DB.currentWeightKg();
+  var weight = (DB.currentWeightKg ? DB.currentWeightKg() : null) || 80;
   var burn = Math.round(met * weight * (actualMin / 60));
   var record = {
     id: Date.now(),
@@ -593,11 +738,12 @@ function finalizeSession(actualMin, fullyComplete){
     startTime: session.startTime,
     endTime: new Date().toISOString()
   };
-  DB.addRecoverySession(record);
+  if (DB.addRecoverySession) DB.addRecoverySession(record);
   session = null;
-  document.getElementById('sessionOverlay').classList.remove('show');
 
-  // Completion banner
+  document.getElementById('sessionOverlay').classList.remove('show');
+  document.getElementById('resumeBanner').classList.add('hidden');
+
   document.getElementById('completeTitle').textContent = fullyComplete ? 'SESSION COMPLETE' : 'SESSION ENDED';
   document.getElementById('completeSub').textContent = fullyComplete
     ? 'Nicely done — session logged.'
@@ -606,25 +752,24 @@ function finalizeSession(actualMin, fullyComplete){
   document.getElementById('csBurn').textContent = burn;
   document.getElementById('completeBanner').classList.add('show');
 
-  if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+  if (navigator.vibrate) navigator.vibrate([200,100,200]);
   beep(true);
-
   renderToday();
 }
 
 document.getElementById('pauseBtn').addEventListener('click', togglePause);
-document.getElementById('skipBtn').addEventListener('click', skipPose);
+document.getElementById('skipBtn').addEventListener('click', skipStep);
 document.getElementById('stopBtn').addEventListener('click', stopSession);
 document.getElementById('sessionClose').addEventListener('click', stopSession);
-document.getElementById('completeBtn').addEventListener('click', function(){
+document.getElementById('completeBtn').addEventListener('click', function() {
   document.getElementById('completeBanner').classList.remove('show');
 });
 
-// ════════════════════════════════════════════════════════════
-// AUDIO + WAKE LOCK
-// ════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// AUDIO
+// ═══════════════════════════════════════════════════════════
 var audioCtx = null;
-function beep(longer){
+function beep(longer) {
   try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     var o = audioCtx.createOscillator();
@@ -640,24 +785,35 @@ function beep(longer){
   } catch(e) {}
 }
 
+// ═══════════════════════════════════════════════════════════
+// WAKE LOCK — keeps screen on during session (best-effort)
+// ═══════════════════════════════════════════════════════════
 var wakeLock = null;
-function requestWakeLock(){
+function requestWakeLock() {
   try {
     if ('wakeLock' in navigator) {
-      navigator.wakeLock.request('screen').then(function(lock){
-        wakeLock = lock;
-      }).catch(function(){});
+      navigator.wakeLock.request('screen').then(function(lock) { wakeLock = lock; }).catch(function(){});
     }
   } catch(e) {}
 }
-function releaseWakeLock(){
+function releaseWakeLock() {
   if (wakeLock) { try { wakeLock.release(); } catch(e) {} wakeLock = null; }
 }
-document.addEventListener('visibilitychange', function(){
-  if (!document.hidden && session && !isPaused) requestWakeLock();
+
+// Re-acquire wake lock when tab becomes visible again (e.g. returning from another app)
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden && session && !isPaused) {
+    requestWakeLock();
+    // Force an immediate tick to catch up — the interval may have been delayed
+    if (!isPaused) tick();
+  }
 });
 
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
 renderToday();
+checkForResume();
 </script>
 </body>
 </html>
