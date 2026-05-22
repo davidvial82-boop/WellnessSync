@@ -20,8 +20,6 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .header-left h1{font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:1;letter-spacing:2px}
 .header-right .date{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);text-align:right}
 .header-right .day{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--text);text-align:right;line-height:1}
-
-/* SCORE */
 .score-section{display:flex;align-items:center;gap:20px;background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:22px;margin-bottom:16px;position:relative;overflow:hidden}
 .score-section::before{content:'';position:absolute;right:-40px;top:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(0,229,255,0.05),transparent 70%);pointer-events:none}
 .ring-wrap{position:relative;width:110px;height:110px;flex-shrink:0}
@@ -35,8 +33,6 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .score-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;margin-bottom:6px}
 .score-sub{font-size:12px;color:var(--muted);line-height:1.6}
 .streak-badge{display:inline-flex;align-items:center;gap:6px;background:var(--ydim);border:1px solid rgba(255,214,0,0.2);border-radius:99px;padding:4px 10px;font-size:11px;color:var(--yellow);font-weight:700;margin-top:10px}
-
-/* JOURNAL QUICK CARD */
 .journal-quick{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:16px}
 .jq-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .jq-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--blue)}
@@ -54,8 +50,6 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .jq-save:hover{opacity:0.85}
 .jq-status{font-size:10px;color:var(--muted);flex:1}
 .jq-status.success{color:var(--green)}
-
-/* IF TIMER */
 .if-card{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;transition:border-color 0.3s}
 .if-card.active{border-color:rgba(0,255,136,0.4)}
 .if-card.fasting{border-color:rgba(0,229,255,0.4)}
@@ -97,8 +91,6 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .if-save-btn{width:100%;background:var(--accent);color:var(--bg);border:none;border-radius:10px;padding:10px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer}
 .if-gear{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:6px;transition:color 0.2s}
 .if-gear:hover{color:var(--accent)}
-
-/* STAT GRID */
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .stat-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden;transition:border-color 0.2s;cursor:pointer}
 .stat-card:hover{border-color:var(--border2)}
@@ -116,18 +108,12 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .stat-card.wod .sc-val{color:var(--purple)} .stat-card.wod .sc-val.done{color:var(--green)}
 .stat-card.water .sc-val{color:var(--blue)} .stat-card.water .sc-bar-fill{background:var(--blue)}
 .stat-card.weight .sc-val{color:var(--orange)}
-
-/* History arrow on each tile */
 .hist-arrow{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:14px;font-weight:700;transition:all 0.2s;z-index:2}
 .hist-arrow:hover{color:var(--accent);border-color:var(--accent);background:var(--adim)}
-
-/* WATER QUICK ADD */
 .water-btns{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 .water-btn{background:rgba(79,195,247,0.1);border:1px solid rgba(79,195,247,0.25);border-radius:8px;padding:5px 10px;color:var(--blue);font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:'Syne',sans-serif}
 .water-btn:hover{background:rgba(79,195,247,0.2)}
 .water-reset{background:none;border:none;color:var(--muted);font-size:10px;cursor:pointer;padding:5px 8px;font-family:'Syne',sans-serif}
-
-/* WEEK STRIP */
 .week-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px}
 .week-card .card-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
 .week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
@@ -139,16 +125,12 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .day-col .dc-dot.empty{color:var(--muted2)}
 .day-col .dc-dot.today{box-shadow:0 0 0 2px var(--accent)}
 .day-col .dc-cal{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace}
-
-/* QUICK LINKS */
 .quick-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .quick-btn{display:flex;align-items:center;gap:12px;background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:14px;text-decoration:none;color:var(--text);transition:all 0.2s}
 .quick-btn:hover{border-color:var(--accent);background:var(--adim)}
 .quick-btn .qb-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .quick-btn .qb-label{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
 .quick-btn .qb-val{font-family:'Bebas Neue',sans-serif;font-size:18px;line-height:1}
-
-/* MODALS */
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:flex-end;justify-content:center}
 .modal.active{display:flex}
 .modal-sheet{background:var(--s2);border:1px solid var(--border2);border-radius:20px 20px 0 0;padding:28px 24px 40px;width:100%;max-width:500px}
@@ -173,7 +155,6 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
     </div>
   </div>
 
-  <!-- Readiness Score Ring -->
   <div class="score-section">
     <div class="ring-wrap">
       <svg width="110" height="110" viewBox="0 0 110 110">
@@ -192,7 +173,6 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
     </div>
   </div>
 
-  <!-- Quick Journal Tag Card -->
   <div class="journal-quick" id="journalQuick">
     <div class="jq-top">
       <div class="jq-label">How are you feeling today?</div>
@@ -205,7 +185,6 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
     </div>
   </div>
 
-  <!-- Intermittent Fasting Card -->
   <div class="if-card" id="ifCard">
     <div class="if-top">
       <div class="if-title">&#9201; Intermittent Fasting</div>
@@ -252,14 +231,13 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
     </div>
   </div>
 
-  <!-- Stats Row 1: Calories + Protein -->
   <div class="stat-grid">
     <div class="stat-card cal">
       <a href="history.html?metric=calories" class="hist-arrow" title="View history">&#8250;</a>
       <div class="sc-icon">&#9889;</div>
       <div class="sc-label">Calories</div>
       <div class="sc-val" id="statCal">0</div>
-      <div class="sc-sub">of 2,400 target</div>
+      <div class="sc-sub" id="subCal">of 2,400 target</div>
       <div class="sc-net" id="statNet" style="display:none">Net: 0</div>
       <div class="sc-bar"><div class="sc-bar-fill" id="calBar" style="width:0%"></div></div>
     </div>
@@ -268,11 +246,10 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
       <div class="sc-icon">&#128170;</div>
       <div class="sc-label">Protein</div>
       <div class="sc-val" id="statPro">0g</div>
-      <div class="sc-sub">of 185g target</div>
+      <div class="sc-sub" id="subPro">of 185g target</div>
       <div class="sc-bar"><div class="sc-bar-fill" id="proBar" style="width:0%"></div></div>
     </div>
 
-    <!-- Steps - tap to log -->
     <div class="stat-card steps" id="stepsCard">
       <a href="history.html?metric=steps" class="hist-arrow" title="View history">&#8250;</a>
       <div class="sc-icon">&#128099;</div>
@@ -282,7 +259,6 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
       <div class="sc-bar"><div class="sc-bar-fill" id="stepsBar" style="width:0%"></div></div>
     </div>
 
-    <!-- Weight - tap to log -->
     <div class="stat-card weight" id="weightCard">
       <a href="history.html?metric=weight" class="hist-arrow" title="View history">&#8250;</a>
       <div class="sc-icon">&#9878;</div>
@@ -292,7 +268,6 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
     </div>
   </div>
 
-  <!-- Water tile full width -->
   <div class="stat-card water" style="margin-bottom:16px;cursor:default">
     <a href="history.html?metric=water" class="hist-arrow" title="View history">&#8250;</a>
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
@@ -315,7 +290,6 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
     </div>
   </div>
 
-  <!-- Workout stat -->
   <div class="stat-grid" style="grid-template-columns:1fr;margin-bottom:16px">
     <div class="stat-card wod" style="cursor:default">
       <a href="history.html?metric=workout" class="hist-arrow" title="View history">&#8250;</a>
@@ -326,13 +300,11 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
     </div>
   </div>
 
-  <!-- Weekly Strip -->
   <div class="week-card">
     <div class="card-title">This Week</div>
     <div class="week-strip" id="weekStrip"></div>
   </div>
 
-  <!-- Quick Links -->
   <div class="quick-row">
     <a class="quick-btn" href="nutrition.html">
       <div class="qb-icon" style="background:var(--adim)">&#127805;</div>
@@ -357,7 +329,6 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   </div>
 </div>
 
-<!-- Steps Modal -->
 <div class="modal" id="stepsModal">
   <div class="modal-sheet">
     <h3>LOG STEPS</h3>
@@ -368,7 +339,6 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
   </div>
 </div>
 
-<!-- Weight Modal -->
 <div class="modal" id="weightModal">
   <div class="modal-sheet">
     <h3>LOG WEIGHT</h3>
@@ -392,47 +362,27 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 var DAYS = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-// ──────────────────────────────────────────────────────────────
-// READINESS SCORE
-// 0-100 score broken into 3 inputs:
-//  - Recovery (40 pts): driven by today's journal tags. Bad sleep/sore/sick/etc subtract.
-//    Great sleep/energized/hydrated/sauna/etc add back. Clamped 0-40.
-//  - Strain load (30 pts): 7-day burn vs 28-day rolling avg. Sweet spot (0.8-1.3x) = 30.
-//    Overtraining (>1.3) drops fast. Undertraining (<0.5) drops moderate. New users = 30.
-//  - Consistency (30 pts): days in last 7 with any activity logged (workout/recovery/journal).
-//    6-7 = 30, 4-5 = 20, 2-3 = 10, 0-1 = 0.
-// Recommendation: 80+ PUSH HARD, 50-79 STEADY DAY, <50 TAKE IT EASY.
-// ──────────────────────────────────────────────────────────────
-
-// Per-tag impact on Recovery sub-score. Tag IDs match journal.html canonical list.
 var TAG_IMPACT = {
-  // Sleep
-  bad_sleep:    -15, great_sleep:    +5,
-  // Body
-  sore:         -10, sick:           -20, tired:         -10, energized:     +5,
-  // Lifestyle
-  stress:        -8, travel:           0, big_meal:        0, late_meal:     -5,
-  alcohol:       -8, caffeine_late:   -5, hydrated:       +5,
-  // Wellness
-  sauna:         +3, meditation:      +3, outdoors:       +3, sunlight:      +3
+  bad_sleep:-15, great_sleep:+5,
+  sore:-10, sick:-20, tired:-10, energized:+5,
+  stress:-8, travel:0, big_meal:0, late_meal:-5,
+  alcohol:-8, caffeine_late:-5, hydrated:+5,
+  sauna:+3, meditation:+3, outdoors:+3, sunlight:+3
 };
 
-// Quick-tag set shown on the Hub (curated subset — the most common log items).
-// Full set lives on journal.html. Each must match a TAG id from journal.html.
 var QUICK_TAGS = [
-  {id:'bad_sleep',    label:'Bad sleep',     emoji:'😴', val:-1},
-  {id:'great_sleep',  label:'Great sleep',   emoji:'💤', val:+1},
-  {id:'sore',         label:'Sore',          emoji:'🥴', val:-1},
-  {id:'tired',        label:'Tired',         emoji:'😪', val:-1},
-  {id:'energized',    label:'Energized',     emoji:'⚡', val:+1},
-  {id:'stress',       label:'Stressful day', emoji:'😣', val:-1},
-  {id:'alcohol',      label:'Alcohol',       emoji:'🍷', val:-1},
-  {id:'hydrated',     label:'Hydrated',      emoji:'💧', val:+1}
+  {id:'bad_sleep',   label:'Bad sleep',     emoji:'😴', val:-1},
+  {id:'great_sleep', label:'Great sleep',   emoji:'💤', val:+1},
+  {id:'sore',        label:'Sore',          emoji:'🥴', val:-1},
+  {id:'tired',       label:'Tired',         emoji:'😪', val:-1},
+  {id:'energized',   label:'Energized',     emoji:'⚡', val:+1},
+  {id:'stress',      label:'Stressful day', emoji:'😣', val:-1},
+  {id:'alcohol',     label:'Alcohol',       emoji:'🍷', val:-1},
+  {id:'hydrated',    label:'Hydrated',      emoji:'💧', val:+1}
 ];
 
-// Calculate Recovery sub-score from today's journal entry (40 max).
 function calcRecoveryFromJournal(entry){
-  if (!entry || !entry.tags || !entry.tags.length) return 40; // no entry = neutral, assume rested
+  if (!entry || !entry.tags || !entry.tags.length) return 40;
   var base = 40;
   entry.tags.forEach(function(tid){
     if (TAG_IMPACT[tid] !== undefined) base += TAG_IMPACT[tid];
@@ -440,7 +390,6 @@ function calcRecoveryFromJournal(entry){
   return Math.max(0, Math.min(40, base));
 }
 
-// Calculate Strain sub-score from rolling 7-day vs 28-day burn (30 max).
 function calcStrainScore(){
   var burn7 = 0, burn28 = 0;
   for (var i = 0; i < 28; i++) {
@@ -452,26 +401,20 @@ function calcStrainScore(){
     burn28 += dayBurn;
     if (i < 7) burn7 += dayBurn;
   }
-  // No data → assume average (full points)
   if (burn28 === 0) return 30;
   var avg28PerDay = burn28 / 28;
   var avg7PerDay = burn7 / 7;
-  if (avg28PerDay < 50) return 30; // not enough history to judge
+  if (avg28PerDay < 50) return 30;
   var ratio = avg7PerDay / avg28PerDay;
-  // Sweet spot: 0.8 - 1.3 → full 30
   if (ratio >= 0.8 && ratio <= 1.3) return 30;
-  // Overtraining: >1.3 drops fast
   if (ratio > 1.3) {
     if (ratio > 2.0) return 5;
-    return Math.round(30 - ((ratio - 1.3) / 0.7) * 25); // 1.3→30, 2.0→5
+    return Math.round(30 - ((ratio - 1.3) / 0.7) * 25);
   }
-  // Undertraining: <0.8 drops moderate
-  // 0.8→30, 0.5→15, 0→5
   if (ratio < 0.5) return Math.max(5, Math.round(15 * ratio / 0.5));
-  return Math.round(15 + ((ratio - 0.5) / 0.3) * 15); // 0.5→15, 0.8→30
+  return Math.round(15 + ((ratio - 0.5) / 0.3) * 15);
 }
 
-// Calculate Consistency sub-score (30 max).
 function calcConsistencyScore(){
   var activeDays = 0;
   for (var i = 0; i < 7; i++) {
@@ -488,24 +431,11 @@ function calcConsistencyScore(){
   return 0;
 }
 
-// Selected quick-tags state (mirrors today's journal entry)
 var quickTags = [];
 
-// ──────────────────────────────────────────────────────────────
-// CALORIE BURN CALCULATION
-// Net calories = consumed − burned.
-// Burn is summed across:
-//   1) Workouts logged today (per-exercise MET for cardio; session-MET for HIIT/Hyrox; avg-MET for strength)
-//   2) Recovery sessions today (yoga / stretching / sauna)
-// Formula: kcal = MET × weight_kg × (duration_min / 60)
-// Uses most recent weight, defaults to 80kg if none logged.
-// ──────────────────────────────────────────────────────────────
-
-// MET values for per-exercise burn lookup (covers cardio + Hyrox stations)
 var EXERCISE_METS = {
   'Treadmill Run':9.0,'Outdoor Run':9.8,'Outdoor Walk':3.8,'Rowing Machine':7.0,'Bike':7.5,'Assault Bike':8.5,
   'Jump Rope':11.0,'Box Jumps':8.0,'Burpees':8.5,'Double Unders':11.5,
-  // Hyrox stations
   '1km Run':9.8,'400m Run':9.8,'SkiErg 1000m':9.0,'SkiErg 500m':9.0,
   'Sled Push 50m':10.0,'Sled Push 25m':10.0,'Sled Pull 50m':9.5,'Sled Pull 25m':9.5,
   'Burpee Broad Jumps 80m':9.5,'Burpee Broad Jumps 40m':9.5,
@@ -515,7 +445,6 @@ var EXERCISE_METS = {
   'Wall Balls 100 reps':8.0,'Wall Balls 50 reps':8.0
 };
 
-// Session-level MET for HIIT / Hyrox / general strength
 var SESSION_MET = {hiit:8.0, hyrox:9.0, strength:5.0, cardio:7.0};
 
 function calcBurnFromWorkouts(workouts, weightKg){
@@ -527,10 +456,7 @@ function calcBurnFromWorkouts(workouts, weightKg){
       durMin = Math.max(0, Math.round((new Date(w.endTime) - new Date(w.startTime)) / 60000));
     }
     if (durMin <= 0) return;
-
     var type = w.type || 'strength';
-
-    // 1) Cardio/Hyrox exercises with their own tracked durations and per-exercise MET
     var cardioBurn = 0;
     var cardioMin = 0;
     (w.exercises || []).forEach(function(ex){
@@ -541,8 +467,6 @@ function calcBurnFromWorkouts(workouts, weightKg){
         cardioMin += exMin;
       }
     });
-
-    // 2) Remaining time at session-level MET (for strength/HIIT/Hyrox combos)
     var remainingMin = Math.max(0, durMin - cardioMin);
     if (remainingMin > 0) {
       var met = SESSION_MET[type] || 5.0;
@@ -555,10 +479,8 @@ function calcBurnFromWorkouts(workouts, weightKg){
 
 function calcBurnFromRecovery(recovery, weightKg){
   if (!recovery || !recovery.length) return 0;
-  // Recovery records have explicit `burn` and `duration` already stored. Trust them.
   return recovery.reduce(function(sum, s){
     if (s.burn) return sum + s.burn;
-    // Fallback: recalc if missing
     var met = (s.met || (s.type === 'yoga' ? 2.5 : s.type === 'stretch' ? 2.3 : 1.5));
     return sum + Math.round(met * weightKg * ((s.duration || 0) / 60));
   }, 0);
@@ -568,6 +490,9 @@ function init(){
   var now = new Date();
   document.getElementById('dateStr').textContent = now.getDate() + ' ' + MONTHS[now.getMonth()] + ' ' + now.getFullYear();
   document.getElementById('dayStr').textContent = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][now.getDay()];
+
+  // ── LOAD SAVED NUTRITION TARGETS ──────────────────────────
+  var NT = DB.get('nutrition_targets') || {cal:2400, p:185, c:220, f:65};
 
   var todayKey = DB.dayKey();
   var nutrition = DB.get('nutrition_' + todayKey) || {entries:[]};
@@ -580,29 +505,25 @@ function init(){
   var weightKg = todayWeight ? parseFloat(todayWeight.kg) : 80;
   var totals = nutrition.entries.reduce(function(a,e){return {cal:a.cal+(e.cal||0),p:a.p+(e.p||0)};},{cal:0,p:0});
 
-  // Burn = workouts + recovery
   var workoutBurn = calcBurnFromWorkouts(workouts, weightKg);
   var recoveryBurn = calcBurnFromRecovery(recovery, weightKg);
   var totalBurn = workoutBurn + recoveryBurn;
 
-  // Stats
+  // ── STATS — use NT targets for bars and subtitles ─────────
   document.getElementById('statCal').textContent = Math.round(totals.cal);
-  document.getElementById('calBar').style.width = Math.min(totals.cal/2400*100,100) + '%';
+  document.getElementById('calBar').style.width = Math.min(totals.cal / NT.cal * 100, 100) + '%';
+  document.getElementById('subCal').textContent = 'of ' + NT.cal.toLocaleString() + ' target';
   document.getElementById('statPro').textContent = Math.round(totals.p) + 'g';
-  document.getElementById('proBar').style.width = Math.min(totals.p/185*100,100) + '%';
+  document.getElementById('proBar').style.width = Math.min(totals.p / NT.p * 100, 100) + '%';
+  document.getElementById('subPro').textContent = 'of ' + NT.p + 'g target';
   document.getElementById('statSteps').textContent = steps.toLocaleString();
   document.getElementById('stepsBar').style.width = Math.min(steps/11000*100,100) + '%';
 
-  // NET line on calories tile — only show if there's any burn or any food consumed
   var netEl = document.getElementById('statNet');
   if (totalBurn > 0 || totals.cal > 0) {
     var net = Math.round(totals.cal) - totalBurn;
-    if (totalBurn > 0) {
-      netEl.textContent = 'Net: ' + net + ' (–' + totalBurn + ' burn)';
-    } else {
-      netEl.textContent = 'Net: ' + net;
-    }
-    netEl.className = 'sc-net' + (net > 2400 ? ' over' : '');
+    netEl.textContent = totalBurn > 0 ? 'Net: ' + net + ' (–' + totalBurn + ' burn)' : 'Net: ' + net;
+    netEl.className = 'sc-net' + (net > NT.cal ? ' over' : '');
     netEl.style.display = '';
   } else {
     netEl.style.display = 'none';
@@ -611,7 +532,6 @@ function init(){
   document.getElementById('statWater').textContent = water;
   document.getElementById('waterBar').style.width = Math.min(water/3000*100,100) + '%';
 
-  // Weight
   if (todayWeight) {
     document.getElementById('statWeight').textContent = todayWeight.kg + 'kg';
     var goal = DB.get('weightGoal');
@@ -626,19 +546,16 @@ function init(){
     document.getElementById('statWeightSub').textContent = 'Tap to log';
   }
 
-  // Workout — show duration + burn if logged. Also include recovery sessions in the count.
   var allSessions = workouts.length + recovery.length;
   if (allSessions > 0) {
     document.getElementById('statWod').textContent = 'DONE';
     document.getElementById('statWod').className = 'sc-val done';
-    var lastSession = workouts.length > 0 ? workouts[workouts.length-1] : recovery[recovery.length-1];
-    var sessionName = lastSession.name || 'Session';
     var totalMin = 0;
     workouts.forEach(function(w){ totalMin += (w.duration || 0); });
     recovery.forEach(function(r){ totalMin += (r.duration || 0); });
     var subParts = [];
     if (allSessions > 1) subParts.push(allSessions + ' sessions');
-    else subParts.push(sessionName);
+    else subParts.push((workouts.length > 0 ? workouts[workouts.length-1] : recovery[recovery.length-1]).name || 'Session');
     if (totalMin > 0) subParts.push(totalMin + ' min');
     if (totalBurn > 0) subParts.push(totalBurn + ' kcal');
     document.getElementById('statWodSub').textContent = subParts.join(' · ');
@@ -648,7 +565,6 @@ function init(){
     document.getElementById('statWodSub').textContent = 'Not logged today';
   }
 
-  // ── READINESS SCORE ──
   var todayJournal = DB.get('journal_' + todayKey);
   var recoveryScore = calcRecoveryFromJournal(todayJournal);
   var strainScore = calcStrainScore();
@@ -657,7 +573,6 @@ function init(){
 
   document.getElementById('ringScore').textContent = score;
   document.getElementById('ringFill').style.strokeDashoffset = 289 - (289 * score / 100);
-  // Color the ring to match the band
   var ringEl = document.getElementById('ringFill');
   if (score >= 80) ringEl.style.stroke = 'var(--green)';
   else if (score >= 50) ringEl.style.stroke = 'var(--accent)';
@@ -665,24 +580,12 @@ function init(){
 
   var titleEl = document.getElementById('scoreTitle');
   var subEl = document.getElementById('scoreSub');
-  if (score >= 80) {
-    titleEl.textContent = 'PUSH HARD';
-    subEl.textContent = 'Body is primed. Train heavy, go for the PB.';
-  } else if (score >= 65) {
-    titleEl.textContent = 'STEADY DAY';
-    subEl.textContent = 'Good window for a solid session at your usual intensity.';
-  } else if (score >= 40) {
-    titleEl.textContent = 'EASE IN';
-    subEl.textContent = 'Keep it moderate today. Mobility, light cardio, or shorter sets.';
-  } else if (score > 0) {
-    titleEl.textContent = 'TAKE IT EASY';
-    subEl.textContent = 'Recovery first. Walk, stretch, or rest fully.';
-  } else {
-    titleEl.textContent = "LET'S GO";
-    subEl.textContent = 'Log a journal entry or workout to start building your signal.';
-  }
+  if (score >= 80) { titleEl.textContent = 'PUSH HARD'; subEl.textContent = 'Body is primed. Train heavy, go for the PB.'; }
+  else if (score >= 65) { titleEl.textContent = 'STEADY DAY'; subEl.textContent = 'Good window for a solid session at your usual intensity.'; }
+  else if (score >= 40) { titleEl.textContent = 'EASE IN'; subEl.textContent = 'Keep it moderate today. Mobility, light cardio, or shorter sets.'; }
+  else if (score > 0) { titleEl.textContent = 'TAKE IT EASY'; subEl.textContent = 'Recovery first. Walk, stretch, or rest fully.'; }
+  else { titleEl.textContent = "LET'S GO"; subEl.textContent = 'Log a journal entry or workout to start building your signal.'; }
 
-  // Streak (counts any logged day — workout, recovery, or journal entry)
   var streak = 0;
   for (var i = 1; i <= 30; i++) {
     var k = DB.dayKey(-i);
@@ -698,7 +601,6 @@ function init(){
   if (nutrition.entries.length > 0 || workouts.length > 0 || recovery.length > 0 || hasTodayJournal) streak++;
   document.getElementById('streakNum').textContent = streak;
 
-  // Weekly strip
   var strip = document.getElementById('weekStrip');
   strip.innerHTML = '';
   for (var i = 6; i >= 0; i--) {
@@ -723,7 +625,6 @@ function init(){
   }
 }
 
-// Water
 function addWater(ml){
   var k = DB.dayKey();
   var current = DB.get('water_' + k) || 0;
@@ -732,7 +633,6 @@ function addWater(ml){
 }
 function resetWater(){ DB.set('water_' + DB.dayKey(), 0); init(); }
 
-// Steps modal — click anywhere on tile EXCEPT the history arrow
 document.getElementById('stepsCard').addEventListener('click', function(e){
   if (e.target.closest('.hist-arrow')) return;
   document.getElementById('stepsInput').value = DB.get('steps_' + DB.dayKey()) || '';
@@ -750,7 +650,6 @@ document.getElementById('stepsModal').addEventListener('click', function(e){
   if (e.target === document.getElementById('stepsModal')) document.getElementById('stepsModal').classList.remove('active');
 });
 
-// Weight modal — same pattern
 document.getElementById('weightCard').addEventListener('click', function(e){
   if (e.target.closest('.hist-arrow')) return;
   var weights = DB.get('weights') || [];
@@ -777,14 +676,12 @@ document.getElementById('weightModal').addEventListener('click', function(e){
 
 init();
 
-// ── JOURNAL QUICK TAGS ────────────────────────────────────────
 function renderQuickTags(){
   var todayKey = DB.dayKey();
   var entry = DB.get('journal_' + todayKey);
   quickTags = entry && entry.tags ? entry.tags.filter(function(id){
     return QUICK_TAGS.some(function(q){ return q.id === id; });
   }) : [];
-
   var el = document.getElementById('jqTags');
   el.innerHTML = '';
   QUICK_TAGS.forEach(function(t){
@@ -805,7 +702,6 @@ function renderQuickTags(){
 document.getElementById('jqSave').addEventListener('click', function(){
   var todayKey = DB.dayKey();
   var existing = DB.get('journal_' + todayKey) || {tags:[], note:''};
-  // Preserve any non-quick tags the user added on the full journal page
   var preserved = (existing.tags || []).filter(function(id){
     return !QUICK_TAGS.some(function(q){ return q.id === id; });
   });
@@ -815,12 +711,11 @@ document.getElementById('jqSave').addEventListener('click', function(){
   st.textContent = '✓ Saved';
   st.className = 'jq-status success';
   setTimeout(function(){ st.textContent = ''; st.className = 'jq-status'; }, 2000);
-  init(); // re-render Readiness to reflect new tags
+  init();
 });
 
 renderQuickTags();
 
-// Refresh when tab regains focus on a new day (daily rollover without reload)
 var _lastRenderDay = DB.dayKey();
 function _refreshIfNewDay(){
   var today = DB.dayKey();
@@ -854,11 +749,7 @@ window.addEventListener('focus', _refreshIfNewDay);
     if (stored) _ifSettings = stored;
     return _ifSettings;
   }
-  function saveIFSettings(s){
-    _ifSettings = s;
-    DB._ls('if_settings', s);
-    DB.set('if_settings', s);
-  }
+  function saveIFSettings(s){ _ifSettings = s; DB._ls('if_settings', s); DB.set('if_settings', s); }
   function getIFSettings(){ return _ifSettings; }
   function parseTime(str){ var p = str.split(':'); return parseInt(p[0])*60 + parseInt(p[1]); }
 
@@ -884,12 +775,7 @@ window.addEventListener('focus', _refreshIfNewDay);
     var endMins = parseTime(s.end);
     var windowLen = endMins > startMins ? endMins - startMins : (1440 - startMins + endMins);
     var fastLen = 1440 - windowLen;
-    var inWindow;
-    if (endMins > startMins) {
-      inWindow = nowMins >= startMins && nowMins < endMins;
-    } else {
-      inWindow = nowMins >= startMins || nowMins < endMins;
-    }
+    var inWindow = endMins > startMins ? (nowMins >= startMins && nowMins < endMins) : (nowMins >= startMins || nowMins < endMins);
     var minsUntilNext, progress;
     if (inWindow) {
       minsUntilNext = endMins > nowMins ? endMins - nowMins : (1440 - nowMins + endMins);
@@ -936,9 +822,7 @@ window.addEventListener('focus', _refreshIfNewDay);
     setTimeout(function(){ saveBtn.textContent = 'SAVE WINDOW'; }, 2000);
   });
   function buildDropdowns(){
-    var hours = ['ifStartH','ifEndH'];
-    var mins = ['ifStartM','ifEndM'];
-    hours.forEach(function(id){
+    ['ifStartH','ifEndH'].forEach(function(id){
       var sel = document.getElementById(id);
       for (var h = 0; h < 24; h++) {
         var opt = document.createElement('option');
@@ -948,7 +832,7 @@ window.addEventListener('focus', _refreshIfNewDay);
         sel.appendChild(opt);
       }
     });
-    mins.forEach(function(id){
+    ['ifStartM','ifEndM'].forEach(function(id){
       var sel = document.getElementById(id);
       [0,15,30,45].forEach(function(m){
         var opt = document.createElement('option');
