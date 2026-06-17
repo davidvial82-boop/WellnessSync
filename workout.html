@@ -150,6 +150,71 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .finish-btn{width:100%;background:linear-gradient(135deg,var(--purple),var(--accent));color:var(--bg);border:none;border-radius:14px;padding:16px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;transition:opacity 0.2s;margin-bottom:14px}
 .finish-btn:hover{opacity:0.88}
 .empty-workout{text-align:center;padding:30px;color:var(--muted);font-size:13px;line-height:2}
+
+/* ── VIEW TOGGLE ── */
+.view-tabs{display:flex;gap:6px;margin-bottom:16px}
+.view-tab{flex:1;padding:9px 6px;border-radius:10px;border:1px solid var(--border);background:var(--s1);color:var(--muted);font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;text-align:center}
+.view-tab.active{background:var(--pdim);border-color:var(--purple);color:var(--purple)}
+
+/* ── PROGRAMME PANEL ── */
+#programmePanel{display:none}
+.prog-header-card{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px}
+.prog-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--text);margin-bottom:4px}
+.prog-desc{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:14px}
+.prog-pips{display:flex;gap:5px;margin-bottom:8px}
+.prog-pip{width:32px;height:32px;border-radius:50%;background:var(--s2);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);font-family:'DM Mono',monospace}
+.prog-pip.done{background:var(--green);border-color:var(--green);color:var(--bg)}
+.prog-pip.active{background:var(--purple);border-color:var(--purple);color:var(--bg);box-shadow:0 0 12px rgba(179,136,255,.4)}
+.prog-pip-label{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.prog-week-tabs{display:flex;gap:6px;margin-bottom:14px}
+.prog-week-tab{flex:1;padding:9px;border-radius:10px;border:1px solid var(--border);background:var(--s1);color:var(--muted);font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;text-align:center}
+.prog-week-tab.active{background:var(--pdim);border-color:var(--purple);color:var(--purple)}
+.prog-day-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;margin-bottom:8px;overflow:hidden}
+.prog-day-card.today-day{border-color:rgba(179,136,255,.4)}
+.prog-day-summary{padding:13px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border-left:4px solid transparent;list-style:none;user-select:none}
+.prog-day-summary::-webkit-details-marker{display:none}
+.prog-day-name{font-size:13px;font-weight:700;color:var(--text)}
+.prog-day-focus{font-size:11px;color:var(--muted);margin-top:2px}
+.prog-day-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.prog-badge{font-size:9px;font-weight:800;letter-spacing:.08em;padding:3px 9px;border-radius:20px;color:var(--bg);white-space:nowrap}
+.prog-dur{font-size:10px;color:var(--muted)}
+.prog-chevron{color:var(--muted);font-size:10px;transition:transform .2s}
+details[open] .prog-chevron{transform:rotate(180deg)}
+.prog-day-body{padding:0 12px 12px;overflow-x:auto}
+.prog-ex-table{width:100%;border-collapse:collapse;font-size:11px;color:var(--text);margin-top:6px}
+.prog-ex-table th{text-align:left;padding:5px 7px;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);font-weight:600}
+.prog-ex-table td{padding:7px 7px;border-bottom:1px solid var(--border2);vertical-align:top}
+.prog-ex-table tbody tr:last-child td{border-bottom:none}
+.prog-ex-header-row td{color:var(--muted);font-style:italic;font-size:10px;padding:4px 7px;background:var(--s2)}
+.prog-ex-note{color:var(--muted);font-style:italic}
+.prog-log-btn{margin-top:10px;width:100%;padding:11px;background:var(--purple);color:var(--bg);border:none;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;transition:background .2s}
+.prog-log-btn:disabled{background:var(--green);cursor:default}
+.prog-today-card{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;border-left:4px solid var(--purple)}
+
+/* ── HISTORY PANEL ── */
+#historyPanel{display:none}
+.hist-week-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.hist-week-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.hist-week-label{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--text)}
+.hist-week-sub{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.hist-days-row{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
+.hist-day-chip{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 8px;border-radius:9px;background:var(--s2);border:1px solid var(--border);min-width:38px}
+.hist-day-chip.done{background:var(--gdim);border-color:var(--green)}
+.hist-day-chip.rest{background:var(--ydim);border-color:var(--yellow)}
+.hist-chip-day{font-size:8px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-family:'DM Mono',monospace}
+.hist-chip-badge{font-size:9px;font-weight:800;padding:2px 5px;border-radius:6px;color:var(--bg)}
+.hist-chip-tick{font-size:14px}
+.hist-metrics-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--purple);margin-bottom:8px}
+.hist-metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.hist-metric-field{background:var(--s2);border:1px solid var(--border2);border-radius:9px;padding:9px 10px}
+.hist-metric-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.hist-metric-input{background:none;border:none;color:var(--text);font-family:'DM Mono',monospace;font-size:15px;font-weight:500;width:100%;outline:none}
+.hist-metric-input:focus{color:var(--purple)}
+.hist-metric-unit{font-size:9px;color:var(--muted)}
+.hist-save-btn{margin-top:8px;width:100%;padding:9px;background:var(--s2);border:1px solid var(--border2);border-radius:9px;color:var(--purple);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.hist-save-btn:hover{background:var(--pdim);border-color:var(--purple)}
+.hist-save-btn.saved{color:var(--green);border-color:var(--green)}
+.hist-empty{text-align:center;padding:30px;color:var(--muted);font-size:13px;line-height:2}
 </style>
 </head>
 <body>
@@ -188,6 +253,12 @@ HISTORY
 <button id="nextDay">▸</button>
 </div>
 </div>
+</div>
+
+<div class="view-tabs">
+  <button class="view-tab active" id="tabWorkout" onclick="showView('workout')">🏋️ WORKOUT</button>
+  <button class="view-tab" id="tabProgramme" onclick="showView('programme')">📋 PROGRAMME</button>
+  <button class="view-tab" id="tabProgHistory" onclick="showView('proghistory')">📈 HISTORY</button>
 </div>
 
 <div class="session-banner" id="sessionBanner">
@@ -230,6 +301,16 @@ HISTORY
 </div>
 
 <button class="finish-btn" id="finishBtn" style="display:none">FINISH WORKOUT ✓</button>
+</div>
+
+<!-- ── PROGRAMME PANEL ── -->
+<div id="programmePanel" class="wrap" style="max-width:600px;margin:0 auto;padding:0 16px 20px;display:none">
+  <div id="progContent"></div>
+</div>
+
+<!-- ── PROGRAMME HISTORY PANEL ── -->
+<div id="historyPanel" class="wrap" style="max-width:600px;margin:0 auto;padding:0 16px 20px;display:none">
+  <div id="histContent"></div>
 </div>
 
 <nav class="nav">
@@ -845,6 +926,347 @@ updateSessionUI();
 
 // Resume rest timer if it was running when we left
 resumeRestTimer();
+
+// ═══════════════════════════════════════════════════════════
+// VIEW SWITCHER
+// ═══════════════════════════════════════════════════════════
+function showView(view) {
+  // Panels
+  document.getElementById('mainWrap').style.display = view==='workout' ? 'block' : 'none';
+  document.getElementById('programmePanel').style.display = view==='programme' ? 'block' : 'none';
+  document.getElementById('historyPanel').style.display = view==='proghistory' ? 'block' : 'none';
+  // Tabs
+  document.getElementById('tabWorkout').className = 'view-tab' + (view==='workout' ? ' active' : '');
+  document.getElementById('tabProgramme').className = 'view-tab' + (view==='programme' ? ' active' : '');
+  document.getElementById('tabProgHistory').className = 'view-tab' + (view==='proghistory' ? ' active' : '');
+  // Render on demand
+  if (view==='programme') renderProgramme();
+  if (view==='proghistory') renderProgHistory();
+}
+
+// ═══════════════════════════════════════════════════════════
+// 8-WEEK PROGRAMME DATA
+// ═══════════════════════════════════════════════════════════
+const PROG_START = new Date('2026-06-19'); // Programme kick-off date — change if needed
+const PROG_WEEKS = [
+  // ── WEEK A (odd weeks: 1,3,5,7) ─────────────────────────
+  { label:'Week A', subtitle:'4-Day Strength · 2-Day Cardio · 1-Day HIIT',
+    days:[
+      { day:'Monday', type:'strength', badge:'POWER', color:'#ef4444', icon:'💥', duration:'60 min', focus:'Explosive compound — speed & power',
+        exercises:[
+          {name:'Power Clean (or Hang Clean)',sets:'5',reps:'3–5',rest:'2–3 min',notes:'Quality > load. Sub box jumps if no bar.'},
+          {name:'Box Jump',sets:'4',reps:'5',rest:'90 s',notes:'Land soft, step down'},
+          {name:'Push Press',sets:'4',reps:'5–6',rest:'2 min',notes:'Leg drive into overhead press'},
+          {name:'Trap Bar Deadlift (speed reps)',sets:'4',reps:'4–6',rest:'2 min',notes:'60–70% 1RM — fast concentric'},
+          {name:'Medicine Ball Slam',sets:'3',reps:'10',rest:'60 s',notes:''},
+          {name:'Battle Ropes',sets:'3',reps:'20 s',rest:'40 s',notes:'Max intensity bursts'},
+        ]},
+      { day:'Tuesday', type:'strength', badge:'PUSH', color:'#4f9cf9', icon:'🏋️', duration:'60–75 min', focus:'Chest · Shoulders · Triceps',
+        exercises:[
+          {name:'Barbell Bench Press',sets:'4',reps:'6–8',rest:'2 min',notes:'Primary — control the descent'},
+          {name:'Incline Dumbbell Press',sets:'3',reps:'10–12',rest:'90 s',notes:''},
+          {name:'Cable Chest Fly',sets:'3',reps:'12–15',rest:'60 s',notes:'Full stretch at bottom'},
+          {name:'Seated Overhead Press (DB)',sets:'4',reps:'8–10',rest:'90 s',notes:'Drive through shoulders'},
+          {name:'Lateral Raise',sets:'3',reps:'15–20',rest:'60 s',notes:'Control — no swinging'},
+          {name:'Tricep Rope Pushdown',sets:'3',reps:'12–15',rest:'60 s',notes:''},
+          {name:'Overhead Tricep Extension (cable)',sets:'3',reps:'12–15',rest:'60 s',notes:''},
+        ]},
+      { day:'Wednesday', type:'cardio', badge:'CARDIO', color:'#10b981', icon:'🚶', duration:'30 min', focus:'Zone 2 — slow & steady',
+        exercises:[
+          {name:'Treadmill walk (incline 8–12%)',sets:'1',reps:'30 min',rest:'—',notes:'HR 120–140 bpm. Beach walk counts.'},
+          {name:'Or: Stationary bike (easy resistance)',sets:'1',reps:'30 min',rest:'—',notes:'Keep HR conversational'},
+        ]},
+      { day:'Thursday', type:'strength', badge:'PULL', color:'#a78bfa', icon:'🏋️', duration:'60–75 min', focus:'Back · Biceps · Rear Delts',
+        exercises:[
+          {name:'Deadlift',sets:'4',reps:'5–6',rest:'2–3 min',notes:'Brace hard. Primary mover.'},
+          {name:'Weighted Pull-up / Lat Pulldown',sets:'4',reps:'6–10',rest:'90 s',notes:'Full range — dead hang to chin'},
+          {name:'Seated Cable Row',sets:'3',reps:'10–12',rest:'90 s',notes:'Chest proud, elbows back'},
+          {name:'Single-Arm DB Row',sets:'3',reps:'10–12 ea',rest:'60 s',notes:''},
+          {name:'Face Pull (cable)',sets:'3',reps:'15–20',rest:'60 s',notes:"Rear delt health — don't skip"},
+          {name:'Hammer Curl',sets:'3',reps:'12–15',rest:'60 s',notes:''},
+          {name:'Incline DB Curl',sets:'3',reps:'10–12',rest:'60 s',notes:'Full stretch at bottom'},
+        ]},
+      { day:'Friday', type:'hiit', badge:'HIIT', color:'#f97316', icon:'⚡', duration:'30 min', focus:'Hyrox-style — heart rate spike',
+        exercises:[
+          {name:'Warm-up jog / row',sets:'1',reps:'5 min',rest:'—',notes:'Build to 75% effort'},
+          {name:'AMRAP × 20 min:',sets:'',reps:'',rest:'',notes:''},
+          {name:'  Ski Erg',sets:'1',reps:'200 m',rest:'—',notes:'Max effort'},
+          {name:'  Burpee Broad Jump',sets:'1',reps:'10 reps',rest:'—',notes:''},
+          {name:'  Wall Ball (9 kg)',sets:'1',reps:'15 reps',rest:'—',notes:''},
+          {name:'  Sled Push (heavy)',sets:'1',reps:'20 m',rest:'—',notes:'Can sub KB swings × 20'},
+          {name:'Cool-down walk',sets:'1',reps:'5 min',rest:'—',notes:''},
+        ]},
+      { day:'Saturday', type:'strength', badge:'LEGS', color:'#f59e0b', icon:'🏋️', duration:'60–75 min', focus:'Quads · Hamstrings · Glutes · Calves',
+        exercises:[
+          {name:'Back Squat',sets:'4',reps:'6–8',rest:'2–3 min',notes:'Primary — depth below parallel'},
+          {name:'Romanian Deadlift',sets:'4',reps:'8–10',rest:'90 s',notes:'Hamstring pull — hinge not squat'},
+          {name:'Leg Press',sets:'3',reps:'12–15',rest:'90 s',notes:'Quad focus — high foot placement'},
+          {name:'Walking Lunge (DB)',sets:'3',reps:'12 ea',rest:'60 s',notes:''},
+          {name:'Leg Curl (machine)',sets:'3',reps:'12–15',rest:'60 s',notes:''},
+          {name:'Standing Calf Raise',sets:'4',reps:'15–20',rest:'60 s',notes:'Pause at top'},
+          {name:'Plank / Ab circuit',sets:'3',reps:'45 s',rest:'30 s',notes:''},
+        ]},
+      { day:'Sunday', type:'cardio', badge:'CARDIO', color:'#10b981', icon:'🚶', duration:'30 min', focus:'Active recovery — Zone 2',
+        exercises:[
+          {name:'Beach walk or ocean swim',sets:'1',reps:'30 min',rest:'—',notes:'Gold Coast special. Counts as steps.'},
+          {name:'Or: Light cycle / elliptical',sets:'1',reps:'30 min',rest:'—',notes:'HR stays below 140'},
+        ]},
+    ]
+  },
+  // ── WEEK B (even weeks: 2,4,6,8) ────────────────────────
+  { label:'Week B', subtitle:'3-Day Strength · 2-Day Cardio · 2-Day HIIT',
+    days:[
+      { day:'Monday', type:'strength', badge:'PUSH', color:'#4f9cf9', icon:'🏋️', duration:'60–75 min', focus:'Chest · Shoulders · Triceps',
+        exercises:[
+          {name:'Flat DB Press',sets:'4',reps:'8–10',rest:'90 s',notes:'Slightly different angle vs Week A'},
+          {name:'Incline Barbell Press',sets:'4',reps:'6–8',rest:'2 min',notes:''},
+          {name:'Pec Deck / Machine Fly',sets:'3',reps:'12–15',rest:'60 s',notes:''},
+          {name:'Arnold Press',sets:'4',reps:'8–10',rest:'90 s',notes:'Rotation at top'},
+          {name:'Cable Lateral Raise',sets:'3',reps:'15',rest:'60 s',notes:''},
+          {name:'Close-Grip Bench Press',sets:'3',reps:'8–10',rest:'90 s',notes:'Elbows tucked'},
+          {name:'Dips (weighted if able)',sets:'3',reps:'Max / 10+',rest:'90 s',notes:''},
+        ]},
+      { day:'Tuesday', type:'hiit', badge:'HIIT', color:'#f97316', icon:'⚡', duration:'30 min', focus:'Hyrox-style session 1',
+        exercises:[
+          {name:'Warm-up jog / row',sets:'1',reps:'4 min',rest:'—',notes:''},
+          {name:'4 rounds × EMOM 4 min:',sets:'',reps:'',rest:'',notes:''},
+          {name:'  Rowing (Concept2)',sets:'1',reps:'250 m',rest:'—',notes:'Hard effort'},
+          {name:'  KB Farmer Carry',sets:'1',reps:'30 m',rest:'—',notes:'Heavy pair'},
+          {name:'  Box Step-Up',sets:'1',reps:'10 ea',rest:'—',notes:''},
+          {name:'  Rest remainder of minute',sets:'',reps:'',rest:'',notes:''},
+          {name:'Cool-down',sets:'1',reps:'4 min',rest:'—',notes:'Walk / stretch'},
+        ]},
+      { day:'Wednesday', type:'cardio', badge:'CARDIO', color:'#10b981', icon:'🚶', duration:'30 min', focus:'Zone 2 — slow & steady',
+        exercises:[
+          {name:'Incline treadmill walk',sets:'1',reps:'30 min',rest:'—',notes:'HR 120–140 bpm'},
+          {name:'Or: Outdoor walk (flat)',sets:'1',reps:'30 min',rest:'—',notes:'Counts toward 11k steps goal'},
+        ]},
+      { day:'Thursday', type:'strength', badge:'PULL', color:'#a78bfa', icon:'🏋️', duration:'60–75 min', focus:'Back · Biceps · Rear Delts',
+        exercises:[
+          {name:'Pull-up (weighted or BW)',sets:'5',reps:'5–8',rest:'2 min',notes:'Best bang for back width'},
+          {name:'Barbell Row (Pendlay or bent-over)',sets:'4',reps:'6–8',rest:'2 min',notes:'Row to hips not chest'},
+          {name:'Chest-Supported DB Row',sets:'3',reps:'12',rest:'90 s',notes:'Removes lower-back fatigue'},
+          {name:'Cable Pullover',sets:'3',reps:'15',rest:'60 s',notes:'Lat isolation'},
+          {name:'Rear Delt Fly (machine or cable)',sets:'3',reps:'15–20',rest:'60 s',notes:''},
+          {name:'EZ Bar Curl',sets:'3',reps:'10–12',rest:'60 s',notes:''},
+          {name:'Cable Curl (slow negative)',sets:'3',reps:'12',rest:'60 s',notes:'3 s down'},
+        ]},
+      { day:'Friday', type:'hiit', badge:'HIIT', color:'#f97316', icon:'⚡', duration:'30 min', focus:'Hyrox-style session 2',
+        exercises:[
+          {name:'Warm-up',sets:'1',reps:'5 min',rest:'—',notes:''},
+          {name:'Tabata × 16 min (8 rounds × 20 s on / 10 s off):',sets:'',reps:'',rest:'',notes:''},
+          {name:'  Ski Erg sprints',sets:'1',reps:'20 s max',rest:'10 s',notes:''},
+          {name:'  Air Squat Jumps',sets:'1',reps:'20 s max',rest:'10 s',notes:''},
+          {name:'Repeat pairing × 4 full rounds',sets:'',reps:'',rest:'',notes:''},
+          {name:'Finisher — Sled Push + Pull',sets:'3',reps:'20 m ea',rest:'90 s',notes:'Can sub prowler drag with band'},
+          {name:'Cool-down',sets:'1',reps:'5 min',rest:'—',notes:''},
+        ]},
+      { day:'Saturday', type:'strength', badge:'LOWER', color:'#f59e0b', icon:'🏋️', duration:'60–75 min', focus:'Legs — Volume Day',
+        exercises:[
+          {name:'Front Squat / Goblet Squat',sets:'4',reps:'8–10',rest:'2 min',notes:'Quad dominant — torso upright'},
+          {name:'Bulgarian Split Squat (DB)',sets:'3',reps:'10 ea',rest:'90 s',notes:'Brutal but effective. Go slow.'},
+          {name:'Leg Extension (machine)',sets:'3',reps:'15',rest:'60 s',notes:'Squeeze at top'},
+          {name:'Swiss Ball Leg Curl',sets:'3',reps:'12–15',rest:'60 s',notes:''},
+          {name:'Hip Thrust (barbell or machine)',sets:'4',reps:'10–12',rest:'90 s',notes:'Glute peak contraction'},
+          {name:'Seated Calf Raise',sets:'4',reps:'15–20',rest:'60 s',notes:'Soleus focus — different from standing'},
+          {name:'Core finisher — cable rotations / pallof press',sets:'3',reps:'12 ea',rest:'45 s',notes:''},
+        ]},
+      { day:'Sunday', type:'cardio', badge:'CARDIO', color:'#10b981', icon:'🚶', duration:'30 min', focus:'Active recovery — Zone 2',
+        exercises:[
+          {name:'Surfing / ocean swim',sets:'1',reps:'30+ min',rest:'—',notes:'Best recovery on the GC.'},
+          {name:'Or: Easy bike / walk',sets:'1',reps:'30 min',rest:'—',notes:'Keep it genuinely easy'},
+        ]},
+    ]
+  }
+];
+
+const PROG_METRICS_DEF = [
+  {key:'weight',  label:'Body Weight', unit:'kg',  placeholder:'122'},
+  {key:'bench',   label:'Bench Press', unit:'kg',  placeholder:'—'},
+  {key:'squat',   label:'Back Squat',  unit:'kg',  placeholder:'—'},
+  {key:'deadlift',label:'Deadlift',    unit:'kg',  placeholder:'—'},
+  {key:'pullup',  label:'Pull-Up Max', unit:'reps', placeholder:'—'},
+  {key:'hyrox',   label:'Hyrox Score', unit:'time', placeholder:'—'},
+];
+
+function progCurrentWeek() {
+  const ms = Date.now() - PROG_START.getTime();
+  if (ms < 0) return 0; // Not started yet
+  const weekNum = Math.min(8, Math.floor(ms / (7*24*60*60*1000)) + 1);
+  return weekNum;
+}
+
+function progWeekTemplate(weekNum) {
+  // Week A = odd (1,3,5,7), Week B = even (2,4,6,8)
+  return PROG_WEEKS[(weekNum % 2 === 1) ? 0 : 1];
+}
+
+function progExTable(exercises) {
+  if (!exercises || !exercises.length) return '';
+  const hasNotes = exercises.some(e => e.notes);
+  return `<table class="prog-ex-table">
+    <thead><tr>
+      <th>Exercise</th><th>Sets</th><th>Reps / Time</th><th>Rest</th>
+      ${hasNotes ? '<th>Notes</th>' : ''}
+    </tr></thead>
+    <tbody>
+    ${exercises.map(ex => !ex.sets ? '' : ex.sets === '' ?
+      `<tr class="prog-ex-header-row"><td colspan="${hasNotes?5:4}">${ex.name}</td></tr>` :
+      `<tr>
+        <td>${ex.name}</td>
+        <td>${ex.sets}</td>
+        <td>${ex.reps}</td>
+        <td>${ex.rest}</td>
+        ${hasNotes ? `<td class="prog-ex-note">${ex.notes}</td>` : ''}
+      </tr>`
+    ).join('')}
+    </tbody>
+  </table>`;
+}
+
+function progLogSession(weekNum, dayName, badge) {
+  const key = 'prog_log_w' + weekNum;
+  const log = DB.get(key) || {};
+  log[dayName] = { badge, ts: new Date().toISOString() };
+  DB.set(key, log);
+  renderProgramme();
+}
+
+let progActiveWeek = 0; // 0 = Week A, 1 = Week B
+
+function renderProgramme() {
+  const currentWeekNum = progCurrentWeek();
+  const todayName = new Date().toLocaleDateString('en-AU', {weekday:'long'});
+  const displayWeekIdx = progActiveWeek;
+  const week = PROG_WEEKS[displayWeekIdx];
+  // Which calendar week does this display correspond to?
+  // For log checking: if showing Week A, check odd weeks; we use current
+  const logWeekNum = currentWeekNum > 0 ? currentWeekNum : 1;
+  const log = DB.get('prog_log_w' + logWeekNum) || {};
+
+  // Progress pips
+  const pips = [1,2,3,4,5,6,7,8].map(w => {
+    const done = w < currentWeekNum;
+    const active = w === currentWeekNum;
+    return `<div class="prog-pip ${done?'done':active?'active':''}">${w}</div>`;
+  }).join('');
+
+  let html = `
+    <div class="prog-header-card">
+      <div class="prog-title">8-WEEK STRENGTH BLOCK</div>
+      <div class="prog-desc">14-day alternating split. Week A = 4-day strength. Week B = 3-day strength + 2 HIIT. Starts 19 June 2026.</div>
+      <div class="prog-pips">${pips}</div>
+      <div class="prog-pip-label">${currentWeekNum < 1 ? 'Starts 19 Jun 2026' : currentWeekNum > 8 ? '✅ Programme Complete!' : 'Week ' + currentWeekNum + ' of 8 — ' + (currentWeekNum%2===1?'Week A':'Week B')}</div>
+    </div>
+
+    <div class="prog-week-tabs">
+      <button class="prog-week-tab ${displayWeekIdx===0?'active':''}" onclick="progActiveWeek=0;renderProgramme()">Week A — Odd weeks</button>
+      <button class="prog-week-tab ${displayWeekIdx===1?'active':''}" onclick="progActiveWeek=1;renderProgramme()">Week B — Even weeks</button>
+    </div>
+
+    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--purple);margin-bottom:10px">${week.subtitle}</div>`;
+
+  week.days.forEach(session => {
+    const isToday = (session.day === todayName) && (displayWeekIdx === (currentWeekNum%2===1?0:1));
+    const isLogged = !!log[session.day];
+    html += `
+      <details class="prog-day-card ${isToday?'today-day':''}" ${isToday?'open':''}>
+        <summary class="prog-day-summary" style="border-left-color:${session.color}">
+          <div>
+            <div class="prog-day-name">${isLogged?'✅ ':isToday?'📍 ':''}${session.day}</div>
+            <div class="prog-day-focus">${session.focus}</div>
+          </div>
+          <div class="prog-day-right">
+            <span class="prog-badge" style="background:${session.color}">${session.badge}</span>
+            <span class="prog-dur">${session.duration}</span>
+            <span class="prog-chevron">▾</span>
+          </div>
+        </summary>
+        <div class="prog-day-body">
+          ${progExTable(session.exercises)}
+          ${isToday && !isLogged ? `<button class="prog-log-btn" onclick="progLogSession(${logWeekNum},'${session.day}','${session.badge}')">✅ LOG THIS SESSION</button>` : ''}
+          ${isLogged ? `<div style="font-size:11px;color:var(--green);margin-top:8px;font-family:'DM Mono',monospace">✅ Logged ${new Date(log[session.day].ts).toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'})}</div>` : ''}
+        </div>
+      </details>`;
+  });
+
+  document.getElementById('progContent').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════
+// PROGRAMME HISTORY + METRICS
+// ═══════════════════════════════════════════════════════════
+function saveProgMetrics(weekNum) {
+  const data = {};
+  PROG_METRICS_DEF.forEach(m => {
+    const el = document.getElementById('pm_' + weekNum + '_' + m.key);
+    if (el) data[m.key] = el.value;
+  });
+  DB.set('prog_metrics_w' + weekNum, data);
+  const btn = document.getElementById('pm_save_' + weekNum);
+  if (btn) { btn.textContent = '✅ SAVED'; btn.className = 'hist-save-btn saved'; }
+}
+
+function renderProgHistory() {
+  const currentWeekNum = Math.max(1, progCurrentWeek());
+  const totalWeeks = Math.min(currentWeekNum, 8);
+  let html = '';
+
+  if (currentWeekNum < 1) {
+    html = '<div class="hist-empty">Programme starts 19 June 2026.<br>Come back then to track your progress.</div>';
+    document.getElementById('histContent').innerHTML = html;
+    return;
+  }
+
+  for (let w = 1; w <= totalWeeks; w++) {
+    const weekTemplate = progWeekTemplate(w);
+    const log = DB.get('prog_log_w' + w) || {};
+    const metrics = DB.get('prog_metrics_w' + w) || {};
+    const isCurrentWeek = w === currentWeekNum;
+
+    // Day chips
+    const chips = weekTemplate.days.map(session => {
+      const done = !!log[session.day];
+      const isRest = session.type === 'cardio';
+      return `<div class="hist-day-chip ${done?'done':isRest?'rest':''}">
+        <span class="hist-chip-day">${session.day.slice(0,2)}</span>
+        <span class="hist-chip-badge" style="background:${session.color}">${session.badge.slice(0,3)}</span>
+        <span class="hist-chip-tick">${done?'✅':'○'}</span>
+      </div>`;
+    }).join('');
+
+    // Sessions count
+    const sessCount = Object.keys(log).length;
+
+    // Metrics inputs
+    const metricsHtml = `
+      <div class="hist-metrics-title">Week ${w} Metrics ${isCurrentWeek?'(current)':''}</div>
+      <div class="hist-metrics-grid">
+        ${PROG_METRICS_DEF.map(m => `
+          <div class="hist-metric-field">
+            <div class="hist-metric-label">${m.label} <span class="hist-metric-unit">(${m.unit})</span></div>
+            <input class="hist-metric-input" id="pm_${w}_${m.key}" type="text" placeholder="${m.placeholder}" value="${metrics[m.key]||''}">
+          </div>`).join('')}
+      </div>
+      <button class="hist-save-btn" id="pm_save_${w}" onclick="saveProgMetrics(${w})">SAVE METRICS</button>`;
+
+    html += `
+      <div class="hist-week-card">
+        <div class="hist-week-header">
+          <div>
+            <div class="hist-week-label">WEEK ${w}</div>
+            <div class="hist-week-sub">${weekTemplate.label} · ${sessCount}/7 sessions logged</div>
+          </div>
+          ${isCurrentWeek ? '<span style="font-size:10px;color:var(--purple);font-family:\'DM Mono\',monospace;letter-spacing:1px">▶ CURRENT</span>' : ''}
+        </div>
+        <div class="hist-days-row">${chips}</div>
+        ${metricsHtml}
+      </div>`;
+  }
+
+  document.getElementById('histContent').innerHTML = html;
+}
+
 </script>
 </body>
 </html>
