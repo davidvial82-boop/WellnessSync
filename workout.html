@@ -190,6 +190,23 @@ details[open] .prog-chevron{transform:rotate(180deg)}
 .prog-log-btn{margin-top:10px;width:100%;padding:11px;background:var(--purple);color:var(--bg);border:none;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;transition:background .2s}
 .prog-log-btn:disabled{background:var(--green);cursor:default}
 .prog-today-card{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;border-left:4px solid var(--purple)}
+/* ── SESSION LOGGING INPUTS ── */
+.prog-log-section{margin-top:14px;border-top:1px solid var(--border);padding-top:14px}
+.prog-log-section-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--purple);margin-bottom:10px}
+.prog-ex-log-row{display:grid;grid-template-columns:1fr 80px 80px;gap:6px;align-items:center;margin-bottom:6px}
+.prog-ex-log-name{font-size:11px;color:var(--muted);line-height:1.3}
+.prog-ex-log-input{background:var(--s3);border:1px solid var(--border2);border-radius:7px;padding:7px 8px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;text-align:center;outline:none;width:100%;transition:border-color .2s}
+.prog-ex-log-input:focus{border-color:var(--purple)}
+.prog-ex-log-header{font-size:9px;color:var(--muted);text-align:center;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.prog-score-field{background:var(--s3);border:1px solid var(--border2);border-radius:9px;padding:10px 12px;margin-bottom:8px}
+.prog-score-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+.prog-score-input{background:none;border:none;color:var(--text);font-family:'DM Mono',monospace;font-size:18px;font-weight:500;width:100%;outline:none}
+.prog-score-input:focus{color:var(--purple)}
+.prog-score-hint{font-size:10px;color:var(--muted);margin-top:4px}
+.prog-cardio-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.prog-notes-input{width:100%;background:var(--s3);border:1px solid var(--border2);border-radius:9px;padding:9px 11px;color:var(--text);font-family:'Syne',sans-serif;font-size:12px;outline:none;resize:none;margin-bottom:8px}
+.prog-notes-input:focus{border-color:var(--purple)}
+.prog-notes-input::placeholder{color:var(--muted)}
 
 /* ── HISTORY PANEL ── */
 #historyPanel{display:none}
@@ -947,7 +964,7 @@ function showView(view) {
 // ═══════════════════════════════════════════════════════════
 // 8-WEEK PROGRAMME DATA
 // ═══════════════════════════════════════════════════════════
-const PROG_START = new Date('2026-06-19'); // Programme kick-off date — change if needed
+const PROG_START = new Date('2026-06-22'); // Programme kick-off date — change if needed
 const PROG_WEEKS = [
   // ── WEEK A (odd weeks: 1,3,5,7) ─────────────────────────
   { label:'Week A', subtitle:'4-Day Strength · 2-Day Cardio · 1-Day HIIT',
@@ -1124,12 +1141,107 @@ function progExTable(exercises) {
   </table>`;
 }
 
-function progLogSession(weekNum, dayName, badge) {
+function progLogSession(weekNum, dayName, badge, type) {
+  // Collect whatever input fields are visible
   const key = 'prog_log_w' + weekNum;
   const log = DB.get(key) || {};
-  log[dayName] = { badge, ts: new Date().toISOString() };
+  const entry = { badge, type, ts: new Date().toISOString() };
+
+  if (type === 'strength') {
+    // Collect per-exercise weight + reps
+    const exData = [];
+    document.querySelectorAll('.prog-ex-log-row[data-exidx]').forEach(row => {
+      const idx = row.dataset.exidx;
+      const wt = document.getElementById('prog_wt_'+idx);
+      const rp = document.getElementById('prog_rp_'+idx);
+      const nm = document.getElementById('prog_nm_'+idx);
+      if (nm) exData.push({ name: nm.value, weight: wt?wt.value:'', reps: rp?rp.value:'' });
+    });
+    entry.exercises = exData;
+  } else if (type === 'hiit' || type === 'hyrox') {
+    entry.score = (document.getElementById('prog_score_' + weekNum + '_' + dayName) || {}).value || '';
+    entry.notes = (document.getElementById('prog_notes_' + weekNum + '_' + dayName) || {}).value || '';
+  } else if (type === 'cardio') {
+    entry.activity = (document.getElementById('prog_cardio_act_' + weekNum + '_' + dayName) || {}).value || '';
+    entry.duration = (document.getElementById('prog_cardio_dur_' + weekNum + '_' + dayName) || {}).value || '';
+    entry.notes = (document.getElementById('prog_notes_' + weekNum + '_' + dayName) || {}).value || '';
+  }
+
+  log[dayName] = entry;
   DB.set(key, log);
   renderProgramme();
+}
+
+function progSessionLogForm(session, weekNum, logEntry) {
+  // Returns the logging UI HTML appropriate to session type
+  const dn = session.day;
+  const wn = weekNum;
+  const sid = wn + '_' + dn;
+
+  if (logEntry) {
+    // Already logged — show summary
+    let summary = `<div style="margin-top:12px;padding:10px 12px;background:var(--gdim);border:1px solid var(--green);border-radius:10px">
+      <div style="font-size:10px;color:var(--green);font-family:'DM Mono',monospace;letter-spacing:1px">✅ LOGGED ${new Date(logEntry.ts).toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'})}</div>`;
+    if (logEntry.exercises && logEntry.exercises.length) {
+      summary += `<div style="margin-top:8px;font-size:11px;color:var(--muted)">`;
+      logEntry.exercises.filter(e=>e.weight||e.reps).forEach(e => {
+        summary += `<div style="padding:2px 0">${e.name}: <span style="color:var(--text);font-family:'DM Mono',monospace">${e.weight?e.weight+'kg':'—'} × ${e.reps||'—'}</span></div>`;
+      });
+      summary += `</div>`;
+    }
+    if (logEntry.score) summary += `<div style="margin-top:6px;font-size:13px;color:var(--text);font-family:'DM Mono',monospace">Score: ${logEntry.score}</div>`;
+    if (logEntry.activity) summary += `<div style="margin-top:6px;font-size:13px;color:var(--text);font-family:'DM Mono',monospace">${logEntry.activity} · ${logEntry.duration||'—'} min</div>`;
+    if (logEntry.notes) summary += `<div style="margin-top:4px;font-size:11px;color:var(--muted)">${logEntry.notes}</div>`;
+    summary += `</div>`;
+    return summary;
+  }
+
+  // Not yet logged — show entry form
+  let form = `<div class="prog-log-section">`;
+
+  if (session.type === 'strength') {
+    form += `<div class="prog-log-section-title">Log Your Sets</div>`;
+    form += `<div style="display:grid;grid-template-columns:1fr 80px 80px;gap:6px;margin-bottom:4px">
+      <div class="prog-ex-log-header" style="text-align:left">Exercise</div>
+      <div class="prog-ex-log-header">Weight kg</div>
+      <div class="prog-ex-log-header">Reps</div>
+    </div>`;
+    session.exercises.filter(ex => ex.sets && ex.sets !== '').forEach((ex, i) => {
+      form += `<div class="prog-ex-log-row" data-exidx="${i}">
+        <div class="prog-ex-log-name" id="prog_nm_${i}" data-name="${ex.name}">${ex.name}<input type="hidden" id="prog_nm_${i}" value="${ex.name}"></div>
+        <input class="prog-ex-log-input" id="prog_wt_${i}" type="number" step="0.5" min="0" placeholder="kg">
+        <input class="prog-ex-log-input" id="prog_rp_${i}" type="number" min="0" placeholder="reps">
+      </div>`;
+    });
+    form += `<textarea class="prog-notes-input" id="prog_notes_${sid}" rows="2" placeholder="Any notes — PBs, how it felt…"></textarea>`;
+
+  } else if (session.type === 'hiit') {
+    form += `<div class="prog-log-section-title">Log Your Score</div>`;
+    form += `<div class="prog-score-field">
+      <div class="prog-score-label">Rounds / Score</div>
+      <input class="prog-score-input" id="prog_score_${sid}" type="text" placeholder="e.g. 4 rounds, 58:22, 3+12 reps">
+      <div class="prog-score-hint">AMRAP → rounds completed · Tabata → total reps · Hyrox → finish time</div>
+    </div>
+    <textarea class="prog-notes-input" id="prog_notes_${sid}" rows="2" placeholder="How'd it go? HR, effort level…"></textarea>`;
+
+  } else if (session.type === 'cardio') {
+    form += `<div class="prog-log-section-title">Log Your Cardio</div>`;
+    form += `<div class="prog-cardio-grid">
+      <div class="prog-score-field">
+        <div class="prog-score-label">Activity</div>
+        <input class="prog-score-input" id="prog_cardio_act_${sid}" type="text" placeholder="Beach walk, treadmill…" style="font-size:14px">
+      </div>
+      <div class="prog-score-field">
+        <div class="prog-score-label">Duration (min)</div>
+        <input class="prog-score-input" id="prog_cardio_dur_${sid}" type="number" min="0" placeholder="30">
+      </div>
+    </div>
+    <textarea class="prog-notes-input" id="prog_notes_${sid}" rows="2" placeholder="HR zone, felt good/bad…"></textarea>`;
+  }
+
+  form += `<button class="prog-log-btn" onclick="progLogSession(${wn},'${dn}','${session.badge}','${session.type}')">✅ LOG THIS SESSION</button>`;
+  form += `</div>`;
+  return form;
 }
 
 let progActiveWeek = 0; // 0 = Week A, 1 = Week B
@@ -1139,12 +1251,9 @@ function renderProgramme() {
   const todayName = new Date().toLocaleDateString('en-AU', {weekday:'long'});
   const displayWeekIdx = progActiveWeek;
   const week = PROG_WEEKS[displayWeekIdx];
-  // Which calendar week does this display correspond to?
-  // For log checking: if showing Week A, check odd weeks; we use current
   const logWeekNum = currentWeekNum > 0 ? currentWeekNum : 1;
   const log = DB.get('prog_log_w' + logWeekNum) || {};
 
-  // Progress pips
   const pips = [1,2,3,4,5,6,7,8].map(w => {
     const done = w < currentWeekNum;
     const active = w === currentWeekNum;
@@ -1154,9 +1263,9 @@ function renderProgramme() {
   let html = `
     <div class="prog-header-card">
       <div class="prog-title">8-WEEK STRENGTH BLOCK</div>
-      <div class="prog-desc">14-day alternating split. Week A = 4-day strength. Week B = 3-day strength + 2 HIIT. Starts 19 June 2026.</div>
+      <div class="prog-desc">14-day alternating split. Week A = 4-day strength. Week B = 3-day strength + 2 HIIT. Starts 22 June 2026.</div>
       <div class="prog-pips">${pips}</div>
-      <div class="prog-pip-label">${currentWeekNum < 1 ? 'Starts 19 Jun 2026' : currentWeekNum > 8 ? '✅ Programme Complete!' : 'Week ' + currentWeekNum + ' of 8 — ' + (currentWeekNum%2===1?'Week A':'Week B')}</div>
+      <div class="prog-pip-label">${currentWeekNum < 1 ? 'Starts 22 Jun 2026' : currentWeekNum > 8 ? '✅ Programme Complete!' : 'Week ' + currentWeekNum + ' of 8 — ' + (currentWeekNum%2===1?'Week A':'Week B')}</div>
     </div>
 
     <div class="prog-week-tabs">
@@ -1168,7 +1277,8 @@ function renderProgramme() {
 
   week.days.forEach(session => {
     const isToday = (session.day === todayName) && (displayWeekIdx === (currentWeekNum%2===1?0:1));
-    const isLogged = !!log[session.day];
+    const logEntry = log[session.day] || null;
+    const isLogged = !!logEntry;
     html += `
       <details class="prog-day-card ${isToday?'today-day':''}" ${isToday?'open':''}>
         <summary class="prog-day-summary" style="border-left-color:${session.color}">
@@ -1184,8 +1294,7 @@ function renderProgramme() {
         </summary>
         <div class="prog-day-body">
           ${progExTable(session.exercises)}
-          ${isToday && !isLogged ? `<button class="prog-log-btn" onclick="progLogSession(${logWeekNum},'${session.day}','${session.badge}')">✅ LOG THIS SESSION</button>` : ''}
-          ${isLogged ? `<div style="font-size:11px;color:var(--green);margin-top:8px;font-family:'DM Mono',monospace">✅ Logged ${new Date(log[session.day].ts).toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'})}</div>` : ''}
+          ${progSessionLogForm(session, logWeekNum, logEntry)}
         </div>
       </details>`;
   });
