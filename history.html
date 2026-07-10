@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dave - History</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#07090d;--s1:#0d1117;--s2:#131920;--s3:#1a2233;--border:#1e2a3a;--border2:#253248;--accent:#00e5ff;--adim:rgba(0,229,255,0.1);--green:#00ff88;--orange:#ff6b35;--yellow:#ffd600;--red:#ff3d71;--purple:#b388ff;--blue:#4fc3f7;--text:#e2e8f5;--muted:#4a5c78;--muted2:#2e3d54}
+:root{--bg:#141110;--s1:#1b1712;--s2:#211c16;--s3:#2b241b;--border:#322a20;--border2:#463a2b;--accent:#e8622b;--adim:rgba(232,98,43,0.12);--green:#8ec63f;--gdim:rgba(142,198,63,0.12);--orange:#e8843b;--odim:rgba(232,132,59,0.12);--yellow:#f0a92b;--ydim:rgba(240,169,43,0.12);--red:#ef4d4d;--rdim:rgba(239,77,77,0.12);--purple:#c9954a;--pdim:rgba(201,149,74,0.12);--blue:#3ea6c4;--bdim:rgba(62,166,196,0.12);--teal:#2fb59e;--tdim:rgba(47,181,158,0.12);--text:#efe7da;--muted:#8a8177;--muted2:#4a4237;--disp:'Archivo',sans-serif;--mono:'Space Mono',monospace;--sans:'Inter',sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;padding-bottom:90px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding-bottom:90px}
 .nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(7,9,13,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 max(10px,env(safe-area-inset-bottom))}
 .nav-link{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--muted);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:6px 16px;border-radius:10px;transition:color 0.2s}
 .nav-link svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -17,12 +17,12 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .page-header{padding:16px 0 20px;display:flex;align-items:center;gap:12px}
 .back-btn{background:var(--s1);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:20px;cursor:pointer;width:40px;height:40px;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:border-color 0.2s}
 .back-btn:hover{border-color:var(--accent)}
-.page-header h1{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;line-height:1}
+.page-header h1{font-family:'Archivo',sans-serif;font-weight:900;font-size:34px;letter-spacing:2px;line-height:1}
 .page-header .sub{font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:2px}
 
 /* Tab switcher */
 .tabs{display:flex;gap:6px;background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:16px}
-.tab{flex:1;background:none;border:none;color:var(--muted);font-family:'Syne',sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:10px;border-radius:8px;cursor:pointer;transition:all 0.2s}
+.tab{flex:1;background:none;border:none;color:var(--muted);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:10px;border-radius:8px;cursor:pointer;transition:all 0.2s}
 .tab.active{background:var(--s3);color:var(--accent)}
 
 /* Averages card */
@@ -30,11 +30,11 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .avg-card::before{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;background:radial-gradient(circle,rgba(0,229,255,0.05),transparent 70%);pointer-events:none}
 .avg-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
 .avg-item .al{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.avg-item .av{font-family:'Bebas Neue',sans-serif;font-size:38px;line-height:1;color:var(--accent)}
+.avg-item .av{font-family:'Archivo',sans-serif;font-weight:900;font-size:38px;line-height:1;color:var(--accent)}
 .avg-item .au{font-size:12px;color:var(--muted);margin-left:4px}
 .avg-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-top:14px;border-top:1px solid var(--border)}
 .mini{text-align:center}
-.mini .mv{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1}
+.mini .mv{font-family:'Archivo',sans-serif;font-weight:900;font-size:22px;line-height:1}
 .mini .ml{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
 
 /* Chart */
@@ -55,7 +55,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .day-date{font-size:13px;font-weight:600;color:var(--text)}
 .day-dow{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
 .day-right{display:flex;align-items:center;gap:10px}
-.day-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);line-height:1}
+.day-val{font-family:'Archivo',sans-serif;font-weight:900;font-size:22px;color:var(--accent);line-height:1}
 .day-unit{font-size:10px;color:var(--muted);letter-spacing:1px}
 .day-bar-wrap{width:60px;height:4px;background:var(--border);border-radius:99px;overflow:hidden}
 .day-bar-fill{height:100%;background:var(--accent);border-radius:99px}
@@ -129,9 +129,10 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 
 <nav class="nav">
   <a class="nav-link active" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Hub</a>
-  <a class="nav-link" href="nutrition.html"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Nutrition</a>
-  <a class="nav-link" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Workout</a>
-  <a class="nav-link" href="weight.html"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Weight</a>
+  <a class="nav-link" href="nutrition.html"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Fuel</a>
+  <a class="nav-link" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Train</a>
+  <a class="nav-link" href="recovery.html"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3c0 1.66-1.34 3-3 3s-3-1.34-3-3a3 3 0 0 1 3-3z"/><path d="M12 8v8M8 12h8M6 20c0-4 2-6 6-6s6 2 6 6"/></svg>Restore</a>
+  <a class="nav-link" href="weight.html"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Weigh</a>
 </nav>
 
 <script src="db.js"></script>
