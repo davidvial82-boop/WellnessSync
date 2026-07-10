@@ -12,12 +12,16 @@
 body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;padding-bottom:150px;-webkit-font-smoothing:antialiased}
 body::after{content:'';position:fixed;top:0;left:0;right:0;height:340px;background:radial-gradient(ellipse 75% 100% at 50% -35%,rgba(232,98,43,0.10),transparent 70%);pointer-events:none;z-index:0}
 .wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:22px 15px}
-.deck{margin-bottom:18px}
 .kicker{font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--accent);margin-bottom:14px;text-transform:uppercase}
+.tabs{display:flex;gap:5px;background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:20px}
+.tab{flex:1;background:none;border:none;color:var(--muted);font-family:var(--disp);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;padding:10px 4px;border-radius:9px;cursor:pointer;transition:all 0.15s}
+.tab.active{background:var(--accent);color:#1a0f08}
 .sess{font-family:var(--disp);font-weight:900;text-transform:uppercase;line-height:0.82;letter-spacing:-2px;margin-bottom:12px}
 .sess span{display:block;font-size:50px}
 .sess .int{color:var(--accent)}
-.sess-meta{font-size:13px;color:var(--muted)}
+.sess-meta{font-size:13px;color:var(--muted);margin-bottom:18px}
+.view-title{font-family:var(--disp);font-weight:900;font-size:30px;text-transform:uppercase;letter-spacing:-1px;margin-bottom:6px}
+.view-note{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.5}
 .philosophy{background:var(--s2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:12px;padding:14px 16px;margin-bottom:18px;font-size:12px;color:var(--muted);line-height:1.55}
 .philosophy b{color:var(--text)}
 
@@ -35,7 +39,6 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:340px;backgrou
 .set-row.done .set-done{background:var(--green);border-color:var(--green);color:var(--bg)}
 .set-row.done .set-w,.set-row.done .set-r{border-color:rgba(142,198,63,0.3);color:var(--green)}
 .rest-btn{width:100%;margin-top:8px;background:var(--adim);border:1px solid rgba(232,98,43,0.3);color:var(--accent);border-radius:10px;padding:11px;font-family:var(--disp);font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer}
-.rest-btn:active{background:rgba(232,98,43,0.22)}
 
 .cardio{background:var(--s2);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:12px;text-align:center}
 .cardio h2{font-family:var(--disp);font-weight:900;font-size:26px;text-transform:uppercase;letter-spacing:-0.5px;margin-bottom:6px}
@@ -47,10 +50,37 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:340px;backgrou
 .rest-day{text-align:center;padding:50px 20px;color:var(--muted)}
 .rest-day .big{font-family:var(--disp);font-weight:900;font-size:44px;color:var(--text);text-transform:uppercase;margin-bottom:10px}
 
-.finish-wrap{position:fixed;bottom:74px;left:0;right:0;z-index:90;padding:12px 15px;max-width:560px;margin:0 auto}
+.wk-row{display:flex;align-items:center;gap:14px;background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px}
+.wk-row.today{border-color:var(--accent);background:var(--adim)}
+.wk-day{font-family:var(--mono);font-size:12px;color:var(--muted);width:34px;flex-shrink:0}
+.wk-row.today .wk-day{color:var(--accent)}
+.wk-body{flex:1}
+.wk-name{font-family:var(--disp);font-weight:900;font-size:17px;text-transform:uppercase;letter-spacing:-0.3px}
+.wk-int{font-size:11px;color:var(--muted);margin-top:2px}
+.wk-tag{font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:4px 8px;border-radius:6px;flex-shrink:0}
+.tag-lift{background:var(--adim);color:var(--accent)} .tag-cardio{background:rgba(62,166,196,0.12);color:var(--blue)} .tag-rest{background:var(--s3);color:var(--muted)}
+
+.bm{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px}
+.bm-top{display:flex;justify-content:space-between;align-items:baseline}
+.bm-name{font-family:var(--disp);font-weight:900;font-size:18px;text-transform:uppercase;letter-spacing:-0.3px}
+.bm-cur{font-family:var(--mono);font-weight:700;font-size:22px;color:var(--accent)}
+.bm-sub{font-size:11px;color:var(--muted);margin-top:3px;font-family:var(--mono)}
+.bm-sub .up{color:var(--green)} .bm-sub .down{color:var(--red)}
+.bm-actions{display:flex;gap:8px;margin-top:12px}
+.bm-actions button{flex:1;background:var(--s3);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:9px;font-family:var(--disp);font-weight:700;font-size:12px;text-transform:uppercase;cursor:pointer}
+.bm-actions .primary{background:var(--adim);border-color:rgba(232,98,43,0.3);color:var(--accent)}
+.bm-entry{display:none;gap:8px;margin-top:10px}
+.bm-entry.show{display:flex}
+.bm-entry input{flex:1;background:var(--s3);border:1px solid var(--border2);border-radius:9px;padding:10px;color:var(--text);font-family:var(--mono);font-weight:700;font-size:16px;text-align:center;outline:none}
+.bm-entry button{background:var(--accent);color:#1a0f08;border:none;border-radius:9px;padding:10px 16px;font-family:var(--disp);font-weight:700;font-size:13px;text-transform:uppercase;cursor:pointer}
+.bm-history{display:none;margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
+.bm-history.show{display:block}
+.bm-hrow{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--muted);padding:4px 0}
+.bm-hrow .v{color:var(--text)}
+
+.finish-wrap{position:fixed;bottom:74px;left:0;right:0;z-index:90;padding:12px 15px;max-width:560px;margin:0 auto;display:none}
 .finish-btn{width:100%;background:var(--green);color:var(--bg);border:none;border-radius:12px;padding:15px;font-family:var(--disp);font-weight:900;font-size:17px;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,0.4)}
 .finish-btn.saved{background:var(--s3);color:var(--green);border:1px solid var(--green)}
-
 .rest-bar{position:fixed;bottom:74px;left:0;right:0;z-index:95;max-width:560px;margin:0 auto;padding:0 15px;display:none}
 .rest-bar.show{display:block}
 .rest-inner{background:var(--accent);color:#1a0f08;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,0.5)}
@@ -68,26 +98,41 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:340px;backgrou
 </head>
 <body>
 <div class="wrap">
-  <div class="deck">
-    <div class="kicker" id="kicker">TODAY</div>
+  <div class="kicker" id="kicker">TODAY</div>
+  <div class="tabs">
+    <button class="tab active" id="tab-today" onclick="switchView('today')">Today</button>
+    <button class="tab" id="tab-week" onclick="switchView('week')">Week</button>
+    <button class="tab" id="tab-bench" onclick="switchView('bench')">Benchmarks</button>
+  </div>
+
+  <div class="view" id="todayView">
     <h1 class="sess"><span id="sessionName">SESSION</span><span class="int" id="sessionIntensity"></span></h1>
     <div class="sess-meta" id="sessionMeta"></div>
+    <div id="sessionBody"></div>
   </div>
-  <div id="sessionBody"></div>
+
+  <div class="view" id="weekView" style="display:none">
+    <h2 class="view-title">The Week</h2>
+    <div class="view-note">Your split: 4 heavy lifts, 2 VO2, 2 Zone 2. Today is highlighted.</div>
+    <div id="weekList"></div>
+  </div>
+
+  <div class="view" id="benchView" style="display:none">
+    <h2 class="view-title">Benchmarks</h2>
+    <div class="view-note">Set a starting point, then log as you go. First entry becomes your baseline. Progress is the trend.</div>
+    <div id="benchList"></div>
+  </div>
 </div>
 
 <div class="rest-bar" id="restBar">
   <div class="rest-inner" id="restInner">
-    <div>
-      <div class="rest-label" id="restLabel">Rest</div>
-      <div class="rest-time" id="restTime">0:00</div>
-    </div>
+    <div><div class="rest-label" id="restLabel">Rest</div><div class="rest-time" id="restTime">0:00</div></div>
     <button onclick="addRest(30)">+30s</button>
     <button onclick="stopRest()">Done</button>
   </div>
 </div>
 
-<div class="finish-wrap" id="finishWrap" style="display:none">
+<div class="finish-wrap" id="finishWrap">
   <button class="finish-btn" id="finishBtn" onclick="finishSession()">Finish Session</button>
 </div>
 
@@ -111,159 +156,159 @@ var PROGRAM={
   6:{type:'zone2',name:'CONDITIONING',intensity:'SURF / Z2',mins:45},
   0:{type:'rest',name:'REST',intensity:'RECOVER'}
 };
+var WEEKORDER=[1,2,3,4,5,6,0];
+var BENCHMARKS=[
+  {k:'bench',n:'Bench Press',unit:'kg',dir:'up'},
+  {k:'squat',n:'Squat',unit:'kg',dir:'up'},
+  {k:'deadlift',n:'Deadlift',unit:'kg',dir:'up'},
+  {k:'pullups',n:'Max Pull-ups',unit:'reps',dir:'up'},
+  {k:'ohp',n:'Shoulder Press',unit:'kg',dir:'up'},
+  {k:'run1k',n:'1km Run',unit:'time',dir:'down'},
+  {k:'run5k',n:'5km Run',unit:'time',dir:'down'}
+];
 var now=new Date(), dow=now.getDay(), prog=PROGRAM[dow];
 var DKEY=DB.dayKey();
 var DRAFT_KEY='workout_draft_'+DKEY;
 var draft=DB.get(DRAFT_KEY)||{start:null,log:{}};
 
-function fmt(s){s=Math.max(0,s);var m=Math.floor(s/60),x=s%60;return m+':'+(x<10?'0':'')+x;}
+function fmt(s){s=Math.max(0,Math.round(s));var m=Math.floor(s/60),x=s%60;return m+':'+(x<10?'0':'')+x;}
 function pb(name){return DB.get('pb_'+name)||0;}
+
+function switchView(v){
+  ['today','week','bench'].forEach(function(x){
+    document.getElementById(x+'View').style.display = x===v?'block':'none';
+    document.getElementById('tab-'+x).classList.toggle('active',x===v);
+  });
+  document.getElementById('finishWrap').style.display = (v==='today'&&prog.type!=='rest')?'block':'none';
+  if(v==='week') renderWeek();
+  if(v==='bench') renderBench();
+}
 
 function initHeader(){
   document.getElementById('sessionName').textContent=prog.name;
   document.getElementById('sessionIntensity').textContent=prog.intensity;
   var start=new Date(2026,5,22), week=Math.max(1,Math.floor((now-start)/(7*864e5))+1);
-  var meta=prog.type==='lift'?('Heavy · RPE 7–9 · hold your loads — week '+week):(prog.type==='zone2'?('Conversational pace · joint-sparing — week '+week):('Full recovery — week '+week));
+  var meta=prog.type==='lift'?('Heavy \u00b7 RPE 7\u20139 \u00b7 hold your loads \u2014 week '+week):(prog.type==='zone2'?('Conversational pace \u00b7 joint-sparing \u2014 week '+week):('Full recovery \u2014 week '+week));
   document.getElementById('sessionMeta').textContent=meta;
-  document.getElementById('kicker').textContent=DABBR[dow]+' · '+DKEY;
+  document.getElementById('kicker').textContent=DABBR[dow]+' \u00b7 '+DKEY;
 }
 
-function render(){
-  initHeader();
-  var body=document.getElementById('sessionBody');
-  body.innerHTML='';
-  if(prog.type==='rest'){
-    body.innerHTML='<div class="rest-day"><div class="big">Rest</div><div>Recover hard. Walk, stretch, eat your protein, sleep. Tomorrow you push.</div></div>';
-    return;
-  }
-  body.innerHTML='<div class="philosophy">Keep lifting <b>heavy</b> — that is the signal that holds muscle in a deficit. Progress here = <b>holding your loads</b>, not chasing reps. Steady working weights in a deficit means you are winning.</div>';
-  if(prog.type==='lift'){
-    prog.ex.forEach(function(e,i){ body.appendChild(exCard(e,i)); });
-    if(prog.vo2) body.appendChild(vo2Block());
-    showFinish();
-  } else if(prog.type==='zone2'){
-    body.appendChild(zone2Block(prog.mins));
-    showFinish();
-  }
+function renderToday(){
+  var body=document.getElementById('sessionBody'); body.innerHTML='';
+  if(prog.type==='rest'){ body.innerHTML='<div class="rest-day"><div class="big">Rest</div><div>Recover hard. Walk, stretch, eat your protein, sleep. Tomorrow you push.</div></div>'; return; }
+  body.innerHTML='<div class="philosophy">Keep lifting <b>heavy</b> \u2014 that is the signal that holds muscle in a deficit. Progress here = <b>holding your loads</b>, not chasing reps.</div>';
+  if(prog.type==='lift'){ prog.ex.forEach(function(e,i){ body.appendChild(exCard(e,i)); }); if(prog.vo2) body.appendChild(vo2Block()); }
+  else if(prog.type==='zone2'){ body.appendChild(zone2Block(prog.mins)); }
 }
 
 function exCard(e,i){
   var name=e[0], sets=e[1], reps=e[2];
   var d=document.createElement('div'); d.className='ex';
-  var pbv=pb(name); var pbTxt=pbv>0?('PB '+pbv+'kg'):'';
+  var pbv=pb(name), pbTxt=pbv>0?('PB '+pbv+'kg'):'';
   var h='<div class="ex-top"><div class="ex-name">'+name+'</div><div class="ex-pb">'+pbTxt+'</div></div>';
   h+='<div class="ex-target">'+sets+' \u00d7 '+reps+' \u00b7 RPE 7\u20139</div><div class="sets">';
   var log=draft.log[i]||[];
-  for(var s=0;s<sets;s++){
-    var l=log[s]||{};
-    var doneCls=l.done?' done':'';
-    h+='<div class="set-row'+doneCls+'" data-i="'+i+'" data-s="'+s+'">'
-      +'<span class="set-n">'+(s+1)+'</span>'
-      +'<input class="set-w" inputmode="decimal" placeholder="kg" value="'+(l.w||'')+'">'
-      +'<span class="set-x">\u00d7</span>'
-      +'<input class="set-r" inputmode="numeric" placeholder="'+reps+'" value="'+(l.r||'')+'">'
-      +'<button class="set-done">\u2713</button></div>';
+  for(var s=0;s<sets;s++){ var l=log[s]||{}, dc=l.done?' done':'';
+    h+='<div class="set-row'+dc+'" data-i="'+i+'" data-s="'+s+'"><span class="set-n">'+(s+1)+'</span>'
+      +'<input class="set-w" inputmode="decimal" placeholder="kg" value="'+(l.w||'')+'"><span class="set-x">\u00d7</span>'
+      +'<input class="set-r" inputmode="numeric" placeholder="'+reps+'" value="'+(l.r||'')+'"><button class="set-done">\u2713</button></div>';
   }
   h+='</div><button class="rest-btn" onclick="startRest(120)">Start rest \u00b7 2:00</button>';
   d.innerHTML=h;
   d.querySelectorAll('.set-row').forEach(function(row){
-    var w=row.querySelector('.set-w'), r=row.querySelector('.set-r'), b=row.querySelector('.set-done');
-    w.addEventListener('input',function(){saveSet(row);});
-    r.addEventListener('input',function(){saveSet(row);});
-    b.addEventListener('click',function(){row.classList.toggle('done');saveSet(row);if(row.classList.contains('done'))startRest(120);});
+    row.querySelector('.set-w').addEventListener('input',function(){saveSet(row);});
+    row.querySelector('.set-r').addEventListener('input',function(){saveSet(row);});
+    row.querySelector('.set-done').addEventListener('click',function(){row.classList.toggle('done');saveSet(row);if(row.classList.contains('done'))startRest(120);});
   });
   return d;
 }
-
-function saveSet(row){
-  if(!draft.start) draft.start=Date.now();
-  var i=+row.dataset.i, s=+row.dataset.s;
-  draft.log[i]=draft.log[i]||[];
-  draft.log[i][s]={w:row.querySelector('.set-w').value,r:row.querySelector('.set-r').value,done:row.classList.contains('done')};
-  DB.set(DRAFT_KEY,draft);
-}
+function saveSet(row){ if(!draft.start)draft.start=Date.now(); var i=+row.dataset.i,s=+row.dataset.s; draft.log[i]=draft.log[i]||[]; draft.log[i][s]={w:row.querySelector('.set-w').value,r:row.querySelector('.set-r').value,done:row.classList.contains('done')}; DB.set(DRAFT_KEY,draft); }
 
 var VO2_SEQ=[['HARD',240],['EASY',180],['HARD',240],['EASY',180],['HARD',240],['EASY',180],['HARD',240],['EASY',180]];
-function vo2Block(){
-  var d=document.createElement('div'); d.className='cardio'; d.id='vo2Block';
-  d.innerHTML='<h2>Norwegian 4\u00d74</h2><p>After lifting. 4 min hard (~90% max HR) / 3 min easy, \u00d74. Bike, rower or ski-erg \u2014 spare the joints.</p>'
-    +'<div class="cardio-timer" id="vo2Time">28:00</div><div class="cardio-phase phase-idle" id="vo2Phase">Ready \u00b7 4 rounds</div>'
-    +'<button class="big-btn" id="vo2Btn" onclick="toggleCardio(\'vo2\')">Start intervals</button>';
-  return d;
-}
-function zone2Block(mins){
-  var d=document.createElement('div'); d.className='cardio'; d.id='z2Block';
-  d.innerHTML='<h2>Zone 2</h2><p>'+mins+' min conversational pace \u2014 nose-breathing steady state. Bike, row, incline walk, swim or surf.</p>'
-    +'<div class="cardio-timer" id="z2Time">'+mins+':00</div><div class="cardio-phase phase-idle" id="z2Phase">Ready</div>'
-    +'<button class="big-btn" id="z2Btn" onclick="toggleCardio(\'zone2\')">Start Zone 2</button>';
-  return d;
-}
-function toggleCardio(type){
-  var c=DB.get('active_cardio');
-  if(c&&c.type===type){ DB.set('active_cardio',null); }
-  else{ if(!draft.start){draft.start=Date.now();DB.set(DRAFT_KEY,draft);} DB.set('active_cardio',{type:type,start:Date.now(),mins:prog.mins||45}); requestNotify(); }
-  tickCardio();
-}
-function tickCardio(){
-  var c=DB.get('active_cardio'); if(!c) return;
-  var el=Math.floor((Date.now()-c.start)/1000);
-  if(c.type==='vo2'){
-    var t=document.getElementById('vo2Time'), p=document.getElementById('vo2Phase'), b=document.getElementById('vo2Btn');
-    if(!t) return;
-    var total=0; VO2_SEQ.forEach(function(x){total+=x[1];});
-    if(el>=total){ p.textContent='Done \u2014 well held'; p.className='cardio-phase phase-easy'; t.textContent='0:00'; b.textContent='Reset'; DB.set('active_cardio',null); return; }
-    var acc=0, round=1, phase='HARD', rem=0;
-    for(var i=0;i<VO2_SEQ.length;i++){ if(el<acc+VO2_SEQ[i][1]){ phase=VO2_SEQ[i][0]; rem=acc+VO2_SEQ[i][1]-el; round=Math.floor(i/2)+1; break;} acc+=VO2_SEQ[i][1]; }
-    t.textContent=fmt(rem); p.textContent=phase+' \u00b7 round '+round+' of 4'; p.className='cardio-phase '+(phase==='HARD'?'phase-hard':'phase-easy'); b.textContent='Stop';
-  } else {
-    var t2=document.getElementById('z2Time'), p2=document.getElementById('z2Phase'), b2=document.getElementById('z2Btn');
-    if(!t2) return;
-    var totalS=(c.mins||40)*60, rem2=totalS-el;
-    if(rem2<=0){ t2.textContent='0:00'; p2.textContent='Done'; p2.className='cardio-phase phase-easy'; b2.textContent='Reset'; DB.set('active_cardio',null); return; }
-    t2.textContent=fmt(rem2); p2.textContent='Rolling'; p2.className='cardio-phase phase-easy'; b2.textContent='Stop';
-  }
+function vo2Block(){ var d=document.createElement('div'); d.className='cardio'; d.innerHTML='<h2>Norwegian 4\u00d74</h2><p>After lifting. 4 min hard (~90% max HR) / 3 min easy, \u00d74. Bike, rower or ski-erg.</p><div class="cardio-timer" id="vo2Time">28:00</div><div class="cardio-phase phase-idle" id="vo2Phase">Ready \u00b7 4 rounds</div><button class="big-btn" id="vo2Btn" onclick="toggleCardio(\'vo2\')">Start intervals</button>'; return d; }
+function zone2Block(mins){ var d=document.createElement('div'); d.className='cardio'; d.innerHTML='<h2>Zone 2</h2><p>'+mins+' min conversational pace \u2014 nose-breathing steady state. Bike, row, incline walk, swim or surf.</p><div class="cardio-timer" id="z2Time">'+mins+':00</div><div class="cardio-phase phase-idle" id="z2Phase">Ready</div><button class="big-btn" id="z2Btn" onclick="toggleCardio(\'zone2\')">Start Zone 2</button>'; return d; }
+function toggleCardio(type){ var c=DB.get('active_cardio'); if(c&&c.type===type){DB.set('active_cardio',null);} else{ if(!draft.start){draft.start=Date.now();DB.set(DRAFT_KEY,draft);} DB.set('active_cardio',{type:type,start:Date.now(),mins:prog.mins||45}); requestNotify(); } tickCardio(); }
+function tickCardio(){ var c=DB.get('active_cardio'); if(!c)return; var el=Math.floor((Date.now()-c.start)/1000);
+  if(c.type==='vo2'){ var t=document.getElementById('vo2Time'),p=document.getElementById('vo2Phase'),b=document.getElementById('vo2Btn'); if(!t)return; var total=0;VO2_SEQ.forEach(function(x){total+=x[1];});
+    if(el>=total){p.textContent='Done \u2014 well held';p.className='cardio-phase phase-easy';t.textContent='0:00';b.textContent='Reset';DB.set('active_cardio',null);return;}
+    var acc=0,round=1,phase='HARD',rem=0; for(var i=0;i<VO2_SEQ.length;i++){ if(el<acc+VO2_SEQ[i][1]){phase=VO2_SEQ[i][0];rem=acc+VO2_SEQ[i][1]-el;round=Math.floor(i/2)+1;break;} acc+=VO2_SEQ[i][1]; }
+    t.textContent=fmt(rem);p.textContent=phase+' \u00b7 round '+round+' of 4';p.className='cardio-phase '+(phase==='HARD'?'phase-hard':'phase-easy');b.textContent='Stop';
+  } else { var t2=document.getElementById('z2Time'),p2=document.getElementById('z2Phase'),b2=document.getElementById('z2Btn'); if(!t2)return; var rem2=(c.mins||40)*60-el;
+    if(rem2<=0){t2.textContent='0:00';p2.textContent='Done';p2.className='cardio-phase phase-easy';b2.textContent='Reset';DB.set('active_cardio',null);return;}
+    t2.textContent=fmt(rem2);p2.textContent='Rolling';p2.className='cardio-phase phase-easy';b2.textContent='Stop'; }
 }
 
 function startRest(sec){ DB.set('rest_end',Date.now()+sec*1000); requestNotify(); tickRest(); }
 function addRest(sec){ var e=DB.get('rest_end')||Date.now(); DB.set('rest_end',Math.max(Date.now(),e)+sec*1000); tickRest(); }
 function stopRest(){ DB.set('rest_end',null); document.getElementById('restBar').classList.remove('show'); }
 var restRang=false;
-function tickRest(){
-  var end=DB.get('rest_end'); var bar=document.getElementById('restBar');
-  if(!end){ bar.classList.remove('show'); return; }
-  bar.classList.add('show');
-  var left=Math.round((end-Date.now())/1000);
-  var inner=document.getElementById('restInner');
-  if(left<=0){ document.getElementById('restTime').textContent='GO'; document.getElementById('restLabel').textContent='Rest over'; inner.classList.add('over'); if(!restRang){restRang=true;buzz();} }
-  else { document.getElementById('restTime').textContent=fmt(left); document.getElementById('restLabel').textContent='Rest'; inner.classList.remove('over'); restRang=false; }
+function tickRest(){ var end=DB.get('rest_end'),bar=document.getElementById('restBar'); if(!end){bar.classList.remove('show');return;} bar.classList.add('show');
+  var left=Math.round((end-Date.now())/1000),inner=document.getElementById('restInner');
+  if(left<=0){document.getElementById('restTime').textContent='GO';document.getElementById('restLabel').textContent='Rest over';inner.classList.add('over');if(!restRang){restRang=true;buzz();}}
+  else{document.getElementById('restTime').textContent=fmt(left);document.getElementById('restLabel').textContent='Rest';inner.classList.remove('over');restRang=false;}
 }
 
-function showFinish(){ document.getElementById('finishWrap').style.display='block'; }
 function finishSession(){
   var dur=draft.start?Math.max(1,Math.round((Date.now()-draft.start)/60000)):0;
-  if(prog.type==='lift'){
-    prog.ex.forEach(function(e,i){
-      var name=e[0], log=draft.log[i]||[], best=0;
-      log.forEach(function(l){ if(l&&l.done){ var w=parseFloat(l.w)||0; if(w>best)best=w; } });
-      if(best>pb(name)) DB.set('pb_'+name,best);
-    });
-  }
+  if(prog.type==='lift'){ prog.ex.forEach(function(e,i){ var name=e[0],log=draft.log[i]||[],best=0; log.forEach(function(l){if(l&&l.done){var w=parseFloat(l.w)||0;if(w>best)best=w;}}); if(best>pb(name))DB.set('pb_'+name,best); }); }
   var workouts=DB.get('workouts_'+DKEY)||[];
   workouts.push({name:prog.name,type:prog.type,duration:dur,log:draft.log,startTime:draft.start?new Date(draft.start).toISOString():null,endTime:new Date().toISOString()});
-  DB.set('workouts_'+DKEY,workouts);
-  DB.set(DRAFT_KEY,null); DB.set('active_cardio',null); DB.set('rest_end',null);
+  DB.set('workouts_'+DKEY,workouts); DB.set(DRAFT_KEY,null); DB.set('active_cardio',null); DB.set('rest_end',null);
   var b=document.getElementById('finishBtn'); b.textContent='Session Saved \u2713'; b.classList.add('saved');
-  setTimeout(function(){ location.href='index.html'; },900);
+  setTimeout(function(){location.href='index.html';},900);
 }
 
+// ---------- WEEK ----------
+function renderWeek(){
+  var el=document.getElementById('weekList'); el.innerHTML='';
+  WEEKORDER.forEach(function(d){ var pr=PROGRAM[d], today=d===dow;
+    var tag=pr.type==='lift'?'LIFT':(pr.type==='zone2'?'CARDIO':'REST');
+    var detail=pr.type==='lift'?(pr.ex.length+' lifts'+(pr.vo2?' + VO2 4\u00d74':'')):(pr.type==='zone2'?((pr.mins||40)+' min'):'Full recovery');
+    el.innerHTML+='<div class="wk-row'+(today?' today':'')+'"><div class="wk-day">'+DABBR[d]+'</div>'
+      +'<div class="wk-body"><div class="wk-name">'+pr.name+'</div><div class="wk-int">'+pr.intensity+' \u00b7 '+detail+'</div></div>'
+      +'<div class="wk-tag tag-'+tag.toLowerCase()+'">'+tag+'</div></div>';
+  });
+}
+
+// ---------- BENCHMARKS ----------
+function getBench(){return DB.get('benchmarks')||{};}
+function fmtVal(unit,v){ if(v==null||v==='')return '\u2014'; return unit==='time'?fmt(v):(unit==='reps'?v:(v+'kg')); }
+function parseVal(unit,raw){ raw=(raw||'').trim(); if(!raw)return null; if(unit==='time'){ if(raw.indexOf(':')>-1){var p=raw.split(':');return (parseInt(p[0],10)||0)*60+(parseInt(p[1],10)||0);} return Math.round(parseFloat(raw)); } return parseFloat(raw); }
+function renderBench(){
+  var data=getBench(), el=document.getElementById('benchList'); el.innerHTML='';
+  BENCHMARKS.forEach(function(bm){
+    var d=data[bm.k]||{start:null,entries:[]};
+    var latest=d.entries.length?d.entries[d.entries.length-1].v:d.start;
+    var sub;
+    if(d.start==null){ sub='<span>No baseline yet \u2014 log to set it</span>'; }
+    else { var delta=bm.dir==='up'?(latest-d.start):(d.start-latest); var cls=delta>0?'up':(delta<0?'down':'');
+      var dtxt = delta===0?'even' : (bm.unit==='time'?(Math.abs(delta)+'s '+(delta>0?'faster':'slower')):(Math.abs(delta)+(bm.unit==='reps'?' reps':'kg')+' '+(delta>0?'up':'down')));
+      sub='Start '+fmtVal(bm.unit,d.start)+' \u00b7 <span class="'+cls+'">'+dtxt+'</span>'; }
+    var ph=bm.unit==='time'?'mm:ss':(bm.unit==='reps'?'reps':'kg');
+    var hist=d.entries.slice().reverse().map(function(e){return '<div class="bm-hrow"><span>'+e.date+'</span><span class="v">'+fmtVal(bm.unit,e.v)+'</span></div>';}).join('')||'<div class="bm-hrow"><span>No entries yet</span><span></span></div>';
+    var c=document.createElement('div'); c.className='bm';
+    c.innerHTML='<div class="bm-top"><div class="bm-name">'+bm.n+'</div><div class="bm-cur">'+fmtVal(bm.unit,latest)+'</div></div>'
+      +'<div class="bm-sub">'+sub+'</div>'
+      +'<div class="bm-actions"><button class="primary" onclick="toggleEntry(\''+bm.k+'\')">+ Log</button><button onclick="toggleHist(\''+bm.k+'\')">History</button></div>'
+      +'<div class="bm-entry" id="entry_'+bm.k+'"><input id="in_'+bm.k+'" inputmode="'+(bm.unit==='time'?'text':'decimal')+'" placeholder="'+ph+'"><button onclick="saveBench(\''+bm.k+'\',\''+bm.unit+'\')">Save</button></div>'
+      +'<div class="bm-history" id="hist_'+bm.k+'">'+hist+'</div>';
+    el.appendChild(c);
+  });
+}
+function toggleEntry(k){ var e=document.getElementById('entry_'+k); e.classList.toggle('show'); if(e.classList.contains('show'))document.getElementById('in_'+k).focus(); }
+function toggleHist(k){ document.getElementById('hist_'+k).classList.toggle('show'); }
+function saveBench(k,unit){ var raw=document.getElementById('in_'+k).value; var v=parseVal(unit,raw); if(v==null||isNaN(v))return;
+  var data=getBench(); var d=data[k]||{start:null,entries:[]}; if(d.start==null)d.start=v;
+  var dt=new Date().toLocaleDateString('en-AU',{day:'numeric',month:'short'}); d.entries.push({v:v,date:dt}); data[k]=d; DB.set('benchmarks',data); renderBench(); }
+
 function requestNotify(){ try{ if('Notification'in window&&Notification.permission==='default')Notification.requestPermission(); }catch(e){} }
-function buzz(){ try{ if(navigator.vibrate)navigator.vibrate([200,100,200]); var A=new (window.AudioContext||window.webkitAudioContext)(); var o=A.createOscillator(),g=A.createGain(); o.connect(g);g.connect(A.destination); o.frequency.value=880;g.gain.value=0.2;o.start();o.stop(A.currentTime+0.3); if('Notification'in window&&Notification.permission==='granted')new Notification('Rest over \u2014 go.'); }catch(e){} }
+function buzz(){ try{ if(navigator.vibrate)navigator.vibrate([200,100,200]); var A=new (window.AudioContext||window.webkitAudioContext)(),o=A.createOscillator(),g=A.createGain(); o.connect(g);g.connect(A.destination);o.frequency.value=880;g.gain.value=0.2;o.start();o.stop(A.currentTime+0.3); if('Notification'in window&&Notification.permission==='granted')new Notification('Rest over \u2014 go.'); }catch(e){} }
 
 function loop(){ tickRest(); tickCardio(); }
-document.addEventListener('visibilitychange',function(){ if(!document.hidden)loop(); });
+document.addEventListener('visibilitychange',function(){if(!document.hidden)loop();});
 window.addEventListener('focus',loop);
 setInterval(loop,500);
-render(); loop();
+initHeader(); renderToday(); switchView('today'); loop();
 </script>
 </body>
 </html>
