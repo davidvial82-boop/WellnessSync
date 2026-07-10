@@ -4,23 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dave · Journal</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#07090d;--s1:#0d1117;--s2:#131920;--s3:#1a2233;--border:#1e2a3a;--border2:#253248;--accent:#00e5ff;--adim:rgba(0,229,255,0.1);--green:#00ff88;--gdim:rgba(0,255,136,0.1);--orange:#ff6b35;--odim:rgba(255,107,53,0.1);--yellow:#ffd600;--ydim:rgba(255,214,0,0.1);--red:#ff3d71;--rdim:rgba(255,61,113,0.1);--purple:#b388ff;--pdim:rgba(179,136,255,0.1);--teal:#00d4aa;--tdim:rgba(0,212,170,0.1);--blue:#4fc3f7;--bdim:rgba(79,195,247,0.1);--text:#e2e8f5;--muted:#4a5c78;--muted2:#2e3d54}
+:root{--bg:#141110;--s1:#1b1712;--s2:#211c16;--s3:#2b241b;--border:#322a20;--border2:#463a2b;--accent:#e8622b;--adim:rgba(232,98,43,0.12);--green:#8ec63f;--gdim:rgba(142,198,63,0.12);--orange:#e8843b;--odim:rgba(232,132,59,0.12);--yellow:#f0a92b;--ydim:rgba(240,169,43,0.12);--red:#ef4d4d;--rdim:rgba(239,77,77,0.12);--purple:#c9954a;--pdim:rgba(201,149,74,0.12);--blue:#3ea6c4;--bdim:rgba(62,166,196,0.12);--teal:#2fb59e;--tdim:rgba(47,181,158,0.12);--text:#efe7da;--muted:#8a8177;--muted2:#4a4237;--disp:'Archivo',sans-serif;--mono:'Space Mono',monospace;--sans:'Inter',sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;padding-bottom:90px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding-bottom:90px}
 .nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(7,9,13,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 max(10px,env(safe-area-inset-bottom))}
 .nav-link{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--muted);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:6px 10px;border-radius:10px;transition:color 0.2s}
 .nav-link svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .nav-link.active,.nav-link:hover{color:var(--blue)}
 .wrap{max-width:600px;margin:0 auto;padding:20px 16px}
 .page-header{padding:20px 0 20px;display:flex;justify-content:space-between;align-items:center;gap:8px}
-.page-header h1{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:2px}
+.page-header h1{font-family:'Archivo',sans-serif;font-weight:900;font-size:38px;letter-spacing:2px}
 .page-header .sub{font-size:10px;letter-spacing:4px;color:var(--blue);text-transform:uppercase;margin-bottom:4px}
 .date-nav{display:flex;align-items:center;gap:8px;background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:7px 12px}
 .date-nav button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;transition:color 0.2s}
 .date-nav button:hover{color:var(--blue)}
-.dlabel{font-family:'DM Mono',monospace;font-size:11px;color:var(--text);min-width:60px;text-align:center}
+.dlabel{font-family:'Space Mono',monospace;font-size:11px;color:var(--text);min-width:60px;text-align:center}
 
 .card{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px}
 .card-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);margin-bottom:12px;display:flex;align-items:center;gap:8px}
@@ -32,7 +32,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .tag-group{margin-bottom:14px}
 .tag-group-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
 .tag-row{display:flex;flex-wrap:wrap;gap:6px}
-.tag{display:inline-flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--border);border-radius:99px;padding:7px 12px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;font-family:'Syne',sans-serif}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--border);border-radius:99px;padding:7px 12px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif}
 .tag:hover{border-color:var(--blue);color:var(--text)}
 .tag .tag-emoji{font-size:14px;line-height:1}
 .tag.selected{background:var(--bdim);border-color:var(--blue);color:var(--blue)}
@@ -42,16 +42,16 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 /* Note field */
 .note-row{margin-top:14px}
 .note-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.note-input{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;resize:none;min-height:60px;transition:border-color 0.2s}
+.note-input{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;resize:none;min-height:60px;transition:border-color 0.2s}
 .note-input:focus{border-color:var(--blue)}
 .note-input::placeholder{color:var(--muted)}
 
 /* Save bar */
 .save-row{display:flex;gap:8px;margin-top:12px}
-.save-btn{flex:1;background:var(--blue);color:var(--bg);border:none;border-radius:10px;padding:12px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;transition:opacity 0.2s}
+.save-btn{flex:1;background:var(--blue);color:var(--bg);border:none;border-radius:10px;padding:12px;font-family:'Archivo',sans-serif;font-weight:900;font-size:18px;letter-spacing:2px;cursor:pointer;transition:opacity 0.2s}
 .save-btn:hover{opacity:0.85}
 .save-btn:disabled{background:var(--muted2);color:var(--muted);cursor:not-allowed}
-.clear-btn{background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:0 18px;color:var(--muted);font-family:'Syne',sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all 0.2s}
+.clear-btn{background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:0 18px;color:var(--muted);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all 0.2s}
 .clear-btn:hover{color:var(--red);border-color:var(--red)}
 
 .save-status{font-size:11px;color:var(--muted);text-align:center;min-height:16px;margin-top:8px}
@@ -59,14 +59,14 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 
 /* Custom tag input */
 .custom-tag-row{display:flex;gap:6px;margin-top:8px}
-.custom-tag-input{flex:1;background:var(--s2);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;color:var(--text);font-family:'Syne',sans-serif;font-size:12px;outline:none}
+.custom-tag-input{flex:1;background:var(--s2);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none}
 .custom-tag-input:focus{border-color:var(--blue)}
-.custom-tag-btn{background:var(--bdim);border:1px solid var(--blue);border-radius:8px;padding:7px 14px;color:var(--blue);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;cursor:pointer;transition:opacity 0.2s}
+.custom-tag-btn{background:var(--bdim);border:1px solid var(--blue);border-radius:8px;padding:7px 14px;color:var(--blue);font-family:'Archivo',sans-serif;font-weight:900;font-size:13px;letter-spacing:1.5px;cursor:pointer;transition:opacity 0.2s}
 .custom-tag-btn:hover{opacity:0.85}
 
 /* Tabs */
 .tabs{display:flex;gap:6px;background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:14px}
-.tab{flex:1;background:none;border:none;color:var(--muted);font-family:'Syne',sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:10px;border-radius:8px;cursor:pointer;transition:all 0.2s}
+.tab{flex:1;background:none;border:none;color:var(--muted);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:10px;border-radius:8px;cursor:pointer;transition:all 0.2s}
 .tab.active{background:var(--s3);color:var(--blue)}
 
 /* History entries */
@@ -95,7 +95,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .freq-bar-fill{height:100%;border-radius:99px;background:var(--blue);transition:width 0.6s ease}
 .freq-bar-fill.neg{background:var(--red)}
 .freq-bar-fill.pos{background:var(--green)}
-.freq-count{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);min-width:24px;text-align:right}
+.freq-count{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);min-width:24px;text-align:right}
 
 .empty-state{text-align:center;padding:28px;color:var(--muted);font-size:13px;line-height:2}
 </style>
@@ -160,11 +160,11 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 </div>
 
 <nav class="nav">
-  <a class="nav-link" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Hub</a>
-  <a class="nav-link" href="nutrition.html"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Nutrition</a>
-  <a class="nav-link" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Workout</a>
-  <a class="nav-link" href="recovery.html"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3c0 1.66-1.34 3-3 3s-3-1.34-3-3a3 3 0 0 1 3-3z"/><path d="M12 8v8M8 12h8M6 20c0-4 2-6 6-6s6 2 6 6"/></svg>Recovery</a>
-  <a class="nav-link" href="weight.html"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Weight</a>
+  <a class="nav-link active" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Hub</a>
+  <a class="nav-link" href="nutrition.html"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Fuel</a>
+  <a class="nav-link" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Train</a>
+  <a class="nav-link" href="recovery.html"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3c0 1.66-1.34 3-3 3s-3-1.34-3-3a3 3 0 0 1 3-3z"/><path d="M12 8v8M8 12h8M6 20c0-4 2-6 6-6s6 2 6 6"/></svg>Restore</a>
+  <a class="nav-link" href="weight.html"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Weigh</a>
 </nav>
 
 <script src="db.js"></script>
