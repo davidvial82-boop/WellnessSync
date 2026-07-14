@@ -60,6 +60,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:360px;backgrou
 .vital:nth-child(-n+2){border-bottom:1px solid var(--border)}
 .v-label{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
 .v-num{font-family:var(--mono);font-weight:700;font-size:30px;line-height:1;letter-spacing:-1px}
+.v-num.sleep{color:var(--blue)} .v-num.sleepscore{color:var(--teal)} .v-bar-fill.sleep{background:var(--blue)} .v-bar-fill.sleepscore{background:var(--teal)}
 .v-num.cal{color:var(--accent)} .v-num.pro{color:var(--green)} .v-num.steps{color:var(--yellow)} .v-num.weight{color:var(--orange)}
 .v-target{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px}
 .v-net{font-size:10px;color:var(--green);font-family:var(--mono);margin-top:3px;letter-spacing:0.3px}
@@ -234,6 +235,18 @@ a:focus-visible,button:focus-visible,.vital:focus-visible,.jq-tag:focus-visible{
         <div class="v-num weight" id="statWeight">--</div>
         <div class="v-target" id="statWeightSub">Tap to log</div>
       </div>
+      <div class="vital" id="sleepCard" style="border-right:1px solid var(--border);border-top:1px solid var(--border)">
+        <div class="v-label">Sleep</div>
+        <div class="v-num sleep" id="statSleep">--</div>
+        <div class="v-target" id="statSleepSub">Tap to log</div>
+        <div class="v-bar"><div class="v-bar-fill sleep" id="sleepBar" style="width:0%"></div></div>
+      </div>
+      <div class="vital" id="sleepScoreCard" style="border-top:1px solid var(--border)">
+        <div class="v-label">Sleep Score</div>
+        <div class="v-num sleepscore" id="statSleepScore">--</div>
+        <div class="v-target" id="statSleepScoreSub">Log hours + quality</div>
+        <div class="v-bar"><div class="v-bar-fill sleepscore" id="sleepScoreBar" style="width:0%"></div></div>
+      </div>
     </div>
   </div>
 
@@ -343,6 +356,18 @@ a:focus-visible,button:focus-visible,.vital:focus-visible,.jq-tag:focus-visible{
   </div>
 </div>
 
+<div class="modal" id="sleepModal">
+  <div class="modal-sheet">
+    <h3>LOG SLEEP</h3>
+    <div class="modal-hint">Hours slept last night &mdash; target 8h</div>
+    <input class="modal-input" id="sleepInput" type="number" placeholder="0.0" step="0.25" min="0" max="16">
+    <div class="modal-hint">How did it feel?</div>
+    <div class="jq-tags" id="sleepQualTags" style="justify-content:center"></div>
+    <button class="modal-save" id="sleepSave">SAVE SLEEP</button>
+    <button class="modal-cancel" id="sleepCancel">Cancel</button>
+  </div>
+</div>
+
 <div class="modal" id="weightModal">
   <div class="modal-sheet">
     <h3>LOG WEIGHT</h3>
@@ -375,14 +400,22 @@ var TAG_IMPACT = {
 };
 
 var QUICK_TAGS = [
-  {id:'bad_sleep',   label:'Bad sleep',     emoji:'😴', val:-1},
   {id:'great_sleep', label:'Great sleep',   emoji:'💤', val:+1},
+  {id:'bad_sleep',   label:'Bad sleep',     emoji:'😴', val:-1},
+  {id:'energized',   label:'Energized',     emoji:'⚡', val:+1},
+  {id:'strong',      label:'Strong',        emoji:'💪', val:+1},
+  {id:'motivated',   label:'Motivated',     emoji:'🔥', val:+1},
+  {id:'calm',        label:'Calm',          emoji:'🧘', val:+1},
+  {id:'hydrated',    label:'Hydrated',      emoji:'💧', val:+1},
+  {id:'good_food',   label:'Ate well',      emoji:'🥗', val:+1},
   {id:'sore',        label:'Sore',          emoji:'🥴', val:-1},
   {id:'tired',       label:'Tired',         emoji:'😪', val:-1},
-  {id:'energized',   label:'Energized',     emoji:'⚡', val:+1},
   {id:'stress',      label:'Stressful day', emoji:'😣', val:-1},
   {id:'alcohol',     label:'Alcohol',       emoji:'🍷', val:-1},
-  {id:'hydrated',    label:'Hydrated',      emoji:'💧', val:+1}
+  {id:'poor_food',   label:'Ate poorly',    emoji:'🍔', val:-1},
+  {id:'niggle',      label:'Niggle / pain', emoji:'🩹', val:-1},
+  {id:'headache',    label:'Headache',      emoji:'🤕', val:-1},
+  {id:'low_mood',    label:'Low mood',      emoji:'😔', val:-1}
 ];
 
 function calcRecoveryFromJournal(entry){
@@ -879,6 +912,72 @@ window.addEventListener('focus', _refreshIfNewDay);
   var dd=p(now.getDate())+'.'+p(now.getMonth()+1)+'.'+String(now.getFullYear()).slice(2);
   document.getElementById('kicker').textContent=DABBR[dow]+' · '+dd+' · DAY '+streak+' STREAK';
 })();
+
+// ================= SLEEP =================
+var SLEEP_QUAL=[{id:'restless',label:'Restless',emoji:'\U0001F644',val:-15},{id:'ok',label:'OK',emoji:'\U0001F610',val:0},{id:'solid',label:'Solid',emoji:'\U0001F4A4',val:10},{id:'deep',label:'Deep',emoji:'\U0001F31F',val:20}];
+function sleepScore(rec){
+  if(!rec||rec.hours==null) return null;
+  var h=parseFloat(rec.hours)||0;
+  // duration component (0-80): peaks at 8h, penalise short and very long
+  var dur;
+  if(h>=7.5&&h<=9) dur=80;
+  else if(h<7.5) dur=Math.max(0,80-(7.5-h)*18);
+  else dur=Math.max(0,80-(h-9)*10);
+  var q=0; if(rec.quality){ SLEEP_QUAL.forEach(function(x){ if(x.id===rec.quality) q=x.val; }); }
+  return Math.max(0,Math.min(100,Math.round(dur+q)));
+}
+function renderSleep(){
+  var rec=DB.get('sleep_'+DB.dayKey());
+  var hEl=document.getElementById('statSleep'), sEl=document.getElementById('statSleepScore');
+  if(!hEl) return;
+  if(rec&&rec.hours!=null){
+    hEl.textContent=parseFloat(rec.hours)+'h';
+    document.getElementById('statSleepSub').textContent='of 8h target';
+    document.getElementById('sleepBar').style.width=Math.min(100,(parseFloat(rec.hours)/8)*100)+'%';
+    var sc=sleepScore(rec);
+    sEl.textContent=sc;
+    var verdict = sc>=85?'Excellent':(sc>=70?'Good':(sc>=50?'Adequate':'Poor \u2014 protect tonight'));
+    document.getElementById('statSleepScoreSub').textContent=verdict;
+    document.getElementById('sleepScoreBar').style.width=sc+'%';
+  } else {
+    hEl.textContent='--'; sEl.textContent='--';
+    document.getElementById('statSleepSub').textContent='Tap to log';
+    document.getElementById('statSleepScoreSub').textContent='Log hours + quality';
+  }
+}
+var chosenQual='ok';
+function initSleepModal(){
+  var wrap=document.getElementById('sleepQualTags'); if(!wrap) return;
+  var rec=DB.get('sleep_'+DB.dayKey())||{};
+  chosenQual=rec.quality||'ok';
+  wrap.innerHTML='';
+  SLEEP_QUAL.forEach(function(q){
+    var b=document.createElement('div');
+    b.className='jq-tag'+(q.id===chosenQual?' selected pos':'');
+    b.innerHTML='<span class="te">'+q.emoji+'</span>'+q.label;
+    b.onclick=function(){ chosenQual=q.id; initSleepModal(); };
+    wrap.appendChild(b);
+  });
+  if(rec.hours!=null) document.getElementById('sleepInput').value=rec.hours;
+}
+(function(){
+  var card=document.getElementById('sleepCard'), scard=document.getElementById('sleepScoreCard');
+  var modal=document.getElementById('sleepModal');
+  function open(){ initSleepModal(); modal.classList.add('active'); }
+  if(card) card.onclick=open;
+  if(scard) scard.onclick=open;
+  var sv=document.getElementById('sleepSave'), sc=document.getElementById('sleepCancel');
+  if(sv) sv.onclick=function(){
+    var h=parseFloat(document.getElementById('sleepInput').value);
+    if(isNaN(h)||h<0){ modal.classList.remove('active'); return; }
+    DB.set('sleep_'+DB.dayKey(),{hours:h,quality:chosenQual});
+    modal.classList.remove('active'); renderSleep();
+  };
+  if(sc) sc.onclick=function(){ modal.classList.remove('active'); };
+  if(modal) modal.onclick=function(e){ if(e.target===modal) modal.classList.remove('active'); };
+  renderSleep();
+})();
+
 </script>
 </body>
 </html>
