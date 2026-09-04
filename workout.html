@@ -26,6 +26,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:340px;backgrou
 .philosophy b{color:var(--text)}
 
 .ex{background:var(--s2);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px}
+.ex.power{border-left:3px solid var(--accent);background:var(--adim)}
 .ex-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px}
 .ex-name{font-family:var(--disp);font-weight:900;font-size:19px;text-transform:uppercase;letter-spacing:-0.3px}
 .ex-pb{font-family:var(--mono);font-size:11px;color:var(--yellow)}
@@ -147,15 +148,28 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:340px;backgrou
 <script src="db.js"></script>
 <script>
 var DABBR=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+// ex tuple = [name, sets, 'reps'] with optional 4th 'P' = explosive/power movement
 var PROGRAM={
-  1:{type:'lift',name:'LOWER A',intensity:'HEAVY',ex:[['Trap-bar Deadlift',4,'5'],['Romanian Deadlift',3,'8'],['Leg Press',3,'10'],['Walking Lunges',3,'12'],['Standing Calf Raise',3,'15'],['Hanging Leg Raise',3,'12']]},
-  2:{type:'lift',name:'UPPER A',intensity:'HEAVY',vo2:true,ex:[['Bench Press',4,'5'],['Weighted Pull-up',4,'6'],['Overhead Press',3,'8'],['Barbell Row',3,'8'],['Dips',3,'10'],['Face Pull',3,'15']]},
+  1:{type:'lift',name:'SQUAT + PUSH',intensity:'POWER / FBB',ex:[['Landmine Push Press',5,'3','P'],['Back Squat',4,'5'],['Landmine Reverse Lunge',3,'8/side'],['Half-kneeling Landmine Press',3,'8/arm'],['Romanian Deadlift',3,'10'],['Chest-supported Row',3,'12'],['Suitcase Carry',3,'40m']]},
+  2:{type:'lift',name:'HINGE + PULL',intensity:'POWER / FBB',vo2:true,ex:[['Landmine Clean',5,'3/side','P'],['Weighted Pull-up',4,'5'],['Landmine RDL',3,'10'],['Tall-kneeling Landmine Press',3,'8/arm'],['DB Bulgarian Split Squat',3,'8/side'],['Landmine Meadows Row',3,'10/arm'],['Farmer Carry',3,'40m']]},
   3:{type:'zone2',name:'ZONE 2',intensity:'RECOVERY',mins:40},
-  4:{type:'lift',name:'LOWER B',intensity:'HEAVY',ex:[['Front Squat',4,'5'],['Hip Thrust',3,'10'],['Bulgarian Split Squat',3,'10'],['Leg Curl',3,'12'],['Seated Calf Raise',3,'15'],['Cable Crunch',3,'15']]},
-  5:{type:'lift',name:'UPPER B',intensity:'HEAVY',vo2:true,ex:[['Incline DB Press',4,'8'],['Chin-up',4,'8'],['Seated Cable Row',3,'10'],['DB Shoulder Press',3,'10'],['Lateral Raise',3,'15'],['Tricep Pushdown',3,'12']]},
+  4:{type:'lift',name:'UNILATERAL + ROTATION',intensity:'POWER / FBB',ex:[['Landmine Rotational Toss',4,'5/side','P'],['Broad Jump',4,'3','P'],['Landmine Thruster',4,'6'],['Walking Lunge',3,'10/side'],['Single-arm Landmine Incline Press',3,'10/arm'],['Single-leg RDL',3,'8/side'],['Landmine Pallof / Anti-rotation',3,'10/side']]},
+  5:{type:'lift',name:'FULL BODY',intensity:'POWER / FBB',vo2:true,ex:[['Landmine High Pull',5,'3/side','P'],['Bench Press',4,'6'],['Landmine Squat',3,'10'],['Landmine Row',3,'10/arm'],['Hip Thrust',3,'10'],['Face Pull',3,'15'],['Loaded Carry Medley',3,'rounds']]},
   6:{type:'zone2',name:'CONDITIONING',intensity:'SURF / Z2',mins:45},
   0:{type:'rest',name:'REST',intensity:'RECOVER'}
 };
+// ---------- 6-WEEK BLOCK ENGINE ----------
+var BLOCK_START=new Date(2026,8,7); // Mon 7 Sep 2026 = block week 1 (month is 0-indexed)
+var BLOCK_LEN=6;
+var WEEKPLAN={
+  1:{rpe:'RPE 7',  note:'Establish loads. Accessories at the bottom of the rep range.',deload:false},
+  2:{rpe:'RPE 7.5',note:'Same loads, push accessory reps up.',deload:false},
+  3:{rpe:'RPE 8',  note:'Peak accumulation. Accessories to the top of the range.',deload:false},
+  4:{rpe:'RPE 6',  note:'Deload \u2014 volume cut, stay crisp. Reset for the back half.',deload:true},
+  5:{rpe:'RPE 8',  note:'Intensify. Heavier strength, accessories full at moderate load.',deload:false},
+  6:{rpe:'RPE 8.5',note:'Realise \u2014 top set on the strength lift, then close the block. Retest a benchmark.',deload:false}
+};
+function blockWeek(){ return Math.min(BLOCK_LEN,Math.max(1,Math.floor((now-BLOCK_START)/(7*864e5))+1)); }
 var WEEKORDER=[1,2,3,4,5,6,0];
 var BENCHMARKS=[
   {k:'bench',n:'Bench Press',unit:'kg',dir:'up'},
@@ -167,6 +181,7 @@ var BENCHMARKS=[
   {k:'run5k',n:'5km Run',unit:'time',dir:'down'}
 ];
 var now=new Date(), dow=now.getDay(), prog=PROGRAM[dow];
+var BW=blockWeek(), WK=WEEKPLAN[BW], DELOAD=WK.deload;
 var DKEY=DB.dayKey();
 var DRAFT_KEY='workout_draft_'+DKEY;
 var draft=DB.get(DRAFT_KEY)||{start:null,log:{}};
@@ -187,8 +202,8 @@ function switchView(v){
 function initHeader(){
   document.getElementById('sessionName').textContent=prog.name;
   document.getElementById('sessionIntensity').textContent=prog.intensity;
-  var start=new Date(2026,5,22), week=Math.max(1,Math.floor((now-start)/(7*864e5))+1);
-  var meta=prog.type==='lift'?('Heavy \u00b7 RPE 7\u20139 \u00b7 hold your loads \u2014 week '+week):(prog.type==='zone2'?('Conversational pace \u00b7 joint-sparing \u2014 week '+week):('Full recovery \u2014 week '+week));
+  var week=BW;
+  var meta=prog.type==='lift'?(WK.rpe+' \u00b7 '+(DELOAD?'deload':'block')+' \u2014 week '+week+'/'+BLOCK_LEN):(prog.type==='zone2'?('Conversational pace \u00b7 joint-sparing \u2014 week '+week+'/'+BLOCK_LEN):('Full recovery \u2014 week '+week+'/'+BLOCK_LEN));
   document.getElementById('sessionMeta').textContent=meta;
   document.getElementById('kicker').textContent=DABBR[dow]+' \u00b7 '+DKEY;
 }
@@ -196,29 +211,32 @@ function initHeader(){
 function renderToday(){
   var body=document.getElementById('sessionBody'); body.innerHTML='';
   if(prog.type==='rest'){ body.innerHTML='<div class="rest-day"><div class="big">Rest</div><div>Recover hard. Walk, stretch, eat your protein, sleep. Tomorrow you push.</div></div>'; return; }
-  body.innerHTML='<div class="philosophy">Keep lifting <b>heavy</b> \u2014 that is the signal that holds muscle in a deficit. Progress here = <b>holding your loads</b>, not chasing reps.</div>';
+  body.innerHTML='<div class="philosophy">Week <b>'+BW+' of '+BLOCK_LEN+'</b> \u00b7 <b>'+WK.rpe+'</b> on strength &amp; accessories. '+WK.note+' Explosive lifts stay by <b>intent</b> \u2014 full rest, stop when speed drops, never to failure.</div>';
   if(prog.type==='lift'){ prog.ex.forEach(function(e,i){ body.appendChild(exCard(e,i)); }); if(prog.vo2) body.appendChild(vo2Block()); }
   else if(prog.type==='zone2'){ body.appendChild(zone2Block(prog.mins)); }
 }
 
 function exCard(e,i){
-  var name=e[0], sets=e[1], reps=e[2];
-  var d=document.createElement('div'); d.className='ex';
+  var name=e[0], sets=e[1], reps=e[2], isPower=e[3]==='P';
+  var setsEff = DELOAD ? (isPower?Math.min(sets,3):2) : sets;
+  var restSec = isPower ? 180 : 120;
+  var d=document.createElement('div'); d.className='ex'+(isPower?' power':'');
   var pbv=pb(name), pbTxt=pbv>0?('PB '+pbv+'kg'):'';
-  var h='<div class="ex-top"><div class="ex-name">'+name+'</div><div class="ex-pb">'+pbTxt+'</div></div>';
-  h+='<div class="ex-target">'+sets+' \u00d7 '+reps+' \u00b7 RPE 7\u20139</div><div class="sets">';
+  var h='<div class="ex-top"><div class="ex-name">'+name+(isPower?' \u26a1':'')+'</div><div class="ex-pb">'+pbTxt+'</div></div>';
+  var rpeTxt=isPower?'Explosive \u00b7 by intent':WK.rpe;
+  h+='<div class="ex-target">'+setsEff+' \u00d7 '+reps+' \u00b7 '+rpeTxt+(DELOAD?' \u00b7 deload':'')+'</div><div class="sets">';
   var log=draft.log[i]||[];
-  for(var s=0;s<sets;s++){ var l=log[s]||{}, dc=l.done?' done':'';
+  for(var s=0;s<setsEff;s++){ var l=log[s]||{}, dc=l.done?' done':'';
     h+='<div class="set-row'+dc+'" data-i="'+i+'" data-s="'+s+'"><span class="set-n">'+(s+1)+'</span>'
       +'<input class="set-w" inputmode="decimal" placeholder="kg" value="'+(l.w||'')+'"><span class="set-x">\u00d7</span>'
       +'<input class="set-r" inputmode="numeric" placeholder="'+reps+'" value="'+(l.r||'')+'"><button class="set-done">\u2713</button></div>';
   }
-  h+='</div><button class="rest-btn" onclick="startRest(120)">Start rest \u00b7 2:00</button>';
+  h+='</div><button class="rest-btn" onclick="startRest('+restSec+')">Start rest \u00b7 '+fmt(restSec)+'</button>';
   d.innerHTML=h;
   d.querySelectorAll('.set-row').forEach(function(row){
     row.querySelector('.set-w').addEventListener('input',function(){saveSet(row);});
     row.querySelector('.set-r').addEventListener('input',function(){saveSet(row);});
-    row.querySelector('.set-done').addEventListener('click',function(){row.classList.toggle('done');saveSet(row);if(row.classList.contains('done'))startRest(120);});
+    row.querySelector('.set-done').addEventListener('click',function(){row.classList.toggle('done');saveSet(row);if(row.classList.contains('done'))startRest(restSec);});
   });
   return d;
 }
