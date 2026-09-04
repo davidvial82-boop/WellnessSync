@@ -51,7 +51,11 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:340px;backgrou
 .rest-day{text-align:center;padding:50px 20px;color:var(--muted)}
 .rest-day .big{font-family:var(--disp);font-weight:900;font-size:44px;color:var(--text);text-transform:uppercase;margin-bottom:10px}
 
-.wk-row{display:flex;align-items:center;gap:14px;background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px}
+.wk-row{display:flex;align-items:center;gap:14px;background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:border-color .12s,background .12s}
+.wk-row:active{transform:scale(0.995)}
+.wk-row.sel{border-color:var(--accent);background:var(--adim);box-shadow:0 0 0 1px var(--accent) inset}
+.wk-done{font-family:var(--mono);font-size:10px;color:var(--green);margin-left:6px}
+.wk-tod{font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:6px}
 .wk-row.today{border-color:var(--accent);background:var(--adim)}
 .wk-day{font-family:var(--mono);font-size:12px;color:var(--muted);width:34px;flex-shrink:0}
 .wk-row.today .wk-day{color:var(--accent)}
@@ -114,7 +118,7 @@ body::after{content:'';position:fixed;top:0;left:0;right:0;height:340px;backgrou
 
   <div class="view" id="weekView" style="display:none">
     <h2 class="view-title">The Week</h2>
-    <div class="view-note">Your split: 4 heavy lifts, 2 VO2, 2 Zone 2. Today is highlighted.</div>
+    <div class="view-note">Tap any session to load and do it \u2014 miss a day, come back and knock it over whenever. Green \u2713 = already done today.</div>
     <div id="weekList"></div>
   </div>
 
@@ -183,8 +187,12 @@ var BENCHMARKS=[
 var now=new Date(), dow=now.getDay(), prog=PROGRAM[dow];
 var BW=blockWeek(), WK=WEEKPLAN[BW], DELOAD=WK.deload;
 var DKEY=DB.dayKey();
-var DRAFT_KEY='workout_draft_'+DKEY;
-var draft=DB.get(DRAFT_KEY)||{start:null,log:{}};
+var selDow=dow;                 // which session is loaded — defaults to today's plan, but any day can be selected
+prog=PROGRAM[selDow];
+var DRAFT_KEY, draft;
+function loadDraft(){ DRAFT_KEY='workout_draft_'+DKEY+'_'+selDow; draft=DB.get(DRAFT_KEY)||{start:null,log:{}}; }
+loadDraft();
+function selectDay(d){ selDow=d; prog=PROGRAM[d]; loadDraft(); initHeader(); renderToday(); switchView('today'); window.scrollTo(0,0); }
 
 function fmt(s){s=Math.max(0,Math.round(s));var m=Math.floor(s/60),x=s%60;return m+':'+(x<10?'0':'')+x;}
 function pb(name){return DB.get('pb_'+name)||0;}
@@ -205,7 +213,7 @@ function initHeader(){
   var week=BW;
   var meta=prog.type==='lift'?(WK.rpe+' \u00b7 '+(DELOAD?'deload':'block')+' \u2014 week '+week+'/'+BLOCK_LEN):(prog.type==='zone2'?('Conversational pace \u00b7 joint-sparing \u2014 week '+week+'/'+BLOCK_LEN):('Full recovery \u2014 week '+week+'/'+BLOCK_LEN));
   document.getElementById('sessionMeta').textContent=meta;
-  document.getElementById('kicker').textContent=DABBR[dow]+' \u00b7 '+DKEY;
+  document.getElementById('kicker').textContent=(selDow===dow?'TODAY':DABBR[selDow]+' SESSION')+' \u00b7 '+DKEY;
 }
 
 function renderToday(){
@@ -279,11 +287,13 @@ function finishSession(){
 // ---------- WEEK ----------
 function renderWeek(){
   var el=document.getElementById('weekList'); el.innerHTML='';
-  WEEKORDER.forEach(function(d){ var pr=PROGRAM[d], today=d===dow;
+  var doneNames=(DB.get('workouts_'+DKEY)||[]).map(function(w){return w.name;});
+  WEEKORDER.forEach(function(d){ var pr=PROGRAM[d], today=d===dow, sel=d===selDow, done=doneNames.indexOf(pr.name)>-1;
     var tag=pr.type==='lift'?'LIFT':(pr.type==='zone2'?'CARDIO':'REST');
     var detail=pr.type==='lift'?(pr.ex.length+' lifts'+(pr.vo2?' + VO2 4\u00d74':'')):(pr.type==='zone2'?((pr.mins||40)+' min'):'Full recovery');
-    el.innerHTML+='<div class="wk-row'+(today?' today':'')+'"><div class="wk-day">'+DABBR[d]+'</div>'
-      +'<div class="wk-body"><div class="wk-name">'+pr.name+'</div><div class="wk-int">'+pr.intensity+' \u00b7 '+detail+'</div></div>'
+    var badge=done?'<span class="wk-done">\u2713 done</span>':(today?'<span class="wk-tod">today</span>':'');
+    el.innerHTML+='<div class="wk-row'+(sel?' sel':'')+(today?' today':'')+'" onclick="selectDay('+d+')"><div class="wk-day">'+DABBR[d]+'</div>'
+      +'<div class="wk-body"><div class="wk-name">'+pr.name+' '+badge+'</div><div class="wk-int">'+pr.intensity+' \u00b7 '+detail+'</div></div>'
       +'<div class="wk-tag tag-'+tag.toLowerCase()+'">'+tag+'</div></div>';
   });
 }
