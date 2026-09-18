@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#141110">
+<title>Reset · WellnessSync</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#141110;--s1:#1b1712;--s2:#211c16;--s3:#2b241b;--border:#322a20;--border2:#463a2b;--accent:#e8622b;--adim:rgba(232,98,43,0.12);--green:#8ec63f;--gdim:rgba(142,198,63,0.12);--yellow:#f0a92b;--red:#ef4d4d;--blue:#3ea6c4;--text:#efe7da;--muted:#8a8177;--muted2:#4a4237;--disp:'Archivo',sans-serif;--mono:'Space Mono',monospace;--sans:'Inter',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;padding-bottom:150px;-webkit-font-smoothing:antialiased}
+body::after{content:'';position:fixed;top:0;left:0;right:0;height:340px;background:radial-gradient(ellipse 75% 100% at 50% -35%,rgba(232,98,43,0.10),transparent 70%);pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:22px 15px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--accent);margin-bottom:14px;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.streak{font-family:var(--mono);font-size:11px;color:var(--text);background:var(--gdim);border:1px solid rgba(142,198,63,0.3);border-radius:99px;padding:5px 12px}
+.streak b{color:var(--green)}
+.view-title{font-family:var(--disp);font-weight:900;font-size:30px;text-transform:uppercase;letter-spacing:-1px;margin-bottom:6px}
+.view-note{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.5}
+
+.weekbar{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px}
+.weekbar::-webkit-scrollbar{display:none}
+.weektab{flex:0 0 auto;min-width:56px;text-align:center;padding:8px 6px;border-radius:10px;border:1px solid var(--border);background:var(--s1);cursor:pointer}
+.weektab .n{font-family:var(--disp);font-size:18px;font-weight:900}
+.weektab .r{display:block;font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:0.5px;margin-top:2px}
+.weektab.active{background:var(--adim);border-color:var(--accent)}
+.weektab.active .n{color:var(--accent)}
+.weektab.done{border-color:var(--green)}
+
+.block-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:6px}
+.progressbar{height:6px;border-radius:99px;background:var(--s2);overflow:hidden;margin-bottom:14px}
+.progressbar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+
+.banner{background:var(--s1);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px}
+
+.cards{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:15px 16px}
+.card.today{border-color:var(--accent)}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.day-id{display:flex;align-items:baseline;gap:9px}
+.day-name{font-family:var(--disp);font-weight:900;font-size:16px;text-transform:uppercase}
+.day-date{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.todaypill{background:var(--accent);color:#1a0f08;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.5px;border-radius:99px;padding:2px 8px;text-transform:uppercase}
+.tag{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.tag.PUSH,.tag.PULL{background:var(--adim);color:var(--accent)}
+.tag.LEGS,.tag.COND{background:rgba(240,169,43,0.14);color:var(--yellow)}
+.tag.STEPS{background:var(--gdim);color:var(--green)}
+.tag.REST{background:var(--s2);color:var(--muted)}
+
+.focus-label{font-family:var(--disp);font-weight:700;font-size:14px;margin-top:9px}
+.tier{font-family:var(--mono);font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted2);margin-top:10px}
+ul.exercises{list-style:none;margin:5px 0 0;display:flex;flex-direction:column;gap:5px}
+ul.exercises li{font-size:12.5px;color:var(--muted);padding-left:13px;position:relative;line-height:1.4}
+ul.exercises li::before{content:'—';position:absolute;left:0;color:var(--muted2)}
+.phase-note{margin-top:10px;font-size:11.5px;color:var(--yellow);font-style:italic}
+
+.pills{display:flex;gap:7px;margin-top:13px;flex-wrap:wrap}
+.pill{flex:1 1 auto;min-width:96px;text-align:center;border:1px solid var(--border);background:var(--s2);color:var(--muted);border-radius:10px;padding:9px 8px;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.pill .box{width:13px;height:13px;border-radius:4px;border:1.5px solid var(--muted2);flex:0 0 auto}
+.pill.on{background:var(--gdim);border-color:var(--green);color:var(--green)}
+.pill.on .box{background:var(--green);border-color:var(--green)}
+.pill.on .box::after{content:'\2713';display:block;color:#1a0f08;font-size:9px;line-height:12px;font-weight:800}
+
+footer.summary{margin-top:20px;padding-top:14px;border-top:1px solid var(--border);color:var(--muted);font-size:11.5px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px));z-index:9}
+.nav-link{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:var(--muted);font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:6px 8px}
+.nav-link svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.nav-link.active{color:var(--accent)}
+.nav-link.active::before{content:'';position:absolute;top:-11px;left:50%;transform:translateX(-50%);width:22px;height:3px;border-radius:0 0 3px 3px;background:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker"><span>RESET BLOCK</span><span class="streak" id="streakChip">— day streak</span></div>
+  <div class="view-title">6-Week Reset</div>
+  <div class="view-note">Training split + daily steps &amp; protein, Sep 21 &ndash; Nov 1.</div>
+  <div id="app">Loading&hellip;</div>
+</div>
+
+<nav class="nav">
+  <a class="nav-link" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Hub</a>
+  <a class="nav-link" href="nutrition.html"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Fuel</a>
+  <a class="nav-link" href="workout.html"><svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M3 8h3M18 8h3M3 16h3M18 16h3M6 12h12"/></svg>Train</a>
+  <a class="nav-link active" href="reset.html"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>Reset</a>
+  <a class="nav-link" href="recovery.html"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3c0 1.66-1.34 3-3 3s-3-1.34-3-3a3 3 0 0 1 3-3z"/><path d="M12 8v8M8 12h8M6 20c0-4 2-6 6-6s6 2 6 6"/></svg>Restore</a>
+</nav>
+
+<script src="db.js"></script>
+<script>
+(function(){
+  var START_DATE = '2026-09-21'; // Monday, block start
+  var TOTAL_WEEKS = 6;
+  var PROTEIN_TARGET = 190;
+  var STEP_TARGETS = {1:7500, 2:8500, 3:10500};
+  var LOG_KEY = 'reset_log';
+
+  var PROGRAM = [
+    { key:'mon', tag:'PUSH', label:'Upper Push', workoutLabel:'Workout', hasWorkout:true,
+      structured:{ dev:'Med Ball Chest Pass — 3×5 (explosive, full reset between reps)',
+        compound:'Bench Press or DB Bench Press — 4×6-8',
+        accessories:['Incline DB Press — 3×8-10','Seated DB Shoulder Press — 3×8-10','Weighted Dip or Close-Grip Bench — 3×6-8','DB Lateral Raise — 3×8-10','DB Chest Fly — 3×8-10'] } },
+    { key:'tue', tag:'LEGS', label:'Lower — Quad Focus', workoutLabel:'Workout', hasWorkout:true,
+      structured:{ dev:'Box Jump or Broad Jump — 4×3 (stick the landing)',
+        compound:'Back Squat — 4×6-8',
+        accessories:['Front-Foot-Elevated Split Squat — 3×8/leg','Leg Press — 3×8-10','Walking Lunge — 3×10/leg','Standing Calf Raise — 4×8-10','Leg Extension — 3×8-10'] } },
+    { key:'wed', tag:'STEPS', label:'Steps Day', workoutLabel:'Mobility Done', hasWorkout:true,
+      items:['Steps — protect the target today','Core: 3 rounds — Plank 45s, Pallof Press 12/side, Dead Bug 10/side','Stretch: 10 min full-body — hips, t-spine, ankles, hamstrings'] },
+    { key:'thu', tag:'PULL', label:'Upper Pull', workoutLabel:'Workout', hasWorkout:true,
+      structured:{ dev:'Kettlebell Swing — 3×8 (hip snap, not arms)',
+        compound:'Deadlift or Rack Pull — 4×5',
+        accessories:['Weighted Pull-Up or Lat Pulldown — 4×6-8','Seated Cable Row — 3×8-10','Chest-Supported DB Row — 3×8-10','Barbell or DB Curl — 3×8-10','Reverse Fly (Rear Delt) — 3×8-10'] } },
+    { key:'fri', tag:'LEGS', label:'Lower — Hinge Focus', workoutLabel:'Workout', hasWorkout:true,
+      structured:{ dev:'Broad Jump — 3×3 (max distance, full reset)',
+        compound:'Romanian Deadlift — 4×8',
+        accessories:['Hip Thrust — 3×8-10','Bulgarian Split Squat — 3×8/leg','Seated Leg Curl — 3×8-10','Standing Calf Raise — 3×8-10'] } },
+    { key:'sat', tag:'COND', label:'Conditioning', workoutLabel:'Session Done', hasWorkout:true,
+      items:['Circuit ×4: KB Swing 15, Goblet Squat 12, Push Press 10, Row/Ski 250m','Finish: 15-20 min incline walk or bike'] },
+    { key:'sun', tag:'REST', label:'Rest', workoutLabel:null, hasWorkout:false,
+      items:['Full rest — protect this one','Walk only if it feels good, don’t force it'] }
+  ];
+
+  var PHASE_NOTES = {
+    1:'Weeks 1-2 — lock in the lifts; keep the dev work light and crisp, not maximal.',
+    2:'Weeks 3-4 — add load or a rep on the lifts; nudge jump height/distance up a touch.',
+    3:'Weeks 5-6 — push the last accessory set close to failure; dev work stays fast, never grinding.'
+  };
+
+  var state = { log:{} };
+  var selectedWeek = 1;
+
+  function pad(n){ return n<10 ? '0'+n : ''+n; }
+  function toISO(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function parseISO(s){ var p=s.split('-').map(Number); return new Date(p[0], p[1]-1, p[2]); }
+  function addDays(s, n){ var d=parseISO(s); d.setDate(d.getDate()+n); return toISO(d); }
+  function todayISO(){ return DB.dayKey(0); } // uses DB's local-time (non-UTC) date logic
+  function fmtShort(s){ var d=parseISO(s); return d.toLocaleDateString('en-AU',{day:'numeric',month:'short'}); }
+
+  function phaseForWeek(w){ return Math.min(3, Math.ceil(w/2)); }
+
+  function computeCurrentWeek(){
+    var diff = Math.floor((parseISO(todayISO()) - parseISO(START_DATE)) / 86400000);
+    var w = Math.floor(diff/7) + 1;
+    if (w < 1) w = 1;
+    if (w > TOTAL_WEEKS) w = TOTAL_WEEKS;
+    return w;
+  }
+
+  function dateForDay(week, dayIndex){ return addDays(START_DATE, (week-1)*7 + dayIndex); }
+  function dayLog(dateStr){ return state.log[dateStr] || {}; }
+
+  function isDayComplete(dateStr, prog){
+    var l = dayLog(dateStr);
+    if (prog.hasWorkout && !l.workout) return false;
+    if (!l.steps) return false;
+    if (!l.protein) return false;
+    return true;
+  }
+
+  function computeStreak(){
+    var streak = 0;
+    var cursor = addDays(todayISO(), -1);
+    while (cursor >= START_DATE) {
+      var idx = (parseISO(cursor).getDay() + 6) % 7;
+      if (isDayComplete(cursor, PROGRAM[idx])) { streak++; cursor = addDays(cursor, -1); }
+      else break;
+    }
+    var todayIdx = (parseISO(todayISO()).getDay() + 6) % 7;
+    if (todayISO() >= START_DATE && isDayComplete(todayISO(), PROGRAM[todayIdx])) streak++;
+    return streak;
+  }
+
+  function weekProgress(week){
+    var total = 0, done = 0;
+    for (var i=0;i<7;i++){
+      var prog = PROGRAM[i];
+      var d = dateForDay(week, i);
+      var l = dayLog(d);
+      total += (prog.hasWorkout?1:0) + 2;
+      if (prog.hasWorkout && l.workout) done++;
+      if (l.steps) done++;
+      if (l.protein) done++;
+    }
+    return { done:done, total:total };
+  }
+
+  function weekComplete(week){
+    var p = weekProgress(week);
+    return p.total>0 && p.done===p.total;
+  }
+
+  function pillHTML(dateStr, field, on, label){
+    return '<div class="pill'+(on?' on':'')+'" data-toggle="'+dateStr+'|'+field+'"><span class="box"></span>'+label+'</div>';
+  }
+
+  function exerciseBlockHTML(prog){
+    if (prog.structured) {
+      var s = prog.structured;
+      return ''+
+        '<div class="tier">Athletic Development</div>'+
+        '<ul class="exercises"><li>'+s.dev+'</li></ul>'+
+        '<div class="tier">Compound</div>'+
+        '<ul class="exercises"><li>'+s.compound+'</li></ul>'+
+        '<div class="tier">Accessories</div>'+
+        '<ul class="exercises">'+s.accessories.map(function(a){ return '<li>'+a+'</li>'; }).join('')+'</ul>';
+    }
+    return '<ul class="exercises">'+prog.items.map(function(it){ return '<li>'+it+'</li>'; }).join('')+'</ul>';
+  }
+
+  function cardHTML(week, dayIndex){
+    var prog = PROGRAM[dayIndex];
+    var dateStr = dateForDay(week, dayIndex);
+    var isToday = dateStr === todayISO();
+    var l = dayLog(dateStr);
+    var phase = phaseForWeek(week);
+    var stepTarget = STEP_TARGETS[phase];
+
+    var exerciseBlock = exerciseBlockHTML(prog);
+    var note = prog.hasWorkout && prog.tag!=='STEPS' && prog.tag!=='REST'
+      ? '<div class="phase-note">'+PHASE_NOTES[phase]+'</div>' : '';
+
+    var pills = '';
+    if (prog.hasWorkout) pills += pillHTML(dateStr,'workout', !!l.workout, prog.workoutLabel);
+    pills += pillHTML(dateStr,'steps', !!l.steps, 'Steps '+stepTarget.toLocaleString()+'+');
+    pills += pillHTML(dateStr,'protein', !!l.protein, 'Protein '+PROTEIN_TARGET+'g+');
+
+    return '' +
+      '<div class="card'+(isToday?' today':'')+'">'+
+        '<div class="card-head">'+
+          '<div class="day-id">'+
+            '<span class="day-name">'+prog.key.toUpperCase()+'</span>'+
+            '<span class="day-date">'+fmtShort(dateStr)+'</span>'+
+            (isToday?'<span class="todaypill">Today</span>':'')+
+          '</div>'+
+          '<span class="tag '+prog.tag+'">'+prog.tag+'</span>'+
+        '</div>'+
+        '<div class="focus-label">'+prog.label+'</div>'+
+        exerciseBlock+
+        note+
+        '<div class="pills">'+pills+'</div>'+
+      '</div>';
+  }
+
+  function weekTabHTML(){
+    var currentWeek = computeCurrentWeek();
+    var out = '';
+    for (var w=1; w<=TOTAL_WEEKS; w++){
+      var cls = 'weektab' + (w===selectedWeek?' active':'') + (weekComplete(w)?' done':'');
+      out += '<div class="'+cls+'" data-week-tab="'+w+'"><span class="n">'+w+'</span><span class="r">'+(w===currentWeek?'NOW':'WK')+'</span></div>';
+    }
+    return out;
+  }
+
+  function renderApp(){
+    var prog = weekProgress(selectedWeek);
+    var pct = prog.total ? Math.round(100*prog.done/prog.total) : 0;
+    var startBanner = todayISO() < START_DATE
+      ? '<div class="banner">Block starts Monday 21 Sep. Browse the weeks below — checkboxes are live whenever you’re ready.</div>' : '';
+
+    var cards = '';
+    for (var i=0;i<7;i++) cards += cardHTML(selectedWeek, i);
+
+    return '' +
+      '<div class="weekbar">'+weekTabHTML()+'</div>'+
+      '<div class="block-meta"><span>Week '+selectedWeek+' of '+TOTAL_WEEKS+'</span><span>'+prog.done+'/'+prog.total+'</span></div>'+
+      '<div class="progressbar"><i style="width:'+pct+'%"></i></div>'+
+      startBanner+
+      '<div class="cards">'+cards+'</div>'+
+      '<footer class="summary">'+
+        '<span>Protein target: '+PROTEIN_TARGET+'g+/day</span>'+
+        '<span>Steps ramp: 7,500 → 8,500 → 10,500</span>'+
+      '</footer>';
+  }
+
+  function updateStreakChip(){
+    document.getElementById('streakChip').innerHTML = '<b>'+computeStreak()+'</b> day streak';
+  }
+
+  function paint(){
+    document.getElementById('app').innerHTML = renderApp();
+    updateStreakChip();
+  }
+
+  function onAppClick(e){
+    var tab = e.target.closest('[data-week-tab]');
+    if (tab) { selectedWeek = parseInt(tab.getAttribute('data-week-tab'), 10); paint(); return; }
+    var btn = e.target.closest('[data-toggle]');
+    if (btn) {
+      var parts = btn.getAttribute('data-toggle').split('|');
+      var dateStr = parts[0], field = parts[1];
+      if (!state.log[dateStr]) state.log[dateStr] = {};
+      state.log[dateStr][field] = !state.log[dateStr][field];
+      paint();
+      DB.set(LOG_KEY, state.log); // persists via db.js -> Netlify Blobs, per active profile
+    }
+  }
+
+  function init(){
+    state.log = DB.get(LOG_KEY) || {};
+    selectedWeek = computeCurrentWeek();
+    paint();
+    document.getElementById('app').addEventListener('click', onAppClick);
+    // pick up any cloud value that differs from the local cache
+    DB.get(LOG_KEY, function(cloudVal){
+      if (cloudVal && JSON.stringify(cloudVal) !== JSON.stringify(state.log)) {
+        state.log = cloudVal; paint();
+      }
+    });
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
